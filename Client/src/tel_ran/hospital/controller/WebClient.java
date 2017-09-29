@@ -356,7 +356,7 @@ public class WebClient extends Hospital {
 		mapBody.put("doctorId", String.valueOf(doctorId));
 		mapBody.put("daysId", String.valueOf(daysId));
 		HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(mapBody , headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.WORKINGDAYS_GET, HttpMethod.POST,
+		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.DOCTOR_WORKINGDAYS_SET, HttpMethod.POST,
 				requestEntity, String.class);
 
 		return response.getBody();
@@ -375,8 +375,7 @@ public class WebClient extends Hospital {
 	public Iterable<WorkingDays> getAllWorkingDays() {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<Iterable<WorkingDays>> response = restTemplate.exchange(URL + RestRequest.WORKINGDAYS_GET, HttpMethod.POST,
-				requestEntity, new ParameterizedTypeReference<Iterable<WorkingDays>>() {
-				});
+				requestEntity, new ParameterizedTypeReference<Iterable<WorkingDays>>() {});
 
 		return response.getBody();
 	}
@@ -384,8 +383,14 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String setHealthGroup(int patientId, int groupId) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,String> mapBody = new HashMap<>();
+		mapBody.put("patientId", String.valueOf(patientId));
+		mapBody.put("groupId", String.valueOf(groupId));
+		HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(mapBody , headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.PATIENT_HEALTHGROUP_SET, HttpMethod.POST,
+				requestEntity, String.class);
+
+		return response.getBody();
 	}
 
 }

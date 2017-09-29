@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: WebRestController
+Implementation-Version: 0.0.1
+Built-By: gantv
+Implementation-Vendor-Id: tel_ran.hsa
+Build-Jdk: 1.8.0_144
+Implementation-URL: http://projects.spring.io/spring-boot/WebRestContr
+ oller/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

@@ -13,6 +13,6 @@
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="emf" />
 	</bean>
-	<bean class="tel_ran.hospital.model.HospitalModel"></bean>
+	<bean class="tel_ran.hsa.model.HospitalOrm"></bean>
 	
 </beans>

@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
 
-import tel_ran.hsa.model.dto.*;
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.api.RestRequest;
 import tel_ran.hsa.protocols.api.RestResponseCode;

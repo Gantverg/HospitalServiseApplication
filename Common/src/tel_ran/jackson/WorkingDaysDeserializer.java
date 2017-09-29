@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-import tel_ran.hsa.model.dto.WorkingDays;
+import tel_ran.hsa.entities.dto.WorkingDays;
 
 @SuppressWarnings("serial")
 public class WorkingDaysDeserializer extends StdDeserializer<WorkingDays> {

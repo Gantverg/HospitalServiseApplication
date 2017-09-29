@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import tel_ran.hsa.model.dto.WorkingDays;
+import tel_ran.hsa.entities.dto.WorkingDays;
 
 @SuppressWarnings("serial")
 public class WorkingDaysSerializer extends StdSerializer<WorkingDays> {

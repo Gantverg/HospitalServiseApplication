@@ -11,8 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-//import tel_ran.communication.udp.LoadBalancer;
-import tel_ran.hsa.model.dto.*;
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
 import tel_ran.hsa.protocols.api.TcpRequest;
@@ -43,7 +42,7 @@ public class TcpProxy implements IHospital {
 
 	private void getCurrentConnection() throws IOException {
 		//this.socket = LoadBalancer.getSocket();
-		System.out.printf("hostName=%s, port=%s%n",hostName, port);
+		//System.out.printf("hostName=%s, port=%s%n",hostName, port);
 		socket = new Socket(hostName, port);
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		writer = new PrintStream(socket.getOutputStream());
@@ -62,7 +61,6 @@ public class TcpProxy implements IHospital {
 		String body = mapper.writeValueAsString(obj);
 		return mapper.writeValueAsString(new ProtocolEntity(header, body));
 	}
-
 
 	private void getResponse(String request) throws Exception {
 		//getCurrentConnection();

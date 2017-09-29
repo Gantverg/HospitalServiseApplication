@@ -1,15 +1,13 @@
 package tel_ran.security.accounting;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-import tel_ran.rest.RestConfig;
+import org.springframework.http.*;
+
+import tel_ran.hsa.utils.RestConfig;
+import tel_ran.security.entities.Account;
+import tel_ran.security.interfaces.IAccounts;
 
 public class AccountStream implements IAccounts {
 
@@ -43,22 +41,20 @@ public class AccountStream implements IAccounts {
 	}
 
 	public void restore() {
-
+		// TODO Auto-generated method stub
 	}
 
 	public void save() {
-
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public Iterator<Account> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return account.values().iterator();
 	}
 
 	@Override
 	public boolean addAccount(Account account) {
-
 		HttpEntity<Account> requestEntity = new HttpEntity<>(account, rest.headers);
 		ResponseEntity<Boolean> response = rest.restTemplate.exchange(rest.URL + "/account/add", HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<Boolean>() {

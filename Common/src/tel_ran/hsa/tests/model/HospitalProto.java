@@ -5,8 +5,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.Hospital;
-import tel_ran.hsa.model.dto.*;
 import tel_ran.hsa.protocols.api.RestResponseCode;
 
 @SuppressWarnings("serial")

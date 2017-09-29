@@ -14,6 +14,7 @@ public abstract class Hospital implements IHospital {
 
 	private static final LocalTime FINISH_TIME = LocalTime.of(18, 00);
 	private static final LocalTime START_TIME = LocalTime.of(9, 00);
+	private static final int TIME_SLOT = 15;
 	@JsonSerialize(using=LocalTimeSerializer.class)
 	@JsonDeserialize(using=LocalTimeDeserializer.class)
 	protected LocalTime hospitalStartTime;
@@ -22,16 +23,18 @@ public abstract class Hospital implements IHospital {
 	protected LocalTime hospitalFinishTime;
 	protected long timeSlot;
 	
+	public Hospital() {
+		super();
+		this.hospitalStartTime = START_TIME;
+		this.hospitalFinishTime = FINISH_TIME;
+		this.timeSlot = TIME_SLOT;
+		
+	}
+	
 	public Hospital(String hospitalStartTime, String hospitalFinishTime, long timeSlot) {
 		super();
 		this.hospitalStartTime = LocalTime.parse(hospitalStartTime);
 		this.hospitalFinishTime = LocalTime.parse(hospitalFinishTime);
-		this.timeSlot = timeSlot;
-	}
-	public Hospital(long timeSlot) {
-		super();
-		this.hospitalStartTime = START_TIME;
-		this.hospitalFinishTime = FINISH_TIME;
 		this.timeSlot = timeSlot;
 	}
 

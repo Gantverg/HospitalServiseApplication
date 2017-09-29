@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.*;
 import java.util.stream.*;
 
-import tel_ran.hsa.model.dto.*;
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.protocols.api.RestResponseCode;
 import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
 

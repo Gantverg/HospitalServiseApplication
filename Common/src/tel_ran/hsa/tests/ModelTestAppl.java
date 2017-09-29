@@ -9,7 +9,7 @@ import java.util.stream.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import tel_ran.hsa.model.dto.*;
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.api.RestResponseCode;
 import tel_ran.hsa.tests.model.HospitalProto;

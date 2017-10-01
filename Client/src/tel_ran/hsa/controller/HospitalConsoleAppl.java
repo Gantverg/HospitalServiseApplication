@@ -9,7 +9,7 @@ import java.util.*;
 public class HospitalConsoleAppl {
 
 	
-	private static final String adminAuth = "user:95c57579-264f-4dda-8f31-8d42aa784f5f";//"admin:admin";
+	private static final String adminAuth = "user:8f58939b-304f-4ad4-a342-37ea934e242e";//"admin:admin";
 
 	public static void main(String[] args) throws Exception {
 		InputOutput inputOutput = new ConsoleInputOutput();

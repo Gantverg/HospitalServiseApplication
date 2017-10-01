@@ -34,6 +34,7 @@ public interface IHospital extends Serializable, Iterable<Doctor>{
 		return StreamSupport.stream(this.spliterator(), false)
 				.collect(Collectors.toList());
 	}
+	Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate);
 
 	String setWorkingDays(int doctorId, int daysId);
 	String setHealthGroup(int patientId, int groupId);
@@ -50,12 +51,10 @@ public interface IHospital extends Serializable, Iterable<Doctor>{
 	Iterable<Visit> getVisitsByDoctor(int doctorId, LocalDate beginDate, LocalDate endDate);
 	Iterable<Visit> getFreeVisits(int doctorId, LocalDate beginDate, LocalDate endDate);
 	
-	default String addPulseInfo(int patientId, LocalDateTime dateTime, int value) {
+	default String addPulseInfo(HeartBeat heartBeat) {
 		return RestResponseCode.OK;
 	}
-	default Iterable<Integer> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
-		return getPulseByPeriod(patientId, beginDate, endDate, getPatient(patientId).getHealthGroup().getSurveyPeriod());
-	}
+	Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate);
 	Iterable<Integer> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate, int surveyPeriod);
 	
 }

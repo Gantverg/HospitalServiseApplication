@@ -13,6 +13,8 @@ import tel_ran.hsa.model.Hospital;
 import tel_ran.hsa.protocols.api.*;
 import tel_ran.hsa.utils.RestConfig;
 
+//TODO rebuild all methods to new map reducing
+
 @SuppressWarnings("serial")
 public class WebClient extends Hospital {
 	RestTemplate restTemplate;
@@ -29,7 +31,7 @@ public class WebClient extends Hospital {
 	@Override
 	public String addDoctor(Doctor doctor) {
 		HttpEntity<Doctor> requestEntity = new HttpEntity<>(doctor, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.DOCTOR_ADD, HttpMethod.POST, requestEntity,
+		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.DOCTORS, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -39,7 +41,7 @@ public class WebClient extends Hospital {
 	@Override
 	public String addPatient(Patient patient) {
 		HttpEntity<Patient> requestEntity = new HttpEntity<>(patient, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.PATIENT_ADD, HttpMethod.POST, requestEntity,
+		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.PATIENTS, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -388,6 +390,18 @@ public class WebClient extends Hospital {
 				requestEntity, String.class);
 
 		return response.getBody();
+	}
+
+	@Override
+	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

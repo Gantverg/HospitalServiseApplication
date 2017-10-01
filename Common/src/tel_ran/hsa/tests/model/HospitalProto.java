@@ -264,13 +264,12 @@ public class HospitalProto extends Hospital {
 	}
 
 	@Override
-	public String addPulseInfo(int patientId, LocalDateTime dateTime, int value) {
-		Patient patient = patients.get(patientId);
+	public String addPulseInfo(HeartBeat heartBeat) {
+		Patient patient = patients.get(heartBeat.getPatientId());
 		if (patient == null)
 			return RestResponseCode.NO_PATIENT;
 
-		return pulseInfo.putIfAbsent(new PersonDateTime(patientId, dateTime),
-				new HeartBeat(patientId, dateTime, value, patient.getHealthGroup().getSurveyPeriod())) == null
+		return pulseInfo.putIfAbsent(new PersonDateTime(heartBeat.getPatientId(), heartBeat.getDateTime()),heartBeat) == null
 						? RestResponseCode.OK
 						: RestResponseCode.ALREADY_EXIST;
 	}
@@ -320,20 +319,41 @@ public class HospitalProto extends Hospital {
 
 	@Override
 	public HealthGroup getHealthgroup(int groupId) {
-		// TODO Auto-generated method stub
-		return null;
+		return healthGroups.get(groupId);
 	}
 
 	@Override
 	public Iterable<WorkingDays> getAllWorkingDays() {
-		// TODO Auto-generated method stub
-		return null;
+		return workingDaysList.values();
 	}
 
 	@Override
 	public String setHealthGroup(int patientId, int groupId) {
-		// TODO Auto-generated method stub
-		return null;
+		Patient patient = patients.get(patientId);
+		if(patient == null)
+			return RestResponseCode.NO_PATIENT;
+		HealthGroup healthGroup = healthGroups.get(groupId);
+		if(healthGroup == null)
+			return RestResponseCode.NO_HEALTH_GROUP;
+		if(patient.getHealthGroup() == healthGroup)
+			return RestResponseCode.ALREADY_EXIST;
+		patient.setHealthGroup(healthGroup);
+		return RestResponseCode.OK;
+	}
+
+	@Override
+	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
+		return schedule.values();
+	}
+
+	@Override
+	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+		return pulseInfo.entrySet().stream()
+				.filter(entry->entry.getKey().personId==patientId)
+				.filter(entry->entry.getKey().dateTime.isAfter(beginDate.atStartOfDay()))
+				.filter(entry->entry.getKey().dateTime.isBefore(endDate.plusDays(1).atStartOfDay()))
+				.map(Entry::getValue)
+				.collect(Collectors.toList());
 	}
 
 }

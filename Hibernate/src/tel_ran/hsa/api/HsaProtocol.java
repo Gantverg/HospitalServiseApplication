@@ -71,7 +71,8 @@ public class HsaProtocol implements Protocol {
 			int patientId = Integer.parseInt(tokens[1]);
 			LocalDateTime dateTime = LocalDateTime.parse(tokens[2]);
 			int value = Integer.parseInt(tokens[3]);
-			response = hospital.addPulseInfo(patientId, dateTime, value);
+			int surveyPeriod = Integer.parseInt(tokens[4]);
+			response = hospital.addPulseInfo(new HeartBeat(patientId, dateTime, value, surveyPeriod));
 		}catch(Exception e) {
 			code=TcpResponseCode.ERROR;
 			response=e.getMessage();

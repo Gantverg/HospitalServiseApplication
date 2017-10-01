@@ -230,12 +230,8 @@ public class TcpProxy implements IHospital {
 	}
 
 	@Override
-	public String addPulseInfo(int patientId, LocalDateTime dateTime, int value) {
-		Map<String,String> requestBody = new HashMap<>();
-		requestBody.put("patientId", String.valueOf(patientId));
-		requestBody.put("dateTime", dateTime.toString());
-		requestBody.put("value", String.valueOf(value));
-		return getStringResponse(TcpRequest.ADD_PULSE_INFO, requestBody);
+	public String addPulseInfo(HeartBeat heartBeat) {
+		return getStringResponse(TcpRequest.ADD_PULSE_INFO, heartBeat);
 	}
 
 	@Override
@@ -323,6 +319,25 @@ public class TcpProxy implements IHospital {
 		requestBody.put("patientId",String.valueOf(patientId));
 		requestBody.put("groupId",String.valueOf(groupId));
 		return getStringResponse(TcpRequest.SET_HEALTHGROUP, requestBody);
+	}
+
+	@Override
+	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
+		Map<String, String> requestBody = new HashMap<>();
+		requestBody.put("beginDate",String.valueOf(beginDate));
+		requestBody.put("endDate",String.valueOf(endDate));
+		return getIterableResponse(TcpRequest.GET_VISITS, requestBody, new TypeReference<Iterable<Visit>>() {
+		});
+	}
+
+	@Override
+	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+		Map<String,String> requestBody = new HashMap<>();
+		requestBody.put("patientId", String.valueOf(patientId));
+		requestBody.put("beginDate", beginDate.toString());
+		requestBody.put("endDate", endDate.toString());
+		return getIterableResponse(TcpRequest.GET_PULSE_INFO, requestBody, new TypeReference<Iterable<HeartBeat>>() {
+		});
 	}
 
 }

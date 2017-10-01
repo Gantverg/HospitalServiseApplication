@@ -292,11 +292,11 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 
 	@Override
 	@Transactional
-	public String addPulseInfo(int patientId, LocalDateTime dateTime, int value) {
-		PatientOrm patientorm = em.find(PatientOrm.class, patientId);
+	public String addPulseInfo(HeartBeat heartBeat) {
+		PatientOrm patientorm = em.find(PatientOrm.class, heartBeat.getPatientId());
 		if (patientorm == null)
 			return NO_PATIENT;
-		HertBeatOrm pulse = new HertBeatOrm(patientorm, dateTime, value, patientorm.getHealthGroup().getServeyPeriod());
+		HertBeatOrm pulse = new HertBeatOrm(patientorm, heartBeat.getDateTime(), heartBeat.getValue(), patientorm.getHealthGroup().getServeyPeriod());
 		em.persist(pulse);
 		return OK;
 	}
@@ -430,6 +430,18 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 
 	@Override
 	public String setHealthGroup(int patientId, int groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
 		// TODO Auto-generated method stub
 		return null;
 	}

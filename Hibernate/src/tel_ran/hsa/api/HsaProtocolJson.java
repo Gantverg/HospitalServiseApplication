@@ -117,7 +117,8 @@ public class HsaProtocolJson implements Protocol {
 		String response = "";
 		TcpResponseCode code = TcpResponseCode.OK;
 		try {
-			response = hospital.addPulseInfo(info.getPatientId(), info.getDateTime(), info.getValue());
+			response = hospital.addPulseInfo(new HeartBeat(info.getPatientId(), info.getDateTime(), info.getValue(),30)); 
+			//TODO GET PATIENT SURVEY PERIOD
 			return objectToJson(response);
 		} catch (Exception e) {
 			code = TcpResponseCode.ERROR;
@@ -257,16 +258,16 @@ public class HsaProtocolJson implements Protocol {
 		try {
 			if (doctor == null) {
 				code = TcpResponseCode.ERROR;
-				response = RestResponseCode.NO_DOCTOR + code;
-				return objectToJson(response);
+				response = RestResponseCode.NO_DOCTOR;
 			} else {
-				return objectToJson(doctor);
+				response = objectMapper.writeValueAsString(doctor);
 			}
 		} catch (Exception e) {
 			code = TcpResponseCode.ERROR;
-			response = e.getMessage() + code;
-			return objectToJson(response);
+			response = e.getMessage();
 		}
+
+		return objectToJson(code, response);
 	}
 
 	private String updatePatient(String request) {

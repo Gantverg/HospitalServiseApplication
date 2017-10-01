@@ -18,18 +18,19 @@
 	</bean>
 	 -->
 	  
+	<!-- 
 	<bean id="hospital" class="tel_ran.hsa.model.TcpProxy">
 		<constructor-arg name="hostName" value="localhost"/>
-		<constructor-arg name="port" value = "59863" />
+		<constructor-arg name="port" value = "63717" />
 	</bean>
+	 -->
 		
-	<!--
+	
 	<bean id="hospital" class="tel_ran.hsa.tests.model.HospitalProto">
 		<constructor-arg name="hospitalStartTime" value="09:00" />
 		<constructor-arg name="hospitalFinishTime" value="18:00" />
 		<constructor-arg name="timeSlot" value="15" />
 	</bean>
-	-->
 	 
 	 <!-- 
 	 <bean id="hospital" class="tel_ran.hsa.tests.model.HospitalProto">

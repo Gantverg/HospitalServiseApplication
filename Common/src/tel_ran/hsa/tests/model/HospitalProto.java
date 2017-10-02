@@ -39,10 +39,6 @@ public class HospitalProto extends Hospital {
 		healthGroups.put(3, new HealthGroup(3, "Spies", 55, 65, 60));
 	}
 	
-	private static TimeSlot buildSlot(DayOfWeek dayOfWeek, LocalTime beginTime, LocalTime endTime) {
-		return new TimeSlot(dayOfWeek.getValue(), beginTime, endTime);
-	}
-
 	@Override
 	public String addDoctor(Doctor doctor) {
 		if(doctors.containsKey(doctor.getId()))

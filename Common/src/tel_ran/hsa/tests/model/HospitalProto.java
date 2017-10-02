@@ -16,7 +16,6 @@ public class HospitalProto extends Hospital {
 	Map<Integer, HealthGroup> healthGroups;
 	Map<PersonDateTime, Visit> schedule;
 	Map<PersonDateTime, HeartBeat> pulseInfo;
-	Map<Integer, WorkingDays> workingDaysList;
 
 	public HospitalProto(
 			String hospitalStartTime, 
@@ -28,38 +27,20 @@ public class HospitalProto extends Hospital {
 		healthGroups = new HashMap<>();
 		schedule = new HashMap<>();
 		pulseInfo = new HashMap<>();
-		fillWorkingDaysByDefault();
+		fillByDefault();
 
 	}
 
-	private void fillWorkingDaysByDefault() {
-		DayOfWeek[][] scheduleVariants = {
-				{DayOfWeek.SUNDAY,
-				 DayOfWeek.MONDAY,
-				 DayOfWeek.TUESDAY,
-				 DayOfWeek.WEDNESDAY,
-				 DayOfWeek.THURSDAY},
-				{DayOfWeek.SUNDAY,
-				 DayOfWeek.MONDAY,
-				 DayOfWeek.WEDNESDAY,
-				 DayOfWeek.THURSDAY,
-				 DayOfWeek.FRIDAY},
-				{DayOfWeek.SUNDAY,
-				 DayOfWeek.TUESDAY,
-				 DayOfWeek.THURSDAY,
-				 DayOfWeek.SATURDAY}
-				};
-		workingDaysList = new HashMap<>();
-		for(int daysId = 0; daysId < scheduleVariants.length; daysId++) {
-			WorkingDays schedule = new WorkingDays(daysId);
-			schedule.setWorkDays(scheduleVariants[daysId]);
-			workingDaysList.put(daysId, schedule);
-		}
+	private void fillByDefault() {
 		healthGroups = new HashMap<>();
 		healthGroups.put(0, new HealthGroup(0, "Normal", 40, 80, 60*6));
 		healthGroups.put(1, new HealthGroup(1, "Risk1", 80, 120, 30));
 		healthGroups.put(2, new HealthGroup(2, "Risk2", 20, 60, 60));
 		healthGroups.put(3, new HealthGroup(3, "Spies", 55, 65, 60));
+	}
+	
+	private static TimeSlot buildSlot(DayOfWeek dayOfWeek, LocalTime beginTime, LocalTime endTime) {
+		return new TimeSlot(dayOfWeek.getValue(), beginTime, endTime);
 	}
 
 	@Override

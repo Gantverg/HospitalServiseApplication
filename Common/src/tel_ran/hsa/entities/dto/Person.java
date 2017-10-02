@@ -5,6 +5,7 @@ abstract class Person {
 	String name;
 	String phoneNumber;
 	String eMail;
+	Doctor therapist;
 
 	public Person() {
 	}
@@ -40,6 +41,14 @@ abstract class Person {
 	}
 	public void seteMail(String eMail) {
 		this.eMail = eMail;
+	}
+
+	public Doctor getTherapist() {
+		return therapist;
+	}
+
+	public void setTherapist(Doctor therapist) {
+		this.therapist = therapist;
 	}
 
 	@Override

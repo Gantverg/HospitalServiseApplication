@@ -2,20 +2,28 @@ package tel_ran.hsa.entities.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import tel_ran.jackson.LocalDateTimeDeserializer;
+
 public class HeartBeat {
 	int patientId;
+	@JsonDeserialize(using=LocalDateTimeDeserializer.class)
 	LocalDateTime dateTime;
 	int value;
 	int surveyPeriod;
-	
-	public HeartBeat(int patientId, LocalDateTime dateTime, int value, int surveyPeriod) {
+
+	public HeartBeat() {
+	}
+
+	public HeartBeat(int patientId, String dateTime, int value, int surveyPeriod) {
 		super();
 		this.patientId = patientId;
-		this.dateTime = dateTime;
+		this.dateTime = LocalDateTime.parse(dateTime);
 		this.value = value;
 		this.surveyPeriod = surveyPeriod;
 	}
-	
+
 	public int getPatientId() {
 		return patientId;
 	}
@@ -66,5 +74,4 @@ public class HeartBeat {
 		return true;
 	}
 
-	
 }

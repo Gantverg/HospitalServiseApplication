@@ -7,10 +7,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.api.RestRequest;
 import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
+import tel_ran.jackson.LocalDateDeserializer;
+import tel_ran.jackson.LocalDateSerializer;
 import tel_ran.security.interfaces.IAccounts;
 
 @SpringBootApplication
@@ -119,54 +124,54 @@ public class WebController {
 	}	
 
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.PUT)
-	public String bookVisit(@RequestParam(name=RestRequest.DATE_TIME) LocalDateTime dateTime,
+	public String bookVisit(@RequestParam(name=RestRequest.DATE_TIME) String dateTime,
 						    @RequestParam(name=RestRequest.DOCTOR_ID) int doctorId,
 						    @RequestParam(name=RestRequest.PATIENT_ID) int patientId) {
-		return hospital.bookVisit(doctorId, patientId, dateTime);
+		return hospital.bookVisit(doctorId, patientId, LocalDateTime.parse(dateTime));
 	}
 
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.DELETE)
-	public String cancelVisit(@RequestParam(name=RestRequest.DATE_TIME) LocalDateTime dateTime,
+	public String cancelVisit(@RequestParam(name=RestRequest.DATE_TIME) String dateTime,
 						      @RequestParam(name=RestRequest.DOCTOR_ID) int doctorId,
 						      @RequestParam(name=RestRequest.PATIENT_ID) int patientId) {
-		return hospital.cancelVisit(doctorId, patientId, dateTime);
+		return hospital.cancelVisit(doctorId, patientId, LocalDateTime.parse(dateTime));
 	}
 
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.POST)
-	public Iterable<Visit> buildSchedule(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-										 @RequestParam(name=RestRequest.END_DATE) LocalDate endDate) {
+	public Iterable<Visit> buildSchedule(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+										 @RequestParam(name=RestRequest.END_DATE) String endDate) {
 		try {
-			return hospital.buildSchedule(beginDate, endDate);
+			return hospital.buildSchedule(LocalDate.parse(beginDate), LocalDate.parse(endDate));
 		} catch (ScheduleNotEmptyException e) {
 			return null;
 		}
 	}
 
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.GET)
-	public Iterable<Visit> getVisits(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-									 @RequestParam(name=RestRequest.END_DATE) LocalDate endDate) {
-		return hospital.getVisits(beginDate, endDate);
+	public Iterable<Visit> getVisits(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+									 @RequestParam(name=RestRequest.END_DATE) String endDate) {
+		return hospital.getVisits(LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
 	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}", method = RequestMethod.GET)
-	public Iterable<Visit> getVisitsDoctors(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-			 					   			@RequestParam(name=RestRequest.END_DATE) LocalDate endDate,
+	public Iterable<Visit> getVisitsDoctors(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+			 					   			@RequestParam(name=RestRequest.END_DATE) String endDate,
 			 					   			@PathVariable int doctorId) {
-		return hospital.getVisitsByDoctor(doctorId, beginDate, endDate);
+		return hospital.getVisitsByDoctor(doctorId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
 	@RequestMapping(value = RestRequest.VISITS + RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}", method = RequestMethod.GET)
-	public Iterable<Visit> getVisitsByPatient(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-	   										  @RequestParam(name=RestRequest.END_DATE) LocalDate endDate,
+	public Iterable<Visit> getVisitsByPatient(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+	   										  @RequestParam(name=RestRequest.END_DATE) String endDate,
 	   										  @PathVariable int patientId) {
-		return hospital.getVisitsByPatient(patientId, beginDate, endDate);
+		return hospital.getVisitsByPatient(patientId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
 	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}" + RestRequest.FREE, method = RequestMethod.GET)
-	public Iterable<Visit> getVisitsDoctorsFree(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-			 					   				@RequestParam(name=RestRequest.END_DATE) LocalDate endDate,
+	public Iterable<Visit> getVisitsDoctorsFree(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+			 					   				@RequestParam(name=RestRequest.END_DATE) String endDate,
 			 					   				@PathVariable int doctorId) {
-		return hospital.getFreeVisits(doctorId, beginDate, endDate);
+		return hospital.getFreeVisits(doctorId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
 	@RequestMapping(value = RestRequest.DOCTORS+"/{"+RestRequest.DAYS_ID+"}" + 
@@ -196,22 +201,22 @@ public class WebController {
 
 	
 	@RequestMapping(value = RestRequest.PULSE, method = RequestMethod.POST)
-	public String addPulseInfo(@RequestParam(name=RestRequest.HEARTBEAT) HeartBeat heartBeat) {
+	public String addPulseInfo(@RequestBody HeartBeat heartBeat) {
 		return hospital.addPulseInfo(heartBeat);
 	}
 
 	@RequestMapping(value = RestRequest.PULSE+"/{"+RestRequest.PATIENT_ID+"}", method = RequestMethod.GET)
-	public Iterable<HeartBeat> getPulseByPeriod(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-											  @RequestParam(name=RestRequest.END_DATE) LocalDate endDate,
-											  @PathVariable int patientId) {
-		return hospital.getPulseByPeriod(patientId, beginDate, endDate);
+	public Iterable<HeartBeat> getPulseByPeriod(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+												@RequestParam(name=RestRequest.END_DATE) String endDate,
+												@PathVariable int patientId) {
+		return hospital.getPulseByPeriod(patientId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 
 	@RequestMapping(value = RestRequest.PULSE+"/{"+RestRequest.PATIENT_ID+"}/{"+RestRequest.SURVEY_PERIOD+"}", method = RequestMethod.GET)
-	public Iterable<Integer> getPulseByPeriod(@RequestParam(name=RestRequest.BEGIN_DATE) LocalDate beginDate,
-											  @RequestParam(name=RestRequest.END_DATE) LocalDate endDate,
+	public Iterable<Integer> getPulseByPeriod(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+											  @RequestParam(name=RestRequest.END_DATE) String endDate,
 											  @PathVariable int patientId,
 											  @PathVariable int surveyPeriod) {
-		return hospital.getPulseByPeriod(patientId, beginDate, endDate, surveyPeriod);
+		return hospital.getPulseByPeriod(patientId, LocalDate.parse(beginDate), LocalDate.parse(endDate), surveyPeriod);
 	}
 }

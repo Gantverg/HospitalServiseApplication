@@ -13,6 +13,9 @@ public class WorkingDays {
 	//@JsonDeserialize(using=DayOfWeekDeserializer.class)
 	Set<DayOfWeek> workDays;
 
+	public WorkingDays() {
+	}
+	
 	public WorkingDays(int daysId) {
 		this.daysId = daysId;
 		workDays = new HashSet<>();

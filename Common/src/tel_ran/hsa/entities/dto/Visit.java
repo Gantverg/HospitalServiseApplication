@@ -6,7 +6,10 @@ public class Visit {
 	Doctor doctor;
 	Patient patient;
 	LocalDateTime dateTime;
-	
+
+	public Visit() {
+	}
+
 	public Visit(Doctor doctor, Patient patient, LocalDateTime dateTime) {
 		super();
 		this.doctor = doctor;
@@ -69,5 +72,5 @@ public class Visit {
 			return false;
 		return true;
 	}
-	
+
 }

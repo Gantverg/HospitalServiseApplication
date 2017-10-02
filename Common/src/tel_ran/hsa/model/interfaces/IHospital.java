@@ -11,24 +11,20 @@ import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
 public interface IHospital extends Serializable, Iterable<Doctor>{
 	String addDoctor(Doctor doctor);
 	String addPatient(Patient patient);
-	String addWorkingDays(WorkingDays workingDays);
 	String addHealthGroup(HealthGroup healthGroup);
 
 	String removeDoctor(int doctorId);
 	String removePatient(int patientId);
 	String removeHealthGroup(int groupId);
-	String removeWorkingDays(int daysId);
 
 	String updateDoctor(Doctor doctor);
 	String updatePatient(Patient patient);
 
 	Doctor getDoctor(int doctorId);
 	Patient getPatient(int patientId);
-	WorkingDays getWorkingDays(int daysId);
 	HealthGroup getHealthgroup(int groupId);
 	
 	Iterable<HealthGroup> getHealthGroups();
-	Iterable<WorkingDays> getAllWorkingDays();
 	Iterable<Patient> getPatients();
 	default Iterable<Doctor> getDoctors() {
 		return StreamSupport.stream(this.spliterator(), false)
@@ -36,7 +32,7 @@ public interface IHospital extends Serializable, Iterable<Doctor>{
 	}
 	Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate);
 
-	String setWorkingDays(int doctorId, int daysId);
+	String setTimeSlot(int doctorId, TimeSlot...slots);
 	String setHealthGroup(int patientId, int groupId);
 	
 	Iterable<Visit> buildSchedule(LocalDate startDate, LocalDate finishDate) throws ScheduleNotEmptyException;

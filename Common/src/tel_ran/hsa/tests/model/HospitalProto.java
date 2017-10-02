@@ -118,25 +118,36 @@ public class HospitalProto extends Hospital {
 
 	@Override
 	public Iterable<Visit> buildSchedule(LocalDate startDate, LocalDate finishDate) throws ScheduleNotEmptyException {
-		Map<PersonDateTime,Visit> prevSchedule = new HashMap<>();
-		prevSchedule.putAll(schedule);
+		LocalDate endDate = finishDate.plusDays(1);
+		if(schedule.keySet().stream()
+			.map(k->k.dateTime.toLocalDate())
+			.filter(date->date.isAfter(startDate.minusDays(1)))
+			.filter(date->date.isBefore(endDate))
+			.count() > 0)
+			throw new ScheduleNotEmptyException("There already is schedule on this period");
+		
 		List<Visit> result = new ArrayList<>();
 		for (Doctor doctor : doctors.values()) {
-			for(LocalDate currentDate = startDate; 
-					currentDate.isBefore(finishDate) ||currentDate.isEqual(finishDate); 
+			for(LocalDate currentDate = startDate; currentDate.isBefore(endDate); 
 					currentDate = currentDate.plusDays(1)) {
-				if(doctor.isDayWorking(currentDate))
-					for (LocalTime currentTime = hospitalStartTime; 
-							currentTime.isBefore(hospitalFinishTime); 
-							currentTime = currentTime.plusMinutes(timeSlot)) {
-						LocalDateTime currentDateTime = LocalDateTime.of(currentDate, currentTime);
-						Visit visit = new Visit(doctor, null, currentDateTime);
-						if(schedule.put(new PersonDateTime(doctor.getId(), currentDateTime), visit) != null)
-							throw new ScheduleNotEmptyException(doctor.toString()+
-									" already has records to "+currentDateTime.toString());
-						result.add(visit);
-					}
+				for (TimeSlot slot : doctor.getTimeSlots()) {
+					if(slot.isDateInSlot(currentDate))
+						result.addAll(fillSlots(currentDate, doctor, slot));
+				}
 			}
+		}
+		return result;
+	}
+
+	private Collection<? extends Visit> fillSlots(LocalDate date, Doctor doctor, TimeSlot slot) {
+		List<Visit> result = new ArrayList<>();
+		LocalDateTime currentDateTime = LocalDateTime.of(date, slot.getBeginTime());
+		LocalDateTime endDateTime = LocalDateTime.of(date, slot.getEndTime());
+		while(currentDateTime.isBefore(endDateTime)) {
+			Visit visit = new Visit(doctor, null, currentDateTime);
+			result.add(visit);
+			schedule.put(new PersonDateTime(doctor.getId(), currentDateTime), visit);
+			currentDateTime = currentDateTime.plusMinutes(timeSlot);
 		}
 		return result;
 	}
@@ -285,46 +296,8 @@ public class HospitalProto extends Hospital {
 	}
 
 	@Override
-	public String addWorkingDays(WorkingDays workingDays) {
-		if(workingDaysList.containsKey(workingDays.getDaysId()))
-			return RestResponseCode.ALREADY_EXIST;
-		workingDaysList.put(workingDays.getDaysId(), workingDays);
-		return RestResponseCode.OK;
-	}
-
-	@Override
-	public String removeWorkingDays(int daysId) {
-		if(!workingDaysList.containsKey(daysId))
-			return RestResponseCode.NO_SCHEDULE;
-		workingDaysList.remove(daysId);
-		return RestResponseCode.OK;
-	}
-
-	@Override
-	public WorkingDays getWorkingDays(int daysId) {
-		return workingDaysList.get(daysId);
-	}
-
-	@Override
-	public String setWorkingDays(int doctorId, int daysId) {
-		Doctor doctor= doctors.get(doctorId);
-		if(doctor == null)
-			return RestResponseCode.NO_DOCTOR;
-		WorkingDays schedule = workingDaysList.get(daysId);
-		if(schedule == null)
-			return RestResponseCode.NO_SCHEDULE;
-		doctor.setWorkingDays(schedule);
-		return RestResponseCode.OK;
-	}
-
-	@Override
 	public HealthGroup getHealthgroup(int groupId) {
 		return healthGroups.get(groupId);
-	}
-
-	@Override
-	public Iterable<WorkingDays> getAllWorkingDays() {
-		return workingDaysList.values();
 	}
 
 	@Override
@@ -354,6 +327,15 @@ public class HospitalProto extends Hospital {
 				.filter(entry->entry.getKey().dateTime.isBefore(endDate.plusDays(1).atStartOfDay()))
 				.map(Entry::getValue)
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public String setTimeSlot(int doctorId, TimeSlot... slots) {
+		Doctor doctor = doctors.get(doctorId);
+		if(doctor==null)
+			return RestResponseCode.NO_DOCTOR;
+		doctor.setTimeSlots(new HashSet<>(Arrays.asList(slots)));
+		return RestResponseCode.OK;
 	}
 
 }

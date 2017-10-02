@@ -23,44 +23,44 @@ public class ModelTestAppl {
 	private static final int N_FIRST_PATIENT = N_DOCTORS * PATIENTS_PER_DOCTOR;
 	private static final int N_PATIENTS = N_DOCTORS * PATIENTS_PER_DOCTOR;
 	private static List<HealthGroup> healthGroups = new ArrayList<>();
-	private static final DayOfWeek[][] scheduleVariants = {
-					{DayOfWeek.SUNDAY,
-					 DayOfWeek.MONDAY,
-					 DayOfWeek.TUESDAY,
-					 DayOfWeek.WEDNESDAY,
-					 DayOfWeek.THURSDAY},
-					{DayOfWeek.SUNDAY,
-					 DayOfWeek.MONDAY,
-					 DayOfWeek.WEDNESDAY,
-					 DayOfWeek.THURSDAY,
-					 DayOfWeek.FRIDAY},
-					{DayOfWeek.SUNDAY,
-					 DayOfWeek.TUESDAY,
-					 DayOfWeek.THURSDAY,
-					 DayOfWeek.SATURDAY}
+	private static final TimeSlot[][] timeSlots = {
+					{buildSlot(DayOfWeek.SUNDAY,LocalTime.of(9, 0),LocalTime.of(18, 00)),
+					 buildSlot(DayOfWeek.MONDAY,LocalTime.of(9, 0),LocalTime.of(18, 00)),
+					 buildSlot(DayOfWeek.TUESDAY,LocalTime.of(9, 0),LocalTime.of(18, 00)),
+					 buildSlot(DayOfWeek.WEDNESDAY,LocalTime.of(9, 0),LocalTime.of(18, 00)),
+					 buildSlot(DayOfWeek.THURSDAY,LocalTime.of(9, 0),LocalTime.of(18, 00))},
+					{buildSlot(DayOfWeek.SUNDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.MONDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.TUESDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.WEDNESDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.THURSDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.FRIDAY,LocalTime.of(9, 0),LocalTime.of(12, 00))},
+					{buildSlot(DayOfWeek.SUNDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.SUNDAY,LocalTime.of(18, 0),LocalTime.of(23, 00)),
+					 buildSlot(DayOfWeek.MONDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.MONDAY,LocalTime.of(18, 0),LocalTime.of(23, 00)),
+					 buildSlot(DayOfWeek.WEDNESDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.WEDNESDAY,LocalTime.of(18, 0),LocalTime.of(23, 00)),
+					 buildSlot(DayOfWeek.FRIDAY,LocalTime.of(9, 0),LocalTime.of(12, 00)),
+					 buildSlot(DayOfWeek.FRIDAY,LocalTime.of(18, 0),LocalTime.of(23, 00))}
 					};
-	private static WorkingDays[] workingDays = new WorkingDays[3];
 	private static final LocalDate START_DATE = LocalDate.now();
 	private static final LocalDate FINISH_DATE = START_DATE.plusDays(7);
-	private static final LocalTime START_TIME = LocalTime.of(9, 0);
-	private static final LocalTime FINISH_TIME = LocalTime.of(18, 0);
+	private static final LocalTime START_TIME = LocalTime.of(0, 0);
+	private static final LocalTime FINISH_TIME = LocalTime.of(23, 59);
 	private static final long TIME_SLOT = 15;
 	IHospital hospital = new HospitalProto(START_TIME.toString(), FINISH_TIME.toString(), TIME_SLOT);
 	RandomGenerator generator = new RandomGenerator();
 
 	@Before
 	public void setUp() throws Exception {
-		for(int i = 0; i < scheduleVariants.length; i++) {
-			workingDays[i] = new WorkingDays(i);
-			workingDays[i].setWorkDays(scheduleVariants[i]);
-		}
 		Doctor doctor;
 		for(int i = N_FIRST_DOCTOR; i < N_FIRST_DOCTOR + N_DOCTORS; i++) {
 			doctor = new Doctor(i, 
 							  String.format("doctor%02d", i), 
 							  String.format("050-12345%02d", i), 
 							  String.format("mail%02d@hospital.co.il", i));
-			doctor.setWorkingDays(workingDays[i%scheduleVariants.length]);
+			doctor.setTimeSlots(new HashSet<>(Arrays.asList(timeSlots[i%timeSlots.length])));
 			hospital.addDoctor(doctor);
 			
 		};
@@ -77,6 +77,10 @@ public class ModelTestAppl {
 										  String.format("051-1234%03d", i), 
 										  String.format("sms%03d@hospital.co.il", i),
 										  healthGroups.get(i%healthGroups.size())));
+	}
+
+	private static TimeSlot buildSlot(DayOfWeek dayOfWeek, LocalTime beginTime, LocalTime endTime) {
+		return new TimeSlot(dayOfWeek.getValue(), beginTime, endTime);
 	}
 
 	@Test
@@ -116,12 +120,12 @@ public class ModelTestAppl {
 	}
 	
 	@Test
-	public void addHealthGroup() {
+	public void testAddHealthGroup() {
 		assertEquals(RestResponseCode.OK, hospital.addHealthGroup(new HealthGroup(4, "additional", 60, 90, 24*60)));
 		assertEquals(RestResponseCode.ALREADY_EXIST, hospital.addHealthGroup(new HealthGroup(4, "additional", 60, 90, 24*60)));
 	}
 	@Test
-	public void removeHealthGroup() {
+	public void testRemoveHealthGroup() {
 		assertEquals(RestResponseCode.OK, hospital.addHealthGroup(new HealthGroup(4, "additional", 60, 90, 24*60)));
 		assertEquals(RestResponseCode.OK, hospital.removeHealthGroup(4));
 		assertEquals(RestResponseCode.NO_HEALTH_GROUP, hospital.removeHealthGroup(4));
@@ -212,29 +216,33 @@ public class ModelTestAppl {
 	public void testBuildSchedule() {
 		Iterable<Visit> schedule = generateSchedule();
 
+		LocalDateTime startDateTime = LocalDateTime.of(START_DATE, START_TIME).minusMinutes(1);
+		LocalDateTime finishDateTime = LocalDateTime.of(FINISH_DATE, FINISH_TIME).plusMinutes(1);
 		for (Visit visit : schedule) {
-			LocalDate currentDate = visit.getDateTime().toLocalDate();
-			LocalTime currentTime = visit.getDateTime().toLocalTime();
+			LocalDateTime dateTime = visit.getDateTime();
 			//all dates are inside period
-			assertTrue(currentDate.isAfter(START_DATE)||currentDate.isEqual(START_DATE));
-			assertTrue(currentDate.isBefore(FINISH_DATE)||currentDate.isEqual(FINISH_DATE));
+			assertTrue(dateTime.isAfter(startDateTime));
+			assertTrue(dateTime.isBefore(finishDateTime));
+			
+			LocalDate currentDate = visit.getDateTime().toLocalDate();
 			//all dates are working dates
 			assertTrue(visit.getDoctor().isDayWorking(currentDate));
-			//all time is working
-			assertTrue(currentTime.isAfter(START_TIME)||currentTime.equals(START_TIME));
-			assertTrue(currentTime.isBefore(FINISH_TIME));
 		}
 		//check: schedule is full
 		List<Visit> listVisits = StreamSupport.stream(schedule.spliterator(), false).collect(Collectors.toList());
 		for (int i = N_FIRST_DOCTOR; i < N_FIRST_DOCTOR + N_DOCTORS; i++) {
 			Doctor doctor = hospital.getDoctor(i);
-			for(LocalDate date = START_DATE; date.isBefore(FINISH_DATE) || date.isEqual(FINISH_DATE); date = date.plusDays(1)) {
-				for(LocalTime time = START_TIME; time.isBefore(FINISH_TIME); time = time.plusMinutes(TIME_SLOT)) {
-					Visit checkVisit = new Visit(doctor, null, LocalDateTime.of(date, time));
-					if(doctor.isDayWorking(date))
+			for(LocalDate date = START_DATE; date.isBefore(FINISH_DATE.plusDays(1)); date = date.plusDays(1)) {
+				
+				LocalDateTime startDay = LocalDateTime.of(date, START_TIME);
+				LocalDateTime finishDay = LocalDateTime.of(date, FINISH_TIME).plusMinutes(1);
+				for(LocalDateTime dateTime = startDay; dateTime.isBefore(finishDay); dateTime = dateTime.plusMinutes(TIME_SLOT)) {
+					Visit checkVisit = new Visit(doctor, null, dateTime);
+					if(doctor.isDayTimeWorking(dateTime)) {
 						assertTrue(listVisits.remove(checkVisit));
-					else
+					} else {
 						assertFalse(listVisits.remove(checkVisit));
+					}
 				}
 			}
 		}
@@ -258,40 +266,43 @@ public class ModelTestAppl {
 		assertEquals(RestResponseCode.NO_SCHEDULE, hospital.bookVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(START_DATE, START_TIME).minusDays(1)));
 		assertEquals(RestResponseCode.NO_SCHEDULE, hospital.bookVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(FINISH_DATE, FINISH_TIME).plusMinutes(1)));
 		assertEquals(RestResponseCode.NO_SCHEDULE, hospital.bookVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(FINISH_DATE, FINISH_TIME).plusDays(1)));
+		Visit firstVisit = null;
 		for (int doctorId = N_FIRST_DOCTOR; doctorId < N_FIRST_DOCTOR + N_DOCTORS; doctorId++) {
 			Doctor doctor = hospital.getDoctor(doctorId);
-			for(LocalDate date = START_DATE; date.isBefore(FINISH_DATE)||date.isEqual(FINISH_DATE); date = date.plusDays(1)) {
-				for(LocalTime time = START_TIME; time.isBefore(FINISH_TIME); time = time.plusMinutes(TIME_SLOT)) {
-					Visit checkVisit = new Visit(doctor, null, LocalDateTime.of(date, time));
-					int patientId = N_FIRST_PATIENT + doctorId * PATIENTS_PER_DOCTOR + generator.getRandomInteger(0, PATIENTS_PER_DOCTOR);
-					if(doctor.isDayWorking(date)) {
-						assertEquals(RestResponseCode.OK, hospital.bookVisit(doctorId, patientId, LocalDateTime.of(date, time)));
-						assertTrue(listVisits.remove(checkVisit));
-					} else {
-						assertEquals(RestResponseCode.NO_SCHEDULE, hospital.bookVisit(doctorId, patientId, LocalDateTime.of(date, time)));
-						assertFalse(listVisits.remove(checkVisit));
-					}
+			for(LocalDateTime dateTime = START_DATE.atStartOfDay(); 
+				dateTime.isBefore(FINISH_DATE.plusDays(1).atStartOfDay()); 
+				dateTime = dateTime.plusMinutes(TIME_SLOT)) {
+				Visit checkVisit = new Visit(doctor, null, dateTime);
+				int patientId = N_FIRST_PATIENT + doctorId * PATIENTS_PER_DOCTOR + generator.getRandomInteger(0, PATIENTS_PER_DOCTOR);
+				if(doctor.isDayTimeWorking(dateTime)) {
+					assertEquals(RestResponseCode.OK, hospital.bookVisit(doctorId, patientId, dateTime));
+					assertTrue(listVisits.remove(checkVisit));
+					if(firstVisit==null)
+						firstVisit = checkVisit;
+				} else {
+					assertEquals(RestResponseCode.NO_SCHEDULE, hospital.bookVisit(doctorId, patientId, dateTime));
+					assertFalse(listVisits.remove(checkVisit));
 				}
 			}
 		}
 		assertTrue(listVisits.isEmpty());
-		assertEquals(RestResponseCode.VISIT_BUSY, hospital.bookVisit(N_FIRST_DOCTOR + N_DOCTORS - 1, 
+		assertEquals(RestResponseCode.VISIT_BUSY, hospital.bookVisit(firstVisit.getDoctor().getId(), 
 																	 N_FIRST_PATIENT + N_PATIENTS - 1, 
-																	 LocalDateTime.of(START_DATE, START_TIME)));
+																	 firstVisit.getDateTime()));
 		
 	}
 	
 	private List<Visit> generateVisits() {
 		List<Visit> listVisits = new ArrayList<>();
+		LocalDateTime startDateTime = LocalDateTime.of(START_DATE, START_TIME);
+		LocalDateTime finishDateTime = LocalDateTime.of(FINISH_DATE, FINISH_TIME);
 		for (int doctorId = N_FIRST_DOCTOR; doctorId < N_FIRST_DOCTOR + N_DOCTORS; doctorId++) {
 			Doctor doctor = hospital.getDoctor(doctorId);
-			for(LocalDate date = START_DATE; date.isBefore(FINISH_DATE)||date.isEqual(FINISH_DATE); date = date.plusDays(1)) {
-				for(LocalTime time = START_TIME; time.isBefore(FINISH_TIME); time = time.plusMinutes(TIME_SLOT)) {
-					if(doctor.isDayWorking(date)) {
-						int patientId = N_FIRST_PATIENT + doctorId * PATIENTS_PER_DOCTOR + generator.getRandomInteger(0, PATIENTS_PER_DOCTOR);
-						hospital.bookVisit(doctorId, patientId, LocalDateTime.of(date, time));
-						listVisits.add(new Visit(doctor, hospital.getPatient(patientId), LocalDateTime.of(date, time)));
-					}
+			for(LocalDateTime dateTime=startDateTime; dateTime.isBefore(finishDateTime); dateTime = dateTime.plusMinutes(TIME_SLOT)) {			
+				if(doctor.isDayTimeWorking(dateTime)) {
+					int patientId = N_FIRST_PATIENT + doctorId * PATIENTS_PER_DOCTOR + generator.getRandomInteger(0, PATIENTS_PER_DOCTOR);
+					hospital.bookVisit(doctorId, patientId, dateTime);
+					listVisits.add(new Visit(doctor, hospital.getPatient(patientId), dateTime));
 				}
 			}
 		}
@@ -308,11 +319,15 @@ public class ModelTestAppl {
 		assertEquals(RestResponseCode.NO_SCHEDULE, 	hospital.cancelVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(START_DATE, START_TIME).minusDays(1)));
 		assertEquals(RestResponseCode.NO_SCHEDULE, 	hospital.cancelVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(FINISH_DATE, FINISH_TIME).plusMinutes(1)));
 		assertEquals(RestResponseCode.NO_SCHEDULE, 	hospital.cancelVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(FINISH_DATE, FINISH_TIME).plusDays(1)));
-		assertEquals(RestResponseCode.VISIT_BUSY, 	hospital.cancelVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT + N_PATIENTS-1, LocalDateTime.of(START_DATE, START_TIME)));
+		assertEquals(RestResponseCode.VISIT_BUSY, 	hospital.cancelVisit(listVisits.get(0).getDoctor().getId()+1, 
+																		 N_FIRST_PATIENT + N_PATIENTS-1, 
+																		 listVisits.get(0).getDateTime()));
 		assertEquals(RestResponseCode.OK, 			hospital.cancelVisit(listVisits.get(0).getDoctor().getId(), 
 																		 listVisits.get(0).getPatient().getId(),
 																		 listVisits.get(0).getDateTime()));
-		assertEquals(RestResponseCode.VISIT_FREE, 	hospital.cancelVisit(N_FIRST_DOCTOR, N_FIRST_PATIENT, LocalDateTime.of(START_DATE, START_TIME)));
+		assertEquals(RestResponseCode.VISIT_FREE, 	hospital.cancelVisit(listVisits.get(0).getDoctor().getId(), 
+																		 listVisits.get(0).getPatient().getId(),
+																		 listVisits.get(0).getDateTime()));
 		
 	}
 

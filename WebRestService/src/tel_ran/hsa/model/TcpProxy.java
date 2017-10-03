@@ -31,8 +31,6 @@ public class TcpProxy implements IHospital {
 	private ObjectMapper mapper = new ObjectMapper();
 	private Socket socket;
 	
-	private static int count;
-
 	public TcpProxy(String hostName, int port) throws IOException {
 		super();
 		this.hostName = hostName;
@@ -182,11 +180,9 @@ public class TcpProxy implements IHospital {
 	}
 
 	@Override
-	public String replaceVisitsDoctor(int oldDoctorId, int newDoctorId, LocalDateTime beginDateTime,
-			LocalDateTime endDateTime) {
+	public String replaceVisitsDoctor(int doctorId, LocalDateTime beginDateTime, LocalDateTime endDateTime) {
 		Map<String,String> requestBody = new HashMap<>();
-		requestBody.put("oldDoctorId", String.valueOf(oldDoctorId));
-		requestBody.put("newDoctorId", String.valueOf(newDoctorId));
+		requestBody.put("doctorId", String.valueOf(doctorId));
 		requestBody.put("beginDateTime", beginDateTime.toString());
 		requestBody.put("endDateTime", endDateTime.toString());
 		return getStringResponse(TcpRequest.REPLACE_VISITS_DOCTOR, requestBody);

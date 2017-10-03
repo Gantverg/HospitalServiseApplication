@@ -149,6 +149,13 @@ public class WebController {
 		return hospital.getFreeVisits(doctorId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
+	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}" + RestRequest.REPLACE, method = RequestMethod.PUT)
+	public String replaceViditsDoctor(@RequestParam(name=RestRequest.BEGIN_DATE_TIME) String beginDateTime,
+			 					   			   @RequestParam(name=RestRequest.END_DATE_TIME) String endDateTime,
+			 					   			   @PathVariable int doctorId) {
+		return hospital.replaceVisitsDoctor(doctorId, LocalDateTime.parse(beginDateTime), LocalDateTime.parse(endDateTime));
+	}
+	
 /*	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
 							RestRequest.HEALTHGROUPS+"/{"+RestRequest.GROUP_ID+"}", method = RequestMethod.PUT)
 	public String setPatientHealthgroup(@PathVariable int patientId,
@@ -165,8 +172,6 @@ public class WebController {
 	public Iterable<Patient> getDoctorPatients(@PathVariable int doctorId) {
 		return hospital.getDoctorPatients(doctorId);
 	}
-
-
 	
 	@RequestMapping(value = RestRequest.PULSE, method = RequestMethod.POST)
 	public String addPulseInfo(@RequestBody HeartBeat heartBeat) {

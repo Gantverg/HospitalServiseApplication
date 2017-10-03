@@ -11,6 +11,7 @@ public interface RestRequest {
 	String VISITS = "/visits";
 	String PULSE = "/pulse";
 	String FREE = "/free";
+	String REPLACE = "/replace";
 	
 	String GROUP_ID = "groupId";
 	String DAYS_ID = "daysId";
@@ -23,6 +24,8 @@ public interface RestRequest {
 	String VALUE = "value";
 	String HEARTBEAT = "heartbeat";
 	String SURVEY_PERIOD = "surveyPeriod";
+	String BEGIN_DATE_TIME = "beginDateTime";
+	String END_DATE_TIME = "beginDateTime";
 	
 	default String getParamString(Map<String, String> params) {
 		return params.entrySet().stream()

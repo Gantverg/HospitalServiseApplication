@@ -1,13 +1,18 @@
 package tel_ran.hsa.entities.dto;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
+
+import com.fasterxml.jackson.databind.annotation.*;
+
+import tel_ran.jackson.*;
 
 public class TimeSlot {
 	int numberDayOfWeek; 
+	@JsonDeserialize(using=LocalTimeDeserializer.class)
+	@JsonSerialize(using=LocalTimeSerializer.class)
 	LocalTime beginTime;
+	@JsonDeserialize(using=LocalTimeDeserializer.class)
+	@JsonSerialize(using=LocalTimeSerializer.class)
 	LocalTime endTime;
 
 	public TimeSlot() {

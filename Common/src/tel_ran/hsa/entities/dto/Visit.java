@@ -6,6 +6,7 @@ public class Visit {
 	Doctor doctor;
 	Patient patient;
 	LocalDateTime dateTime;
+	boolean blocked;
 
 	public Visit() {
 	}
@@ -15,6 +16,7 @@ public class Visit {
 		this.doctor = doctor;
 		this.patient = patient;
 		this.dateTime = dateTime;
+		blocked = false;
 	}
 
 	@Override
@@ -40,6 +42,14 @@ public class Visit {
 
 	public void setDoctor(Doctor doctor) {
 		this.doctor = doctor;
+	}
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
 	}
 
 	@Override

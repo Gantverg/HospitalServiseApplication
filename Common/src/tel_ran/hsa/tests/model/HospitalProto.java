@@ -140,6 +140,8 @@ public class HospitalProto extends Hospital {
 		if (!schedule.containsKey(doctorDateTime))
 			return RestResponseCode.NO_SCHEDULE;
 		Visit visit = schedule.get(doctorDateTime);
+		if(visit.isBlocked())
+			return RestResponseCode.VISIT_BUSY;
 		if (visit.getPatient() != null)
 			return RestResponseCode.VISIT_BUSY;
 		visit.setPatient(patient);
@@ -158,31 +160,59 @@ public class HospitalProto extends Hospital {
 		if (!schedule.containsKey(doctorDateTime))
 			return RestResponseCode.NO_SCHEDULE;
 		Visit visit = schedule.get(doctorDateTime);
-		if (visit.getPatient() == null)
-			return RestResponseCode.VISIT_FREE;
+		if(visit.getPatient()==null)
+			if(!visit.isBlocked())
+				return RestResponseCode.VISIT_BUSY;
+			else
+				return RestResponseCode.VISIT_FREE;
 		if (visit.getPatient() != patient)
 			return RestResponseCode.VISIT_BUSY;
 		visit.setPatient(null);
+		visit.setBlocked(false);
 		return RestResponseCode.OK;
 	}
 
 	@Override
-	public String replaceVisitsDoctor(int oldDoctorId, int newDoctorId, LocalDateTime beginDateTime,
+	public String replaceVisitsDoctor(int doctorId, LocalDateTime beginDateTime,
 			LocalDateTime endDateTime) {
-		if (!doctors.containsKey(oldDoctorId))
+		if (!doctors.containsKey(doctorId))
 			return RestResponseCode.NO_DOCTOR;
-		if (!doctors.containsKey(newDoctorId))
-			return RestResponseCode.NO_DOCTOR;
-		Doctor newDoctor = doctors.get(newDoctorId);
 
-		schedule.entrySet().stream().filter(entry -> entry.getKey().personId == oldDoctorId)
+		List<Visit> listVisits = schedule.entrySet().stream().filter(entry -> entry.getKey().personId == doctorId)
 				.filter(entry -> entry.getKey().dateTime.isAfter(beginDateTime)
 						&& entry.getKey().dateTime.isBefore(endDateTime))
-				.forEach(entry -> {
-					entry.getKey().personId = newDoctorId;
-					entry.getValue().setDoctor(newDoctor);
-				});
+				.map(Entry::getValue)
+				.collect(Collectors.toList());
+		for(Visit visit : listVisits) {
+			if(!visit.isBlocked())
+				visit.setBlocked(true);
+			else
+				if(!findAndReplaceDocort(visit))
+					return RestResponseCode.NO_DOCTOR;
+		}
 		return RestResponseCode.OK;
+	}
+
+	private boolean findAndReplaceDocort(Visit visit) {
+		Doctor oldDoctor = visit.getDoctor();
+		LocalDateTime dateTime = visit.getDateTime();
+		Patient patient = visit.getPatient();
+		for (Doctor doctor : doctors.values()) {
+			if(doctor != oldDoctor) {
+				PersonDateTime personDateTime = new PersonDateTime(doctor.getId(), dateTime);
+				if(schedule.containsKey(personDateTime)) {
+					Visit newVisit = schedule.get(personDateTime);
+					if(!newVisit.isBlocked()) {
+						visit.setBlocked(true);
+						newVisit.setBlocked(true);
+						newVisit.setPatient(patient);
+						visit.setPatient(null);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override

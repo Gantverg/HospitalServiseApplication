@@ -276,41 +276,8 @@ public class TcpProxy implements IHospital {
 	}
 
 	@Override
-	public String addWorkingDays(WorkingDays workingDays) {
-		Map<String, String> requestBody = new HashMap<>();
-		requestBody.put("daysId",String.valueOf(workingDays.getDaysId()));
-		count = 0;
-		workingDays.getWorkDays().forEach(dayOfWeek->requestBody.put("workDay_"+count++, dayOfWeek.name()));
-		
-		return getStringResponse(TcpRequest.ADD_WORKINGDAYS, requestBody);
-	}
-
-	@Override
-	public String removeWorkingDays(int daysId) {
-		return getStringResponse(TcpRequest.REMOVE_WORKINGDAYS, daysId);
-	}
-
-	@Override
-	public WorkingDays getWorkingDays(int daysId) {
-		return getObject(TcpRequest.GET_WORKINGDAYS, daysId, WorkingDays.class);
-	}
-
-	@Override
-	public String setWorkingDays(int doctorId, int daysId) {
-		Map<String, String> requestBody = new HashMap<>();
-		requestBody.put("docotorId",String.valueOf(doctorId));
-		requestBody.put("daysId",String.valueOf(daysId));
-		return getStringResponse(TcpRequest.SET_WORKINGDAYS, requestBody);
-	}
-
-	@Override
 	public HealthGroup getHealthgroup(int groupId) {
 		return getObject(TcpRequest.GET_HEALTHGROUP, groupId, HealthGroup.class);
-	}
-
-	@Override
-	public Iterable<WorkingDays> getAllWorkingDays() {
-		return getIterableResponse(TcpRequest.GET_ALL_WORKINGDAYS, "", new TypeReference<Iterable<WorkingDays>>() {});
 	}
 
 	@Override
@@ -338,6 +305,11 @@ public class TcpProxy implements IHospital {
 		requestBody.put("endDate", endDate.toString());
 		return getIterableResponse(TcpRequest.GET_PULSE_INFO, requestBody, new TypeReference<Iterable<HeartBeat>>() {
 		});
+	}
+
+	@Override
+	public String setTimeSlot(int doctorId, TimeSlot... slots) {
+		return null;
 	}
 
 }

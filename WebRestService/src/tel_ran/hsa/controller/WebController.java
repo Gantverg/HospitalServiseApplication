@@ -7,15 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.api.RestRequest;
 import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
-import tel_ran.jackson.LocalDateDeserializer;
-import tel_ran.jackson.LocalDateSerializer;
 import tel_ran.security.interfaces.IAccounts;
 
 @SpringBootApplication
@@ -48,11 +43,6 @@ public class WebController {
 		return hospital.addHealthGroup(healthGroup);
 	}
 	
-	@RequestMapping(value = RestRequest.WORKINGDAYS, method = RequestMethod.POST)
-	public String addWorkingDays(@RequestBody WorkingDays workingDays) {
-		return hospital.addWorkingDays(workingDays);
-	}
-	
 	@RequestMapping(value = RestRequest.DOCTORS, method = RequestMethod.PUT)
 	public String updateDoctor(@RequestBody Doctor doctor) {
 		return hospital.updateDoctor(doctor);
@@ -78,11 +68,6 @@ public class WebController {
 		return hospital.removeHealthGroup(groupId);
 	}
 	
-	@RequestMapping(value = RestRequest.WORKINGDAYS+"/{"+RestRequest.DAYS_ID+"}", method = RequestMethod.DELETE)
-	public String removeWorkingDays(int daysId) {
-		return hospital.removeWorkingDays(daysId);
-	}	
-
 	@RequestMapping(value = RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}", method = RequestMethod.GET)
 	public Doctor getDoctor(@PathVariable int doctorId) {
 		return hospital.getDoctor(doctorId);
@@ -112,16 +97,6 @@ public class WebController {
 	public Iterable<HealthGroup> getHealthGroups() {
 		return hospital.getHealthGroups();
 	}
-
-	@RequestMapping(value = RestRequest.WORKINGDAYS+"/{"+RestRequest.DAYS_ID+"}", method = RequestMethod.GET)
-	public WorkingDays getWorkingDays(@PathVariable int daysId) {
-		return hospital.getWorkingDays(daysId);
-	}	
-
-	@RequestMapping(value = RestRequest.WORKINGDAYS, method = RequestMethod.GET)
-	public Iterable<WorkingDays> getAllWorkingDays() {
-		return hospital.getAllWorkingDays();
-	}	
 
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.PUT)
 	public String bookVisit(@RequestParam(name=RestRequest.DATE_TIME) String dateTime,
@@ -174,20 +149,13 @@ public class WebController {
 		return hospital.getFreeVisits(doctorId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 	
-	@RequestMapping(value = RestRequest.DOCTORS+"/{"+RestRequest.DAYS_ID+"}" + 
-							RestRequest.WORKINGDAYS+"/{"+RestRequest.DAYS_ID+"}", method = RequestMethod.PUT)
-	public String getDoctorsWorkingDays(@PathVariable int doctorId,
-								    	@PathVariable int daysId) {
-		return hospital.setWorkingDays(doctorId, daysId);
-	}	
-
-	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
+/*	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
 							RestRequest.HEALTHGROUPS+"/{"+RestRequest.GROUP_ID+"}", method = RequestMethod.PUT)
 	public String setPatientHealthgroup(@PathVariable int patientId,
 			 							@PathVariable int groupId) {
 		return hospital.setHealthGroup(patientId, groupId);
 	}
-
+*/
 	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + RestRequest.DOCTORS, method = RequestMethod.GET)
 	public Iterable<Doctor> getPatientDoctors(@PathVariable int patientId) {
 		return hospital.getPatientDoctors(patientId);

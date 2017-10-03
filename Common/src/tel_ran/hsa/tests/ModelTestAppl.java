@@ -71,12 +71,14 @@ public class ModelTestAppl {
 		for (HealthGroup healthGroup : healthGroups) {
 			hospital.addHealthGroup(healthGroup);
 		}
-		for(int i = N_FIRST_PATIENT; i < N_FIRST_PATIENT + N_PATIENTS; i++)
-			hospital.addPatient(new Patient(i, 
+		for(int i = N_FIRST_PATIENT; i < N_FIRST_PATIENT + N_PATIENTS; i++) {
+			Patient patient = new Patient(i, 
 										  String.format("patient%03d", i), 
 										  String.format("051-1234%03d", i), 
-										  String.format("sms%03d@hospital.co.il", i),
-										  healthGroups.get(i%healthGroups.size())));
+										  String.format("sms%03d@hospital.co.il", i));
+			patient.setHealthGroup(healthGroups.get(i%healthGroups.size()));
+			hospital.addPatient(patient);
+		}
 	}
 
 	private static TimeSlot buildSlot(DayOfWeek dayOfWeek, LocalTime beginTime, LocalTime endTime) {
@@ -107,15 +109,13 @@ public class ModelTestAppl {
 							    new Patient(N_FIRST_PATIENT + N_PATIENTS, 
 								String.format("patient%03d", N_FIRST_PATIENT + N_PATIENTS), 
 								String.format("051-1234%03d", N_FIRST_PATIENT + N_PATIENTS), 
-								String.format("sms%03d@hospital.co.il", N_FIRST_PATIENT + N_PATIENTS),
-								healthGroups.get(0))));
+								String.format("sms%03d@hospital.co.il", N_FIRST_PATIENT + N_PATIENTS))));
 		assertEquals(N_PATIENTS + 1, StreamSupport.stream(hospital.getPatients().spliterator(),false).count());
 		assertEquals(RestResponseCode.ALREADY_EXIST, hospital.addPatient(
 							    new Patient(N_FIRST_PATIENT + N_PATIENTS, 
 								String.format("patient%03d", N_FIRST_PATIENT + N_PATIENTS), 
 								String.format("051-1234%03d", N_FIRST_PATIENT + N_PATIENTS), 
-								String.format("sms%03d@hospital.co.il", N_FIRST_PATIENT + N_PATIENTS),
-								healthGroups.get(0))));
+								String.format("sms%03d@hospital.co.il", N_FIRST_PATIENT + N_PATIENTS))));
 		assertEquals(N_PATIENTS + 1, StreamSupport.stream(hospital.getPatients().spliterator(),false).count());
 	}
 	
@@ -164,9 +164,9 @@ public class ModelTestAppl {
 
 	@Test
 	public void testUpdatePatient() {
-		Patient patient = new Patient(N_FIRST_PATIENT, "Patient123", "000-012345", "mail@mail.com", healthGroups.get(0));
+		Patient patient = new Patient(N_FIRST_PATIENT, "Patient123", "000-012345", "mail@mail.com");
 		assertEquals(RestResponseCode.OK, hospital.updatePatient(patient));
-		patient = new Patient(N_FIRST_PATIENT + N_PATIENTS, "Patient123", "000-012345", "mail@mail.com", healthGroups.get(0));
+		patient = new Patient(N_FIRST_PATIENT + N_PATIENTS, "Patient123", "000-012345", "mail@mail.com");
 		assertEquals(RestResponseCode.NO_PATIENT, hospital.updatePatient(patient));
 		
 	}

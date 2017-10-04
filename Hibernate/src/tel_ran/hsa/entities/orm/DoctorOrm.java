@@ -18,8 +18,30 @@ public class DoctorOrm  {
 	
 	@OneToMany(mappedBy="doctors")
 	Set<VisitOrm> visits;
+	@OneToMany(mappedBy="doctorSlot")
+	Set<TimeSlotOrm> slots;
 	
-	
+
+
+	public DoctorOrm(int id, String name, String phoneNumber, String eMail, Set<VisitOrm> visits,
+			Set<TimeSlotOrm> slots) {
+		this.id = id;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.eMail = eMail;
+		this.visits = visits;
+		this.slots = slots;
+	}
+
+
+	public Set<TimeSlotOrm> getSlots() {
+		return slots;
+	}
+
+
+	public void setSlots(Set<TimeSlotOrm> slots) {
+		this.slots = slots;
+	}
 
 
 	public DoctorOrm(int id, String name, String phoneNumber, String eMail) {
@@ -82,8 +104,7 @@ public class DoctorOrm  {
 	@Override
 	public String toString() {
 		return "DoctorOrm [id=" + id + ", name=" + name + ", phoneNumber=" + phoneNumber + ", eMail=" + eMail
-				+ ", visits=" + visits + "]";
+				+ ", visits=" + visits + ", slots=" + slots + "]";
 	}
-
 
 }

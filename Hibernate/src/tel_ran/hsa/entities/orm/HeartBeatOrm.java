@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class HertBeatOrm {
+public class HeartBeatOrm {
 	@Id
 	@GeneratedValue
 	int idBeat;
@@ -19,13 +19,13 @@ public class HertBeatOrm {
 	@ManyToOne
 	PatientOrm patientPuls;
 	
-	public HertBeatOrm(PatientOrm patientPuls,LocalDateTime dateTime, int value, int surveyPeriod) {
+	public HeartBeatOrm(PatientOrm patientPuls,LocalDateTime dateTime, int value, int surveyPeriod) {
 		this.patientPuls = patientPuls;
 		this.dateTime = dateTime;
 		this.value = value;
 		this.surveyPeriod = surveyPeriod;
 	}
-	public HertBeatOrm() {}
+	public HeartBeatOrm() {}
 	
 	public LocalDateTime getDateTime() {
 		return dateTime;

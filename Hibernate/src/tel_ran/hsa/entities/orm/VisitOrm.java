@@ -17,13 +17,15 @@ public class VisitOrm {
 	@ManyToOne(cascade=CascadeType.ALL)
 	PatientOrm patients;
 	LocalDateTime dateTime;
+	boolean occupied;
 	
 	public VisitOrm() {}
 
-	public VisitOrm(DoctorOrm doctors, PatientOrm patients, LocalDateTime dateTime) {
+	public VisitOrm(DoctorOrm doctors, PatientOrm patients, LocalDateTime dateTime,boolean occupied) {
 		this.doctors = doctors;
 		this.patients = patients;
 		this.dateTime = dateTime;
+		this.occupied=occupied;
 	}
 
 
@@ -52,5 +54,12 @@ public class VisitOrm {
 		this.doctors = doctors;
 	}
 
-	
+	public boolean isOccupied() {
+		return occupied;
+	}
+
+	public void setOccupied(boolean occupied) {
+		this.occupied = occupied;
+	}
+
 }

@@ -19,7 +19,7 @@ public class PatientOrm {
 	@OneToMany(mappedBy="patients")
 	Set<VisitOrm> visits;
 	@OneToMany(mappedBy="patientPuls")
-	Set<HertBeatOrm> pulse;
+	Set<HeartBeatOrm> pulse;
 	
 	
 	
@@ -48,7 +48,7 @@ public class PatientOrm {
 	}
 	
 	
-	public Set<HertBeatOrm> getPulsePatients() {
+	public Set<HeartBeatOrm> getPulsePatients() {
 		return pulse;
 	}
 

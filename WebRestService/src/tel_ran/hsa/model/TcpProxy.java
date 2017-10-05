@@ -305,7 +305,25 @@ public class TcpProxy implements IHospital {
 
 	@Override
 	public String setTimeSlot(int doctorId, TimeSlot... slots) {
-		return null;
+		Map<String, String> requestBody = new HashMap<>();
+		requestBody.put("doctorId",String.valueOf(doctorId));
+		int count = 0;
+		ObjectMapper mapper = new ObjectMapper();
+		for (TimeSlot timeSlot : slots) {
+			try {
+				requestBody.put("timeSlot"+count++, mapper.writeValueAsString(timeSlot));
+			} catch (JsonProcessingException e) {
+			}
+		}
+		return getStringResponse(TcpRequest.SET_TIMESLOTS, requestBody);
+	}
+	
+	@Override
+	public String setTherapist(int patientId, int doctorId) {
+		Map<String, String> requestBody = new HashMap<>();
+		requestBody.put("patientId",String.valueOf(patientId));
+		requestBody.put("doctorId",String.valueOf(doctorId));
+		return getStringResponse(TcpRequest.SET_THERAPIST, requestBody);
 	}
 
 }

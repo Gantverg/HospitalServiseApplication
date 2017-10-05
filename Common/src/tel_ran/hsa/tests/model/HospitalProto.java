@@ -345,4 +345,16 @@ public class HospitalProto extends Hospital {
 		return RestResponseCode.OK;
 	}
 
+	@Override
+	public String setTherapist(int patientId, int doctorId) {
+		Patient patient = patients.get(patientId);
+		if(patient==null)
+			return RestResponseCode.NO_PATIENT;
+		Doctor doctor = doctors.get(doctorId);
+		if(doctor==null)
+			return RestResponseCode.NO_DOCTOR;
+		patient.setTherapist(doctor);
+		return RestResponseCode.OK;
+	}
+
 }

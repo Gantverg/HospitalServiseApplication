@@ -16,6 +16,7 @@ import tel_ran.hsa.entities.dto.Doctor;
 import tel_ran.hsa.entities.dto.HealthGroup;
 import tel_ran.hsa.entities.dto.HeartBeat;
 import tel_ran.hsa.entities.dto.Patient;
+import tel_ran.hsa.entities.dto.TimeSlot;
 import tel_ran.hsa.entities.dto.Visit;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
@@ -97,12 +98,20 @@ public class HsaProtocolJson implements Protocol {
 
 	
 	private String setTimeSlot(String request) {
-		GetTimeSlot slot;
+		//GetTimeSlot slot;
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
-		slot = (GetTimeSlot) jsonToObject(request, GetTimeSlot.class);
+		Map<String, String> map = new HashMap<String, String>();
+		map = (Map<String, String>) jsonToObject(request, new TypeReference<Map<String, String>>(){});
+		TimeSlot[] slots = new TimeSlot[map.values().size()];
+		int count = 0;
+		for (int i = 0; i < slots.length; i++) {
+			slots[i]=(TimeSlot) jsonToObject(map.get("timeSlot"+count), TimeSlot.class);
+			count++;
+		} 
+		
 		try {
-			response = hospital.setTimeSlot(slot.getDoctorId(), slot.getSlots());
+			response = hospital.setTimeSlot(Integer.parseInt(map.get("doctorId")), slots);
 		}catch (Exception e) {
 			code=TcpResponseCode.ERROR;
 			response=e.getMessage();

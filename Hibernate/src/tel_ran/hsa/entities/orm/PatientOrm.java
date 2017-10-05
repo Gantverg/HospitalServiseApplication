@@ -5,6 +5,9 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import tel_ran.hsa.entities.dto.Doctor;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,16 +23,18 @@ public class PatientOrm {
 	Set<VisitOrm> visits;
 	@OneToMany(mappedBy="patientPuls")
 	Set<HeartBeatOrm> pulse;
-	
+	@OneToOne
+	DoctorOrm therapist;
 	
 	
 
-	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm) {
+	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm,DoctorOrm therapist) {
 		this.id = id;
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.eMail = eMail;
 		this.healthGroupOrm = healthGroupOrm;
+		this.therapist=therapist;
 	}
 
 	public PatientOrm() {}
@@ -89,6 +94,15 @@ public class PatientOrm {
 
 	public void seteMail(String eMail) {
 		this.eMail = eMail;
+	}
+	
+	
+	public DoctorOrm getTherapist() {
+		return therapist;
+	}
+
+	public void setTherapist(DoctorOrm therapist) {
+		this.therapist = therapist;
 	}
 
 	@Override

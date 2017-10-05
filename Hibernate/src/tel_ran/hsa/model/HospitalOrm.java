@@ -44,7 +44,10 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		HealthGroupOrm healthGroupOrm = em.find(HealthGroupOrm.class, patient.getHealthGroup().getGroupId());
 		if (healthGroupOrm==null) return NO_HEALTH_GROUP;
 		if (em.find(PatientOrm.class, patient.getId())!=null) return ALREADY_EXIST;
-		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail(),healthGroupOrm);
+		DoctorOrm therapist = em.find(DoctorOrm.class, patient.getTherapist().getId());
+		if (therapist==null)
+			return NO_DOCTOR;
+		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail(),healthGroupOrm,therapist);
 		em.persist(patientOrm);
 		return OK;
 	}
@@ -121,12 +124,12 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		PatientOrm patientorm = em.find(PatientOrm.class, patientId);
 		if (patientorm==null)
 			return null;
-		HealthGroupOrm healthGroupOrm = patientorm.getHealthGroup();
+		/*HealthGroupOrm healthGroupOrm = patientorm.getHealthGroup();
 		HealthGroup group = new HealthGroup(healthGroupOrm.getId(),healthGroupOrm.getName(),
 				healthGroupOrm.getMinNormalPulse(),
 				healthGroupOrm.getMaxNormalPulse(),
-				healthGroupOrm.getServeyPeriod());
-		Patient patient = new Patient(patientId, patientorm.getName(), patientorm.getPhoneNumber(), patientorm.geteMail(), group);
+				healthGroupOrm.getServeyPeriod());*/
+		Patient patient = new Patient(patientId, patientorm.getName(), patientorm.getPhoneNumber(), patientorm.geteMail());
 		return patient;
 	}
 
@@ -245,13 +248,13 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		em.refresh(doctororm);
 		Set<VisitOrm> patients = doctororm.getVisitsDoctors();
 		return patients.stream().map(x -> new Patient(x.getPatients().getId(), x.getPatients().getName(),
-				x.getPatients().getPhoneNumber(), x.getPatients().geteMail(),
-				new HealthGroup(x.getPatients().getHealthGroup().getId(),
+				x.getPatients().getPhoneNumber(), x.getPatients().geteMail())).collect(Collectors.toList());
+				/*new HealthGroup(x.getPatients().getHealthGroup().getId()))).;
 						x.getPatients().getHealthGroup().getName(),
 						x.getPatients().getHealthGroup().getMinNormalPulse(),
 						x.getPatients().getHealthGroup().getMaxNormalPulse(),
-						x.getPatients().getHealthGroup().getServeyPeriod())))
-				.collect(Collectors.toList());
+						x.getPatients().getHealthGroup().getServeyPeriod())))*/
+				
 	}
 
 	@Override
@@ -270,12 +273,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 						new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
 								x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
 						new Patient(x.getPatients().getId(), x.getPatients().getName(),
-								x.getPatients().getPhoneNumber(), x.getPatients().geteMail(),
-								new HealthGroup(x.getPatients().getHealthGroup().getId(),
-										x.getPatients().getHealthGroup().getName(),
-										x.getPatients().getHealthGroup().getMinNormalPulse(),
-										x.getPatients().getHealthGroup().getMaxNormalPulse(),
-										x.getPatients().getHealthGroup().getServeyPeriod())),
+								x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
 						x.getDateTime()))
 				.collect(Collectors.toList());
 	}
@@ -307,12 +305,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 						new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
 								x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
 						new Patient(x.getPatients().getId(), x.getPatients().getName(),
-								x.getPatients().getPhoneNumber(), x.getPatients().geteMail(),
-								new HealthGroup(x.getPatients().getHealthGroup().getId(),
-										x.getPatients().getHealthGroup().getName(),
-										x.getPatients().getHealthGroup().getMinNormalPulse(),
-										x.getPatients().getHealthGroup().getMaxNormalPulse(),
-										x.getPatients().getHealthGroup().getServeyPeriod())),
+								x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
 						x.getDateTime()))
 				.collect(Collectors.toList());
 	}
@@ -434,10 +427,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	public Iterable<Patient> getPatients() {
 		List<PatientOrm> patientOrm = em.createQuery("Select p from PatientOrm", PatientOrm.class).getResultList();
 		return patientOrm.stream()
-				.map(x -> new Patient(x.getId(), x.getName(), x.getPhoneNumber(), x.geteMail(),
-						new HealthGroup(x.getHealthGroup().getId(), x.getHealthGroup().getName(),
-								x.getHealthGroup().getMinNormalPulse(), x.getHealthGroup().getMaxNormalPulse(),
-								x.getHealthGroup().getServeyPeriod())))
+				.map(x -> new Patient(x.getId(), x.getName(), x.getPhoneNumber(), x.geteMail()))
 				.collect(Collectors.toList());
 	}
 
@@ -486,12 +476,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
 						x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
 				new Patient(x.getPatients().getId(), x.getPatients().getName(),
-						x.getPatients().getPhoneNumber(), x.getPatients().geteMail(),
-						new HealthGroup(x.getPatients().getHealthGroup().getId(),
-								x.getPatients().getHealthGroup().getName(),
-								x.getPatients().getHealthGroup().getMinNormalPulse(),
-								x.getPatients().getHealthGroup().getMaxNormalPulse(),
-								x.getPatients().getHealthGroup().getServeyPeriod())),
+						x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
 				x.getDateTime()))
 		.collect(Collectors.toList());
 	}
@@ -527,6 +512,18 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			res.add(iter);
 		}
 		return res.stream().map(s->new TimeSlotOrm(s.getNumberDayOfWeek(),s.getBeginTime(), s.getEndTime())).collect(Collectors.toSet());
+	}
+
+	@Override
+	public String setTherapist(int patientId, int doctorId) {
+		PatientOrm patient = em.find(PatientOrm.class, patientId);
+		if(patient==null)
+			return NO_PATIENT;
+		DoctorOrm doctor = em.find(DoctorOrm.class, doctorId);
+		if (doctor==null)
+			return NO_DOCTOR;
+		patient.setTherapist(doctor);
+		return OK;
 	}
 
 }

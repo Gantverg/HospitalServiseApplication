@@ -9,4 +9,5 @@ public interface RestResponseCode {
 	String ALREADY_EXIST = "already exist";
 	String NO_HEALTH_GROUP = "no healthgroup";
 	String VISIT_FREE = "visit free already";
+	String NO_ACCOUNT = "no account";
 }

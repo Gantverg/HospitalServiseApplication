@@ -2,12 +2,6 @@ package tel_ran.hsa.entities.orm;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import tel_ran.hsa.entities.dto.Doctor;
-
 import javax.persistence.*;
 
 @Entity
@@ -35,6 +29,13 @@ public class PatientOrm {
 		this.eMail = eMail;
 		this.healthGroupOrm = healthGroupOrm;
 		this.therapist=therapist;
+	}
+
+	public PatientOrm(int id, String name, String phoneNumber, String eMail) {
+		this.id = id;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.eMail = eMail;
 	}
 
 	public PatientOrm() {}

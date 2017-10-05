@@ -2,11 +2,13 @@ package tel_ran.hsa.entities.orm;
 
 import java.time.LocalTime;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
 @Entity
 public class TimeSlotOrm {
+	@Id
+	@GeneratedValue
+	int id;
 	int numberDayOfWeek; 
 	LocalTime beginTime;
 	LocalTime endTime;

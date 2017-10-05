@@ -2,9 +2,7 @@ package tel_ran.hsa.entities.orm;
 
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
  
 @Entity
 public class HealthGroupOrm {

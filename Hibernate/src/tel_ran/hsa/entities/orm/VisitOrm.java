@@ -1,10 +1,6 @@
 package tel_ran.hsa.entities.orm;
 
 import java.time.LocalDateTime;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.*;
 
 @Entity

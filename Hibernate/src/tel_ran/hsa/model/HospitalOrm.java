@@ -41,13 +41,12 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	@Override
 	@Transactional
 	public String addPatient(Patient patient) {
-		HealthGroupOrm healthGroupOrm = em.find(HealthGroupOrm.class, patient.getHealthGroup().getGroupId());
-		if (healthGroupOrm==null) return NO_HEALTH_GROUP;
+//		HealthGroupOrm healthGroupOrm = em.find(HealthGroupOrm.class, patient.getHealthGroup().getGroupId());
+//		if (healthGroupOrm==null) return NO_HEALTH_GROUP;
 		if (em.find(PatientOrm.class, patient.getId())!=null) return ALREADY_EXIST;
-		DoctorOrm therapist = em.find(DoctorOrm.class, patient.getTherapist().getId());
-		if (therapist==null)
-			return NO_DOCTOR;
-		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail(),healthGroupOrm,therapist);
+//		DoctorOrm therapist = em.find(DoctorOrm.class, patient.getTherapist().getId());
+//		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail(),healthGroupOrm,therapist);
+		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail());
 		em.persist(patientOrm);
 		return OK;
 	}

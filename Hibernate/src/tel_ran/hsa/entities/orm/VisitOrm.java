@@ -3,6 +3,8 @@ package tel_ran.hsa.entities.orm;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
+import tel_ran.hsa.entities.dto.Visit;
+
 @Entity
 public class VisitOrm {
 	@Id
@@ -24,7 +26,12 @@ public class VisitOrm {
 		this.occupied=occupied;
 	}
 
-
+	public Visit getVisit() {
+		Visit visit = new Visit(doctors.getDoctor(), patients!=null?patients.getPatient():null, dateTime);
+		visit.setBlocked(occupied);
+		return visit;
+	}
+	
 	@Override
 	public String toString() {
 		return "VisitOrm [dateTime=" + dateTime + "]";

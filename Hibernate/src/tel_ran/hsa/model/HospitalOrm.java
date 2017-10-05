@@ -33,21 +33,32 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	public String addDoctor(Doctor doctor) {
 		if ((em.find(DoctorOrm.class, doctor.getId()))!=null)
 			return ALREADY_EXIST;
-		DoctorOrm doctororm = new DoctorOrm(doctor.getId(), doctor.getName(), doctor.getPhoneNumber(), doctor.geteMail());
-		em.persist(doctororm);
+		em.persist(getDoctorOrm(doctor));
 		return OK;
 	}
 
 	@Override
 	@Transactional
 	public String addPatient(Patient patient) {
-//		HealthGroupOrm healthGroupOrm = em.find(HealthGroupOrm.class, patient.getHealthGroup().getGroupId());
-//		if (healthGroupOrm==null) return NO_HEALTH_GROUP;
-		if (em.find(PatientOrm.class, patient.getId())!=null) return ALREADY_EXIST;
-//		DoctorOrm therapist = em.find(DoctorOrm.class, patient.getTherapist().getId());
-//		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail(),healthGroupOrm,therapist);
-		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(), patient.geteMail());
-		em.persist(patientOrm);
+		if (em.find(PatientOrm.class, patient.getId())!=null) 
+			return ALREADY_EXIST;
+
+		HealthGroupOrm healthGroupOrm = null;
+		HealthGroup healthGroup = patient.getHealthGroup();
+		if(healthGroup != null) {
+			healthGroupOrm = em.find(HealthGroupOrm.class, healthGroup.getGroupId());
+			if (healthGroupOrm==null) 
+				return NO_HEALTH_GROUP;
+		}
+		
+		DoctorOrm therapist = null;
+		Doctor doctor = patient.getTherapist();
+		if(doctor != null) {
+			therapist = em.find(DoctorOrm.class, doctor.getId());
+			if(therapist==null) 
+				return NO_DOCTOR;
+		}
+		em.persist(getPatientOrm(patient));
 		return OK;
 	}
 
@@ -101,10 +112,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		patientorm.setName(patient.getName());
 		patientorm.setPhoneNumber(patient.getPhoneNumber());
 		patientorm.seteMail(patient.geteMail());
-		HealthGroupOrm group = patientorm.getHealthGroup();
-		if (group==null)
-			return NO_HEALTH_GROUP;
-		patientorm.setHealthGroup(group);
+		patientorm.setHealthGroup(getHealthGroupOrm(patient.getHealthGroup()));
 		em.persist(patientorm);
 		return OK;
 	}
@@ -114,8 +122,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		DoctorOrm doctororm = em.find(DoctorOrm.class, docotrId);
 		if (doctororm==null)
 			return null;
-		Doctor doctor = new Doctor(docotrId, doctororm.getNameDoctor(), doctororm.getPhoneNumberByDoctor(), doctororm.geteMailDoctor());
-		return doctor;
+		return doctororm.getDoctor();
 	}
 
 	@Override
@@ -123,13 +130,8 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		PatientOrm patientorm = em.find(PatientOrm.class, patientId);
 		if (patientorm==null)
 			return null;
-		/*HealthGroupOrm healthGroupOrm = patientorm.getHealthGroup();
-		HealthGroup group = new HealthGroup(healthGroupOrm.getId(),healthGroupOrm.getName(),
-				healthGroupOrm.getMinNormalPulse(),
-				healthGroupOrm.getMaxNormalPulse(),
-				healthGroupOrm.getServeyPeriod());*/
-		Patient patient = new Patient(patientId, patientorm.getName(), patientorm.getPhoneNumber(), patientorm.geteMail());
-		return patient;
+		else
+			return patientorm.getPatient();
 	}
 
 	@Override
@@ -163,7 +165,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		while(currentDateTime.isBefore(endDateTime)) {
 			VisitOrm visitorm = new VisitOrm(doctororm, null,currentDateTime, false);
 			em.persist(visitorm);
-			Doctor doc = new Doctor(doctororm.getId(), doctororm.getNameDoctor(), doctororm.getPhoneNumberByDoctor(), doctororm.geteMailDoctor());
+			Doctor doc = doctororm.getDoctor();
 			Visit visit = new Visit(doc, null, currentDateTime);
 			result.add(visit);
 			currentDateTime = currentDateTime.plusMinutes(timeSlot);
@@ -172,7 +174,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	}
 
 	private TimeSlot getSlot(TimeSlotOrm slot) {
-		TimeSlot res = new TimeSlot(slot.getNumberDayOfWeek(), slot.getBeginTime(), slot.getEndTime());
+		TimeSlot res = slot.getTimeSlot();
 		return res;
 	}
 
@@ -234,8 +236,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		em.refresh(patientorm);
 		Set<VisitOrm> visits = patientorm.getVisitsPatient();
 		return visits.stream()
-				.map(x -> new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
-						x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()))
+				.map(visit->visit.getDoctors().getDoctor())
 				.collect(Collectors.toList());
 	}
 
@@ -246,14 +247,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			return null;
 		em.refresh(doctororm);
 		Set<VisitOrm> patients = doctororm.getVisitsDoctors();
-		return patients.stream().map(x -> new Patient(x.getPatients().getId(), x.getPatients().getName(),
-				x.getPatients().getPhoneNumber(), x.getPatients().geteMail())).collect(Collectors.toList());
-				/*new HealthGroup(x.getPatients().getHealthGroup().getId()))).;
-						x.getPatients().getHealthGroup().getName(),
-						x.getPatients().getHealthGroup().getMinNormalPulse(),
-						x.getPatients().getHealthGroup().getMaxNormalPulse(),
-						x.getPatients().getHealthGroup().getServeyPeriod())))*/
-				
+		return patients.stream().map(visit->visit.getPatients().getPatient()).collect(Collectors.toList());
 	}
 
 	@Override
@@ -268,12 +262,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 
 	private List<Visit> getVisit(LocalDate beginDate, LocalDate endDate, Set<VisitOrm> records) {
 		return getVisibleOrm(beginDate, endDate, records)
-				.map(x -> new Visit(
-						new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
-								x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
-						new Patient(x.getPatients().getId(), x.getPatients().getName(),
-								x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
-						x.getDateTime()))
+				.map(VisitOrm::getVisit)
 				.collect(Collectors.toList());
 	}
 
@@ -300,12 +289,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		em.refresh(doctororm);
 		Set<VisitOrm> records = doctororm.getVisitsDoctors();
 		return getVisibleOrm(beginDate, endDate, records).filter(x -> x.getPatients() == null)
-				.map(x -> new Visit(
-						new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
-								x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
-						new Patient(x.getPatients().getId(), x.getPatients().getName(),
-								x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
-						x.getDateTime()))
+				.map(VisitOrm::getVisit)
 				.collect(Collectors.toList());
 	}
 
@@ -315,7 +299,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		PatientOrm patientorm = em.find(PatientOrm.class, heartBeat.getPatientId());
 		if (patientorm == null)
 			return NO_PATIENT;
-		HeartBeatOrm pulse = new HeartBeatOrm(patientorm, heartBeat.getDateTime(), heartBeat.getValue(), patientorm.getHealthGroup().getServeyPeriod());
+		HeartBeatOrm pulse = getHeartBeatOrm(patientorm, heartBeat);
 		em.persist(pulse);
 		return OK;
 	}
@@ -395,8 +379,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	public String addHealthGroup(HealthGroup healthGroup) {
 		if (em.find(HealthGroupOrm.class, healthGroup.getGroupId()) != null)
 			return ALREADY_EXIST;
-		HealthGroupOrm healthGroupOrm = new HealthGroupOrm(healthGroup.getGroupId(), healthGroup.getGroupName(),
-				healthGroup.getMinNormalPulse(), healthGroup.getMaxNormalPulse(), healthGroup.getSurveyPeriod());
+		HealthGroupOrm healthGroupOrm = getHealthGroupOrm(healthGroup);
 		em.persist(healthGroupOrm);
 		return OK;
 	}
@@ -418,25 +401,27 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	public Iterable<HealthGroup> getHealthGroups() {
 		List<HealthGroupOrm> healthGroupOrm = em.createQuery("Select p from HealthGroupOrm p", HealthGroupOrm.class)
 				.getResultList();
-		return healthGroupOrm.stream().map(x -> new HealthGroup(x.getId(), x.getName(), x.getMinNormalPulse(),
-				x.getMaxNormalPulse(), x.getServeyPeriod())).collect(Collectors.toList());
+		return healthGroupOrm.stream().map(HealthGroupOrm::getHealthGroup).collect(Collectors.toList());
 	}
 
 	@Override
 	public Iterable<Patient> getPatients() {
-		List<PatientOrm> patientOrm = em.createQuery("Select p from PatientOrm", PatientOrm.class).getResultList();
+		List<PatientOrm> patientOrm = em.createQuery("Select p from PatientOrm p", PatientOrm.class).getResultList();
 		return patientOrm.stream()
-				.map(x -> new Patient(x.getId(), x.getName(), x.getPhoneNumber(), x.geteMail()))
+				.map(PatientOrm::getPatient)
 				.collect(Collectors.toList());
 	}
 
-	private List<Doctor> getDoctor() {
+	@Override
+	public Iterable<Doctor> getDoctors() {
 		List<DoctorOrm> doctors = em.createQuery("Select p from DoctorOrm p",DoctorOrm.class).getResultList();
-		return doctors.stream().map(d->new Doctor(d.getId(), d.getNameDoctor(), d.getPhoneNumberByDoctor(), d.geteMailDoctor())).collect(Collectors.toList());
+		return doctors.stream()
+				.map(DoctorOrm::getDoctor)
+				.collect(Collectors.toList());
 	}
 	@Override
 	public Iterator<Doctor> iterator() {
-		return getDoctor().iterator();
+		return getDoctors().iterator();
 	}
 
 
@@ -445,9 +430,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		HealthGroupOrm healthGroupOrm = em.find(HealthGroupOrm.class, groupId);
 		if (healthGroupOrm==null)
 			return null;
-		HealthGroup healthGroup = new HealthGroup(healthGroupOrm.getId(), healthGroupOrm.getName(),
-				healthGroupOrm.getMinNormalPulse(),healthGroupOrm.getMaxNormalPulse(), healthGroupOrm.getServeyPeriod());
-		return healthGroup;
+		return healthGroupOrm.getHealthGroup();
 	}
 
 	@Override
@@ -471,12 +454,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				filter(x->((x.getDateTime().toLocalDate().isEqual(beginDate) && x.getDateTime().toLocalDate().isAfter(beginDate))
 						&& (x.getDateTime().toLocalDate().isEqual(endDate) && x.getDateTime().toLocalDate().isBefore(endDate)))).collect(Collectors.toList());
 		
-		return visitsByDate.stream().map(x -> new Visit(
-				new Doctor(x.getDoctors().getId(), x.getDoctors().getNameDoctor(),
-						x.getDoctors().getPhoneNumberByDoctor(), x.getDoctors().geteMailDoctor()),
-				new Patient(x.getPatients().getId(), x.getPatients().getName(),
-						x.getPatients().getPhoneNumber(), x.getPatients().geteMail()),
-				x.getDateTime()))
+		return visitsByDate.stream().map(VisitOrm::getVisit)
 		.collect(Collectors.toList());
 	}
 
@@ -490,8 +468,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				filter(x->((x.getDateTime().toLocalDate().isEqual(beginDate) && x.getDateTime().toLocalDate().isAfter(beginDate))
 						&& (x.getDateTime().toLocalDate().isEqual(endDate) && x.getDateTime().toLocalDate().isBefore(endDate)))).collect(Collectors.toSet());
 		
-		return beat.stream().map(h->new HeartBeat(h.getPatient().getId(), h.getDateTime().toString(), h.getValue(),
-				h.getSurveyPeriod())).collect(Collectors.toList());
+		return beat.stream().map(HeartBeatOrm::getHeartBeat).collect(Collectors.toList());
 	}
 
 	@Override
@@ -510,7 +487,9 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		for(TimeSlot iter:slots) {
 			res.add(iter);
 		}
-		return res.stream().map(s->new TimeSlotOrm(s.getNumberDayOfWeek(),s.getBeginTime(), s.getEndTime())).collect(Collectors.toSet());
+		return res.stream()
+				.map(this::getTimeSlotOrm)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -525,4 +504,44 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		return OK;
 	}
 
+	private HealthGroupOrm getHealthGroupOrm(HealthGroup group) {
+		if(group == null)
+			return null;
+		return new HealthGroupOrm(group.getGroupId(), 
+								  group.getGroupName(), 
+								  group.getMinNormalPulse(), 
+								  group.getMaxNormalPulse(), 
+								  group.getSurveyPeriod());
+	}
+	
+	private PatientOrm getPatientOrm(Patient patient) {
+		PatientOrm patientOrm = new PatientOrm(patient.getId(), 
+											   patient.getName(), 
+											   patient.getPhoneNumber(), 
+											   patient.geteMail());
+		patientOrm.setHealthGroup(getHealthGroupOrm(patient.getHealthGroup()));
+		patientOrm.setTherapist(getDoctorOrm(patient.getTherapist()));
+		return patientOrm ;
+	}
+	
+	private TimeSlotOrm getTimeSlotOrm(TimeSlot timeSlot) {
+		return new TimeSlotOrm(timeSlot.getNumberDayOfWeek(), 
+							   timeSlot.getBeginTime(), 
+							   timeSlot.getEndTime());
+	}
+
+	private DoctorOrm getDoctorOrm(Doctor doctor) {
+		DoctorOrm doctorOrm = new DoctorOrm(doctor.getId(),
+											doctor.getName(),
+											doctor.getPhoneNumber(), 
+											doctor.geteMail());
+		doctorOrm.setSlots(doctor.getTimeSlots().stream()
+							.map(this::getTimeSlotOrm)
+							.collect(Collectors.toSet()));
+		return doctorOrm;
+	}
+
+	private HeartBeatOrm getHeartBeatOrm(PatientOrm patientorm, HeartBeat heartBeat) {
+		return  new HeartBeatOrm(patientorm, heartBeat.getDateTime(), heartBeat.getValue(), patientorm.getHealthGroup().getSurveyPeriod());
+	}
 }

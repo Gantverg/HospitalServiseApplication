@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
+import tel_ran.hsa.entities.dto.HeartBeat;
+
 @Entity
 public class HeartBeatOrm {
 	@Id
@@ -23,6 +25,10 @@ public class HeartBeatOrm {
 		this.surveyPeriod = surveyPeriod;
 	}
 	public HeartBeatOrm() {}
+	
+	public HeartBeat getHeartBeat() {
+		return new HeartBeat(patientPuls.id, dateTime.toString(), value, surveyPeriod);
+	}
 	
 	public LocalDateTime getDateTime() {
 		return dateTime;

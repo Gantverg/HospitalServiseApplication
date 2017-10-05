@@ -1,11 +1,13 @@
 package tel_ran.hsa.controller;
 
 import java.time.*;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.handler.RequestMatchResult;
 
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
@@ -156,13 +158,27 @@ public class WebController {
 		return hospital.replaceVisitsDoctor(doctorId, LocalDateTime.parse(beginDateTime), LocalDateTime.parse(endDateTime));
 	}
 	
-/*	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
+	@RequestMapping(value = RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}"+
+							RestRequest.TIMESLOT, method = RequestMethod.PUT)
+	public String setTimeslots(@PathVariable int doctorId,
+							   @RequestBody TimeSlot[] slots) {
+		return hospital.setTimeSlot(doctorId, slots);
+	}
+	
+	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
 							RestRequest.HEALTHGROUPS+"/{"+RestRequest.GROUP_ID+"}", method = RequestMethod.PUT)
 	public String setPatientHealthgroup(@PathVariable int patientId,
 			 							@PathVariable int groupId) {
 		return hospital.setHealthGroup(patientId, groupId);
 	}
-*/
+
+	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + 
+							RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}", method = RequestMethod.PUT)
+	public String setPatientDoctor(@PathVariable int patientId,
+								   @PathVariable int doctorId) {
+		return hospital.setTherapist(patientId, doctorId);
+	}
+
 	@RequestMapping(value = RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}" + RestRequest.DOCTORS, method = RequestMethod.GET)
 	public Iterable<Doctor> getPatientDoctors(@PathVariable int patientId) {
 		return hospital.getPatientDoctors(patientId);

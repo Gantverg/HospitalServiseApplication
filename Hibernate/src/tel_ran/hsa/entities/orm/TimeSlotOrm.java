@@ -4,6 +4,8 @@ import java.time.LocalTime;
 
 import javax.persistence.*;
 
+import tel_ran.hsa.entities.dto.TimeSlot;
+
 @Entity
 public class TimeSlotOrm {
 	@Id
@@ -22,6 +24,10 @@ public class TimeSlotOrm {
 		this.numberDayOfWeek = numberDayOfWeek;
 		this.beginTime = beginTime;
 		this.endTime = endTime;
+	}
+	
+	public TimeSlot getTimeSlot() {
+		return new TimeSlot(numberDayOfWeek, beginTime, endTime);
 	}
 
 	public int getNumberDayOfWeek() {

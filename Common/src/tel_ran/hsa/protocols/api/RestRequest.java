@@ -12,6 +12,7 @@ public interface RestRequest {
 	String PULSE = "/pulse";
 	String FREE = "/free";
 	String REPLACE = "/replace";
+	String TIMESLOT = "/timeslots";
 	
 	String GROUP_ID = "groupId";
 	String DAYS_ID = "daysId";

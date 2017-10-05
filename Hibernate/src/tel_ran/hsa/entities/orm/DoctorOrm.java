@@ -1,8 +1,12 @@
 package tel_ran.hsa.entities.orm;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
+
+import tel_ran.hsa.entities.dto.Doctor;
+import tel_ran.hsa.entities.dto.TimeSlot;
 
 @Entity
 public class DoctorOrm  {
@@ -47,7 +51,15 @@ public class DoctorOrm  {
 		this.eMail = eMail;
 		//this.visits = visits;
 	}
-
+	
+	public Doctor getDoctor() {
+		Doctor doctor = new Doctor(id, name, phoneNumber, eMail);
+		if(slots != null) {
+			Set<TimeSlot> timeSlots = slots.stream().map(TimeSlotOrm::getTimeSlot).collect(Collectors.toSet());
+			doctor.setTimeSlots(timeSlots);
+		}
+		return doctor;
+	}
 
 	public DoctorOrm() {}
 

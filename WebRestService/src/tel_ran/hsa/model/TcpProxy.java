@@ -265,6 +265,12 @@ public class TcpProxy implements IHospital {
 	public Iterator<Doctor> iterator() {
 		return getIterableResponse(TcpRequest.GET_DOCTORS, "", new TypeReference<Iterable<Doctor>>() {}).iterator();
 	}
+	
+	@Override
+	public Iterable<Doctor> getDoctors() {
+		return getIterableResponse(TcpRequest.GET_DOCTORS, "", new TypeReference<Iterable<Doctor>>() {});
+	}
+
 
 	@Override
 	public Iterable<Patient> getPatients() {

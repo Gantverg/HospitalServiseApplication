@@ -78,14 +78,29 @@ public class HsaProtocolJson implements Protocol {
 		}
 	}
 
+
+	private String setTherapist(String request) {
+		String response = "";
+		TcpResponseCode code = TcpResponseCode.OK;
+		Map<String, String> map = new HashMap<String, String>();
+		map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
+		try {
+			response = hospital.setTherapist(Integer.parseInt(map.get("patientId")), 
+					 						 Integer.parseInt(map.get("doctorId")));
+		}catch (Exception e) {
+			code=TcpResponseCode.ERROR;
+			response=e.getMessage();
+		}
+		return objectToJson(code,response);
+		
+	}
 	
-	private String setTimeSlot(String request) {
-		//GetTimeSlot slot;
+	private String setTimeslots(String request) {
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		Map<String, String> map = new HashMap<String, String>();
 		map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
-		TimeSlot[] slots = new TimeSlot[map.values().size()];
+		TimeSlot[] slots = new TimeSlot[map.values().size()-1];
 		int count = 0;
 		for (int i = 0; i < slots.length; i++) {
 			slots[i] = jsonToObject(map.get("timeSlot"+count), TimeSlot.class);
@@ -103,7 +118,6 @@ public class HsaProtocolJson implements Protocol {
 	}
 	
 	private String getPulseByPeriodBeat(String request) {
-		//PulsePeriodHeartBeat beat;
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		Map<String, String> map = new HashMap<String, String>();
@@ -135,7 +149,7 @@ public class HsaProtocolJson implements Protocol {
 			return objectToJson(code,response);
 		}
 	}
-	private String setHealthGroup(String request) {
+	private String setHealthgroup(String request) {
 	//	IdPatientGroup patGroup;
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
@@ -164,12 +178,13 @@ public class HsaProtocolJson implements Protocol {
 		}
 	}
 	
-	private String iterator(String request) {
+	private String getDoctors(String request) {
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		try {
-			Iterator<Doctor> iter = hospital.iterator();
-			return objectToJson(code,iter);
+			//Iterator<Doctor> iter = hospital.iterator();
+			Iterable<Doctor> doctors = hospital.getDoctors();
+			return objectToJson(code,doctors);
 		}catch (Exception e) {
 			code=TcpResponseCode.ERROR;
 			response=e.getMessage();
@@ -190,7 +205,7 @@ public class HsaProtocolJson implements Protocol {
 		}
 		
 	}
-	private String getHealthGroups(String request){
+	private String getHealthgroups(String request){
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		try {
@@ -203,7 +218,7 @@ public class HsaProtocolJson implements Protocol {
 		}
 		
 	}
-	private String removeHealthGroup(String request) {
+	private String removeHealthgroup(String request) {
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		int idGroup = jsonToObject(request, Integer.class);
@@ -216,7 +231,7 @@ public class HsaProtocolJson implements Protocol {
 		return objectToJson(code,response);
 	}
 	
-	private String addHealthGroup(String request) {
+	private String addHealthgroup(String request) {
 	String response="";
 	TcpResponseCode code=TcpResponseCode.OK;
 	HealthGroup healthGroup =  jsonToObject(request, HealthGroup.class);

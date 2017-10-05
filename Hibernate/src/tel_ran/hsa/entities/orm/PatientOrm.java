@@ -4,6 +4,10 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import tel_ran.hsa.entities.dto.Doctor;
+import tel_ran.hsa.entities.dto.HealthGroup;
+import tel_ran.hsa.entities.dto.Patient;
+
 @Entity
 public class PatientOrm {
 	@Id
@@ -22,20 +26,29 @@ public class PatientOrm {
 	
 	
 
-	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm,DoctorOrm therapist) {
-		this.id = id;
-		this.name = name;
-		this.phoneNumber = phoneNumber;
-		this.eMail = eMail;
-		this.healthGroupOrm = healthGroupOrm;
-		this.therapist=therapist;
-	}
+//	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm,DoctorOrm therapist) {
+//		this.id = id;
+//		this.name = name;
+//		this.phoneNumber = phoneNumber;
+//		this.eMail = eMail;
+//		this.healthGroupOrm = healthGroupOrm;
+//		this.therapist=therapist;
+//	}
 
 	public PatientOrm(int id, String name, String phoneNumber, String eMail) {
 		this.id = id;
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.eMail = eMail;
+	}
+	
+	public Patient getPatient() {
+		Patient patient = new Patient(id, name, phoneNumber, eMail);
+		if(healthGroupOrm != null)
+			patient.setHealthGroup(healthGroupOrm.getHealthGroup());
+		if(therapist != null)
+			patient.setTherapist(therapist.getDoctor());
+		return patient;
 	}
 
 	public PatientOrm() {}

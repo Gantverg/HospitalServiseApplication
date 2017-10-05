@@ -15,8 +15,8 @@ public class HealthGroupCollection {
 	}
 
 	public static void addHealthgroup(int groupId, String name, int minNormalPulse, int maxNormalPulse,
-			int serveyPeriod) {
-		healthGroups.put(groupId, new HealthGroup(groupId, name, minNormalPulse, maxNormalPulse, serveyPeriod));
+			int surveyPeriod) {
+		healthGroups.put(groupId, new HealthGroup(groupId, name, minNormalPulse, maxNormalPulse, surveyPeriod));
 	}
 
 	public static boolean removeHealthgroup(int groupId) {

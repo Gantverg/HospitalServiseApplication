@@ -26,14 +26,14 @@ public class PatientOrm {
 	
 	
 
-//	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm,DoctorOrm therapist) {
-//		this.id = id;
-//		this.name = name;
-//		this.phoneNumber = phoneNumber;
-//		this.eMail = eMail;
-//		this.healthGroupOrm = healthGroupOrm;
-//		this.therapist=therapist;
-//	}
+	public PatientOrm(int id, String name, String phoneNumber, String eMail,HealthGroupOrm healthGroupOrm,DoctorOrm therapist) {
+		this.id = id;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.eMail = eMail;
+		this.healthGroupOrm = healthGroupOrm;
+		this.therapist=therapist;
+	}
 
 	public PatientOrm(int id, String name, String phoneNumber, String eMail) {
 		this.id = id;

@@ -26,7 +26,7 @@ public interface RestRequest {
 	String HEARTBEAT = "heartbeat";
 	String SURVEY_PERIOD = "surveyPeriod";
 	String BEGIN_DATE_TIME = "beginDateTime";
-	String END_DATE_TIME = "beginDateTime";
+	String END_DATE_TIME = "endDateTime";
 	
 	default String getParamString(Map<String, String> params) {
 		return params.entrySet().stream()

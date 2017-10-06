@@ -87,12 +87,13 @@ public class TcpProxy implements IHospital {
 		String result = TcpResponseCode.WRONG_REQUEST_TYPE.name();
 		try {
 			getResponse(getRequestString(request, requestBody));
-			if (code == TcpResponseCode.OK) {
-				result = code.name();
+			result = mapper.readValue(responseBody, String.class);
+/*			if (code == TcpResponseCode.OK) {
+				result = code.name()+". "+mapper.readValue(responseBody, String.class);
 			} else {
 				result = mapper.readValue(responseBody, String.class);
 			}
-
+*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

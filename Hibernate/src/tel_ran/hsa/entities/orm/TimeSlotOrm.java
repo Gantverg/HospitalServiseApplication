@@ -20,10 +20,11 @@ public class TimeSlotOrm {
 	public TimeSlotOrm() {
 	}
 
-	public TimeSlotOrm(int numberDayOfWeek, LocalTime beginTime, LocalTime endTime) {
+	public TimeSlotOrm(int numberDayOfWeek, LocalTime beginTime, LocalTime endTime, DoctorOrm doctorOrm) {
 		this.numberDayOfWeek = numberDayOfWeek;
 		this.beginTime = beginTime;
 		this.endTime = endTime;
+		this.doctorSlot = doctorOrm;
 	}
 	
 	public TimeSlot getTimeSlot() {

@@ -100,17 +100,21 @@ public class WebController {
 		return hospital.getHealthGroups();
 	}
 
-	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.PUT)
+	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}"
+			 								   + RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}", 
+			 		method = RequestMethod.PUT)
 	public String bookVisit(@RequestParam(name=RestRequest.DATE_TIME) String dateTime,
-						    @RequestParam(name=RestRequest.DOCTOR_ID) int doctorId,
-						    @RequestParam(name=RestRequest.PATIENT_ID) int patientId) {
+						    @PathVariable int doctorId,
+						    @PathVariable int patientId) {
 		return hospital.bookVisit(doctorId, patientId, LocalDateTime.parse(dateTime));
 	}
 
-	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.DELETE)
+	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}"
+			   + RestRequest.PATIENTS+"/{"+RestRequest.PATIENT_ID+"}", 
+			   method = RequestMethod.DELETE)
 	public String cancelVisit(@RequestParam(name=RestRequest.DATE_TIME) String dateTime,
-						      @RequestParam(name=RestRequest.DOCTOR_ID) int doctorId,
-						      @RequestParam(name=RestRequest.PATIENT_ID) int patientId) {
+							  @PathVariable int doctorId,
+							  @PathVariable int patientId) {
 		return hospital.cancelVisit(doctorId, patientId, LocalDateTime.parse(dateTime));
 	}
 

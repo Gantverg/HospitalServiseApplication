@@ -134,7 +134,6 @@ public class HsaProtocolJson implements Protocol {
 	}
 	
 	private String getVisits(String request) {
-		StartFinishDate date;
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		Map<String, String> map = new HashMap<String, String>();
@@ -363,7 +362,7 @@ public class HsaProtocolJson implements Protocol {
 		Map<String, String> map = new HashMap<String, String>();
 		map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
 		try {
-			response = hospital.replaceVisitsDoctor(Integer.parseInt(map.get("oldDoctorId")), 
+			response = hospital.replaceVisitsDoctor(Integer.parseInt(map.get("doctorId")), 
 					LocalDateTime.parse(map.get("beginDateTime")), LocalDateTime.parse(map.get("endDateTime")));
 		}catch(Exception e) {
 			code=TcpResponseCode.ERROR;

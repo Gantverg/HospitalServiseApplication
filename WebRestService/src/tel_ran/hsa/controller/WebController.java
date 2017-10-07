@@ -1,19 +1,16 @@
 package tel_ran.hsa.controller;
 
 import java.time.*;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.handler.RequestMatchResult;
 
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.api.RestRequest;
 import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
-import tel_ran.security.interfaces.IAccounts;
 
 @SpringBootApplication
 @RestController
@@ -23,9 +20,6 @@ public class WebController {
 	@Autowired
 	IHospital hospital;
 	
-	@Autowired
-	IAccounts accounts;
-
 	public void setHospital(IHospital hospital) {
 		this.hospital = hospital;
 	}

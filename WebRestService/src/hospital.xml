@@ -20,7 +20,7 @@
 	  
 	<bean id="hospital" class="tel_ran.hsa.model.TcpProxy">
 		<constructor-arg name="hostName" value="localhost"/>
-		<constructor-arg name="port" value = "53177" />
+		<constructor-arg name="port" value = "54832" />
 	</bean>
 		
 	<!--

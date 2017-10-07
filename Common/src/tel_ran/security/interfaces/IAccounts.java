@@ -4,10 +4,11 @@ import tel_ran.security.entities.*;
 
 public interface IAccounts extends Iterable<Account>{
 	
-	boolean addAccount(Account account);
-	boolean removeAccount(String username);
-	boolean addRole(String username, String role);
-	boolean removeRole(String username, String role);
+	String addAccount(Account account);
+	String removeAccount(String username);
+	String addRole(String username, String role);
+	String removeRole(String username, String role);
 	Account getAccount(String username);
-	boolean updatePassword(String username, String newPassword);
+	String updatePassword(String username, String newPassword);
+	boolean adminPresent();
 }

@@ -4,7 +4,7 @@ import tel_ran.hsa.entities.dto.Doctor;
 
 //import tel_ran.hospital.entities.not_use.Doctor;
 
-public class DisplayDoctor extends HospitalItem {
+public class GetDoctor extends HospitalItem {
 	@Override
 	public String displayedName() {
 		return "Display a doctor data";

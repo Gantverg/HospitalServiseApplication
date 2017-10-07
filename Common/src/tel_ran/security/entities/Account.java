@@ -6,6 +6,7 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class Account implements Serializable{
 
+	private int id;
 	private String username;
 	private String password;
 	private Set<String> roles;
@@ -14,8 +15,15 @@ public class Account implements Serializable{
 
 	public Account(String username, String password, Set<String> roles) {
 		this.username = username;
-		this.password = password;//Base64.getEncoder().encodeToString(password.getBytes());
+		this.password = password;
 		this.roles = roles;
+	}
+	
+	public Account(String username, String password, String...roles) {
+		this.username = username;
+		this.password = password;
+		this.roles = new HashSet<>(Arrays.asList(roles));
+		
 	}
 
 	public String getUsername() {
@@ -31,7 +39,7 @@ public class Account implements Serializable{
 	}
 
 	public void setPassword(String password) {
-		this.password = password;//Base64.getEncoder().encodeToString(password.getBytes());
+		this.password = password;
 	}
 
 	public Set<String> getRoles() {
@@ -44,6 +52,14 @@ public class Account implements Serializable{
 
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override

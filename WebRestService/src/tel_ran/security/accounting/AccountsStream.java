@@ -3,11 +3,13 @@ package tel_ran.security.accounting;
 import java.io.*;
 import java.util.*;
 
+import tel_ran.hsa.protocols.api.RestResponseCode;
+import tel_ran.hsa.protocols.security.Roles;
 import tel_ran.security.entities.*;
 import tel_ran.security.interfaces.IAccounts;
 
 @SuppressWarnings("serial")
-public class AccountsStream implements IAccounts, Serializable {
+public class AccountsStream implements IAccounts, Serializable, RestResponseCode {
 
 	private Map<String, Account> accounts;
 	private String fileName;
@@ -15,9 +17,9 @@ public class AccountsStream implements IAccounts, Serializable {
 	public AccountsStream(String fileName) {
 		this.fileName = fileName;
 	}
-	
+
 	public AccountsStream() {
-		
+
 	}
 
 	public String getFileName() {
@@ -34,31 +36,43 @@ public class AccountsStream implements IAccounts, Serializable {
 	}
 
 	@Override
-	public boolean addAccount(Account account) {
-		return accounts.putIfAbsent(account.getUsername(), account) == null;
+	public String addAccount(Account account) {
+		if (accounts.putIfAbsent(account.getUsername(), account) == null)
+			return OK;
+		else
+			return ALREADY_EXIST;
 	}
 
 	@Override
-	public boolean removeAccount(String username) {
-		return accounts.remove(username) == null ? false : true;
+	public String removeAccount(String username) {
+		if (accounts.remove(username) == null)
+			return NO_ACCOUNT;
+		else
+			return OK;
 	}
 
 	@Override
-	public boolean addRole(String username, String role) {
+	public String addRole(String username, String role) {
 		Account account = accounts.get(username);
 		Set<String> roles = account.getRoles();
-		boolean isAdd = roles.add(role);
-		account.setRoles(roles);
-		return isAdd;
+		if(roles.add(role)) {
+			account.setRoles(roles);
+			return OK;
+		} else {
+			return ALREADY_EXIST;
+		}
 	}
 
 	@Override
-	public boolean removeRole(String username, String role) {
+	public String removeRole(String username, String role) {
 		Account account = accounts.get(username);
 		Set<String> roles = account.getRoles();
-		boolean isRemoved = roles.remove(role);
-		account.setRoles(roles);
-		return isRemoved;
+		if(roles.remove(role)) {
+			account.setRoles(roles);
+			return OK;
+		} else {
+			return NO_ROLE;
+		}
 	}
 
 	@Override
@@ -67,16 +81,16 @@ public class AccountsStream implements IAccounts, Serializable {
 	}
 
 	@Override
-	public boolean updatePassword(String username, String newPassword) {
+	public String updatePassword(String username, String newPassword) {
 		if (!accounts.containsKey(username)) {
-			return false;
+			return NO_ACCOUNT;
 		}
 		accounts.get(username).setPassword(newPassword);
-		return true;
+		return OK;
 	}
 
 	public boolean save() {
-		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName))){
+		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName))) {
 			output.writeObject(accounts);
 			return true;
 		} catch (IOException e) {
@@ -86,13 +100,19 @@ public class AccountsStream implements IAccounts, Serializable {
 
 	@SuppressWarnings("unchecked")
 	public void restore() {
-		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName))) {
+		try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName))) {
 			accounts = (Map<String, Account>) input.readObject();
 		} catch (Exception e) {
 		}
 		if (accounts == null) {
 			accounts = new HashMap<>();
 		}
+	}
+
+	@Override
+	public boolean adminPresent() {
+		return accounts.values().stream().flatMap(account -> account.getRoles().stream())
+				.anyMatch(role -> role.equals(Roles.ADMIN));
 	}
 
 }

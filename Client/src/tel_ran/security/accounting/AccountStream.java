@@ -89,8 +89,22 @@ public class AccountStream implements IAccounts {
 		return response.getBody();
 	}
 
+	public Iterable<String> getMethodsForRole(String username) {
+		HttpEntity<String> requestEntity = new HttpEntity<>(username,rest.headers);
+		ResponseEntity<Iterable<String>> response = rest.restTemplate.exchange(rest.URL/* + GET_METHODS_FOR_ROLE*/, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<Iterable<String>>() {
+				});
+		return response.getBody();
+	}
+
 	@Override
 	public boolean updatePassword(String username, String newPassword) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean adminPresent() {
 		// TODO Auto-generated method stub
 		return false;
 	}

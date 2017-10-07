@@ -10,4 +10,5 @@ public interface RestResponseCode {
 	String NO_HEALTH_GROUP = "no healthgroup";
 	String VISIT_FREE = "visit free already";
 	String NO_ACCOUNT = "no account";
+	String NO_ROLE = "no role";
 }

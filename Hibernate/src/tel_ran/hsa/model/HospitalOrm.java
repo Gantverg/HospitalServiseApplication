@@ -1,8 +1,6 @@
 package tel_ran.hsa.model;
 
 import java.time.*;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.stream.*;
 

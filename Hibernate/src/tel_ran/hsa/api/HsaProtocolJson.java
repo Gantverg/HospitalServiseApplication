@@ -117,13 +117,13 @@ public class HsaProtocolJson implements Protocol {
 		return objectToJson(code,response);
 	}
 	
-	private String getPulseByPeriodBeat(String request) {
+	private String getPulse(String request) {
 		String response="";
 		TcpResponseCode code=TcpResponseCode.OK;
 		Map<String, String> map = new HashMap<String, String>();
 		map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
 		try {
-			Iterable<HeartBeat> heartbeat = hospital.getPulseByPeriod(Integer.parseInt(map.get("patientId")),
+			Iterable<HeartBeat> heartbeat = hospital.getPulse(Integer.parseInt(map.get("patientId")),
 					LocalDate.parse(map.get("beginDate")), LocalDate.parse(map.get("endDate")));
 			return objectToJson(code, heartbeat);
 		}catch (Exception e) {

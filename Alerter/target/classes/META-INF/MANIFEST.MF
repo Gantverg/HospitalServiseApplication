@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: sensor-source
+Implementation-Version: 1
+Built-By: gantv
+Implementation-Vendor-Id: alerter
+Build-Jdk: 1.8.0_144
+Implementation-URL: http://projects.spring.io/spring-boot/mail/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

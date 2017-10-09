@@ -11,6 +11,13 @@ public class Patient extends Person {
 		super(id, name, phoneNumber, eMail);
 	}
 
+	
+	public Patient(int id, String name, String phoneNumber, String eMail, HealthGroup healthGroup, Doctor therapist) {
+		super(id, name, phoneNumber, eMail);
+		this.healthGroup = healthGroup;
+		this.therapist = therapist;
+	}
+
 	public HealthGroup getHealthGroup() {
 		return healthGroup;
 	}

@@ -1,5 +1,6 @@
 package tel_ran.hsa.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -10,6 +11,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tel_ran.hsa.bigdata.dto.HeartBeatData;
 import tel_ran.hsa.bigdata.dto.HeartInfo;
 import tel_ran.hsa.bigdata.dto.InputInfo;
 import tel_ran.hsa.entities.dto.*;
@@ -25,7 +27,7 @@ public class MapReducerBeats {
 
 	@StreamListener(Processor.INPUT)
 	@SendTo(Processor.OUTPUT)
-	public HeartBeat takePulse(String heartBeatInput) {
+	public HeartBeatData takePulse(String heartBeatInput) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		try {
@@ -59,13 +61,10 @@ public class MapReducerBeats {
 		return info;
 	}
 
-	private HeartBeat sendAlert(HeartInfo info, int pulse) {
+	private HeartBeatData sendAlert(HeartInfo info, int pulse) {
 		HealthGroup health = info.getPatient().getHealthGroup();
 		if (pulse > health.getMaxNormalPulse() || pulse < health.getMinNormalPulse()) {
-			return new HeartBeat(info.getPatient().getId(), 
-								 inp.getTime(), 
-								 inp.getPulse(),
-								 health.getSurveyPeriod());
+			return new HeartBeatData(info.getPatient(), LocalDateTime.parse(inp.getTime()), inp.getPulse(), info.getPatient().getHealthGroup().getSurveyPeriod());
 		}
 		return null;
 	}

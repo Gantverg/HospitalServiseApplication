@@ -196,7 +196,7 @@ public class WebController {
 	public Iterable<HeartBeat> getPulseByPeriod(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
 												@RequestParam(name=RestRequest.END_DATE) String endDate,
 												@PathVariable int patientId) {
-		return hospital.getPulseByPeriod(patientId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
+		return hospital.getPulse(patientId, LocalDate.parse(beginDate), LocalDate.parse(endDate));
 	}
 
 	@RequestMapping(value = RestRequest.PULSE+"/{"+RestRequest.PATIENT_ID+"}/{"+RestRequest.SURVEY_PERIOD+"}", method = RequestMethod.GET)

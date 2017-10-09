@@ -301,7 +301,7 @@ public class TcpProxy implements IHospital {
 	}
 
 	@Override
-	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
 		Map<String,String> requestBody = new HashMap<>();
 		requestBody.put("patientId", String.valueOf(patientId));
 		requestBody.put("beginDate", beginDate.toString());

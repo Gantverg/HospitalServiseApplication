@@ -51,7 +51,7 @@ public interface IHospital extends Serializable, Iterable<Doctor>{
 	default String addPulseInfo(HeartBeat heartBeat) {
 		return RestResponseCode.OK;
 	}
-	Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate);
+	Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate);
 	Iterable<Integer> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate, int surveyPeriod);
 	
 }

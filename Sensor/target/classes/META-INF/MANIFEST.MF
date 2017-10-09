@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
 Implementation-Title: sensor-source
-Implementation-Version: 0.0.1
+Implementation-Version: 1
 Built-By: gantv
-Implementation-Vendor-Id: tel_ran.bigdata
+Implementation-Vendor-Id: hsa.firestreducer
 Build-Jdk: 1.8.0_144
-Implementation-URL: http://projects.spring.io/spring-boot/belt-source/
+Implementation-URL: http://projects.spring.io/spring-boot/beatstopulse
+ /
 Created-By: Maven Integration for Eclipse
 Implementation-Vendor: Pivotal Software, Inc.
 

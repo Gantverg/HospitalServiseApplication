@@ -391,6 +391,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		result.setPatients(oldVisit.getPatients());
 		oldVisit.setPatients(null);
 		oldVisit.setOccupied(true);
+		em.persist(oldVisit);
 		return result;
 	}
 
@@ -488,7 +489,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 */	}
 
 	@Override
-	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
 		PatientOrm patient = em.find(PatientOrm.class, patientId);
 		if (patient == null)
 			return null;

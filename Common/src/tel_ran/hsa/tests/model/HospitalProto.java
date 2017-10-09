@@ -327,7 +327,7 @@ public class HospitalProto extends Hospital {
 	}
 
 	@Override
-	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
 		return pulseInfo.entrySet().stream()
 				.filter(entry->entry.getKey().personId==patientId)
 				.filter(entry->entry.getKey().dateTime.isAfter(beginDate.atStartOfDay()))

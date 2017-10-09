@@ -109,14 +109,18 @@ public class WebClient extends Hospital {
 
 	@Override
 	public Patient getPatient(int patientId) {
-		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PATIENTS)
-		        .queryParam(RestRequest.PATIENT_ID, patientId);
-		ResponseEntity<Patient> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
-				requestEntity, new ParameterizedTypeReference<Patient>() {
-				});
-
-		return response.getBody();
+		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
+		Patient pat = restTemplate.exchange(URL + RestRequest.PATIENTS + String.format("/%d", patientId), HttpMethod.GET,
+				requestEntity, Patient.class).getBody();
+		return pat;
+//		HttpEntity requestEntity = new HttpEntity<>(headers);
+//		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PATIENTS)
+//		        .queryParam(RestRequest.PATIENT_ID, patientId);
+//		ResponseEntity<Patient> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+//				requestEntity, new ParameterizedTypeReference<Patient>() {
+//				});
+//
+//		return response.getBody();
 	}
 
 	@Override
@@ -428,7 +432,7 @@ public class WebClient extends Hospital {
 	}
 
 	@Override
-	public Iterable<HeartBeat> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate) {
+	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PULSE)
 				.queryParam(RestRequest.PATIENT_ID, patientId)
 		        .queryParam(RestRequest.BEGIN_DATE,beginDate)

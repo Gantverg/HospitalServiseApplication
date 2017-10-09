@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.*;
 import tel_ran.security.entities.*;
 import tel_ran.security.interfaces.IAccounts;
 
-@Configuration
+//@Configuration
 public class HospitalAuthentication implements UserDetailsService{
 	
 	@Autowired

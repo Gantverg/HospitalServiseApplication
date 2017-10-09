@@ -1,5 +1,6 @@
 package tel_ran.hsa.controller;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +52,6 @@ public class Login extends HospitalItem{
 
 	@Override
 	public void perform() {
-		// TODO Auto-generated method stub
 		String username = inputOutput.getString("Enter username");
 		String password = inputOutput.getString("Enter password");
 		List<Item> items = new LinkedList<>();
@@ -60,7 +60,9 @@ public class Login extends HospitalItem{
 		WebClient.headers=restConfig.headers;
 		
 	
-		Iterable<String> methods = accauntStream.getMethodsForRole(username);
+		List<String> methods = new ArrayList<>();//accauntStream.getMethodsForRole(username);
+		methods.add(GET_PATIENT);
+		methods.add(GET_DOCTOR);
 		
 		items.add(new Login());
 		for(String s : methods){
@@ -114,7 +116,8 @@ public class Login extends HospitalItem{
 		}
 		
 		items.add(new ExitItem());
-		Menu.setItems(items);
+		Menu menu = new Menu(inputOutput, items);
+		menu.runMenu();
 
 	}
 

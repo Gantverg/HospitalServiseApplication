@@ -17,9 +17,10 @@ public class AddAccount extends HospitalItem {
 		String password = inputOutput.getString("Enter password");
 		String[] roles = inputOutput.getString("Enter roles").split(",");
 		Account account = new Account(username, password, new HashSet<String>(Arrays.asList(roles)));
-		boolean b = accauntStream.addAccount(account);
+		inputOutput.put(accauntStream.addAccount(account));
+		//boolean b = accauntStream.addAccount(account);
 
-		inputOutput.put(String.format("Add account %s", b ? "was" : "wasn't"));
+		//inputOutput.put(String.format("Add account %s", b ? "was" : "wasn't"));
 	}
 
 }

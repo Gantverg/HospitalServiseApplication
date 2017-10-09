@@ -1,6 +1,7 @@
 package tel_ran.hsa.generation;
 
 import java.util.*;
+
 import tel_ran.hsa.generation.controller.HeartBeatController;
 
 public class HeartBeatCleaner extends Thread {

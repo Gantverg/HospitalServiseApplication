@@ -10,7 +10,7 @@ import tel_ran.hsa.protocols.security.Roles;
 import tel_ran.security.entities.Account;
 
 
-@Configuration
+//@Configuration
 public class HospitalAuthorization extends WebSecurityConfigurerAdapter {
 	static Account account;
 	

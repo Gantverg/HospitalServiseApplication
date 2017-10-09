@@ -54,30 +54,30 @@ public class AccountStream implements IAccounts {
 	}
 
 	@Override
-	public boolean addAccount(Account account) {
+	public String addAccount(Account account) {
 		HttpEntity<Account> requestEntity = new HttpEntity<>(account, rest.headers);
-		ResponseEntity<Boolean> response = rest.restTemplate.exchange(rest.URL + "/account/add", HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<Boolean>() {
+		ResponseEntity<String> response = rest.restTemplate.exchange(rest.URL + "/account/add", HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<String>() {
 				});
 		return response.getBody();
 	}
 
 	@Override
-	public boolean removeAccount(String username) {
+	public String removeAccount(String username) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean addRole(String username, String role) {
+	public String addRole(String username, String role) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
-	public boolean removeRole(String username, String role) {
+	public String removeRole(String username, String role) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
@@ -98,9 +98,9 @@ public class AccountStream implements IAccounts {
 	}
 
 	@Override
-	public boolean updatePassword(String username, String newPassword) {
+	public String updatePassword(String username, String newPassword) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override

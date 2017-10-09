@@ -6,16 +6,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.integration.annotation.InboundChannelAdapter;
-
-//import org.springframework.cloud.stream.annotation.EnableBinding;
-//import org.springframework.cloud.stream.messaging.Source;
-//import org.springframework.integration.annotation.InboundChannelAdapter;
-//import com.fasterxml.jackson.core.JsonProcessingException;
-//import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import tel_ran.hsa.generation.controller.HeartBeatController;
 
 @EnableBinding(Source.class)
+@Component
 public class HeartBeatGenerator extends Thread {
 	public HeartBeatGenerator() {
 	}
@@ -29,6 +25,7 @@ public class HeartBeatGenerator extends Thread {
 	SecureRandom sec = new SecureRandom();
 	@InboundChannelAdapter(Source.OUTPUT)
 	public String sendData() {
+		System.out.println("send data");
 		return getData();
 	}
 	
@@ -43,6 +40,8 @@ public class HeartBeatGenerator extends Thread {
 				e.printStackTrace();
 			}
 		String res = Integer.toString(HeartBeatController.currentBeats[index]);
+		System.out.println(res);
+		System.err.println(res);
 		return res;
 	}
 }

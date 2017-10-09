@@ -14,15 +14,15 @@ import tel_ran.hsa.model.interfaces.*;
 //100 patients, 100 doctors
 public class GenerateAppl {
 
-	private static final int NUMBER_PATIENTS = 100;
+	private static final int NUMBER_PATIENTS = 1000;
 	private static final int MIN_ADD_PHONE = 11111111;
 	private static final int MAX_ADD_PHONE = 99999999;
 	private static final int NUMBER_DOCTORS = 10;
-	private static final int NUMBER_HEALTH_GROUP = 3;
+	private static final int NUMBER_HEALTH_GROUP = 4;
 	private static final LocalDate BEGIN_DATE = LocalDate.now();
 	private static final LocalDate END_DATE = BEGIN_DATE.plusDays(30);
-	private static final int NUMBER_VISITS = 1000;
-	private static final int NUMBER_VISITS_CANCEL = 50;
+	private static final int PERCENT_VISITS = 90;
+	private static final int PERCENT_CANCEL = 10;
 	static String phone, patientName, email, doctorName, groupName;
 	static HealthGroup healthGroup;
 	static Set<String> setNamesHealthgroups;
@@ -40,18 +40,26 @@ public class GenerateAppl {
 		patients = new ArrayList<>();
 		doctors = new ArrayList<>();
 
-		for (int i = 0; i < NUMBER_HEALTH_GROUP; i++) {
-			generatorHealthGroups();
-			healthGroups.add(new HealthGroup(i+1, groupName, minNormalPulse, maxNormalPulse, surveyPeriod));
-		}
+		System.out.println("Generate healthgroups at "+LocalDateTime.now());
+		healthGroups.add(new HealthGroup(0, "Normal", 40, 80, 3));
+		healthGroups.add(new HealthGroup(1, "Risk1", 80, 120, 2));
+		healthGroups.add(new HealthGroup(2, "Risk2", 20, 60, 2));
+		healthGroups.add(new HealthGroup(3, "Spies", 55, 65, 1));
+	
+//		for (int i = 0; i < NUMBER_HEALTH_GROUP; i++) {
+//			//generatorHealthGroups();
+//			healthGroups.add(new HealthGroup(i+1, groupName, minNormalPulse, maxNormalPulse, surveyPeriod));
+//		}
 
-		int id = 0;
+		System.out.println("Generate doctors at "+LocalDateTime.now());
+		int id = NUMBER_PATIENTS*2;
 		for (int i = 0; i < NUMBER_DOCTORS; i++) {
 			generatorDoctors();
 			doctors.add(new Doctor(id++, doctorName, phone, email));
 		}
 
-		id = Math.max(1000, NUMBER_DOCTORS);
+		System.out.println("Generate patients at "+LocalDateTime.now());
+		id = 0;
 		for (int i = 0; i < NUMBER_PATIENTS; i++) {
 			generatorPatients();
 			patients.add(new Patient(id++, patientName, phone, email, healthgroup, therapist));
@@ -80,13 +88,18 @@ public class GenerateAppl {
 			else
 				hospitalCreation.setTimeSlot(doctorId, timeslot2);
 		}
+		
+		System.out.println("Build schedule at "+LocalDateTime.now());
 		Iterable<Visit> visits =hospitalCreation.buildSchedule(BEGIN_DATE, END_DATE);
 
 		//Iterable<Visit> visits = hospitalCreation.getVisits(BEGIN_DATE, END_DATE);
 		List<Visit> visitsList = new ArrayList<>();
 		visits.forEach(visitsList::add);
 		// visitsList.forEach(System.out::println);
-		for (int i = 0; i < NUMBER_VISITS; i++) {
+
+		System.out.println("Generate visits at "+LocalDateTime.now());
+		int nVisits = visitsList.size()*PERCENT_VISITS/100;
+		for (int i = 0; i < nVisits; i++) {
 			Random rnd = new Random();
 			Visit visitGen = visitsList.get(rnd.nextInt(visitsList.size() - 1));
 			Patient patientGen = patients.get(rnd.nextInt(NUMBER_PATIENTS - 1));
@@ -98,7 +111,9 @@ public class GenerateAppl {
 		List<Visit> visitsBookedList = visitsListAfterBooking.stream().filter(x -> x.getPatient() != null)
 				.filter(x -> x.isBlocked() == false).collect(Collectors.toList());
 		// System.out.println(visitsBookedList.size());
-		for (int i = 0; i < NUMBER_VISITS_CANCEL; i++) {
+		System.out.println("Generate cancel visits at "+LocalDateTime.now());
+		nVisits = visitsList.size()*PERCENT_CANCEL/100;
+		for (int i = 0; i < nVisits; i++) {
 			Random rnd = new Random();
 			Visit visitForCancel = visitsBookedList.get(rnd.nextInt(visitsBookedList.size() - 1));
 			hospitalCreation.cancelVisit(visitForCancel.getDoctor().getId(), visitForCancel.getPatient().getId(),
@@ -126,7 +141,6 @@ public class GenerateAppl {
 	}
 
 	private static void generatorHealthGroups() {
-		// TODO Auto-generated method stub
 		Random rnd = new Random();
 		groupName = "group" + (rnd.nextInt(NUMBER_HEALTH_GROUP) + 1);
 		minNormalPulse = 60 + rnd.nextInt(90);
@@ -139,7 +153,7 @@ public class GenerateAppl {
 		Random rnd = new Random();
 		patientName = "patient" + (rnd.nextInt(NUMBER_PATIENTS) + 1);
 		phone = "05" + (MIN_ADD_PHONE + rnd.nextInt(MAX_ADD_PHONE));
-		email = "email" + (rnd.nextInt(NUMBER_PATIENTS) + 1) + "@mail.com";
+		email = "ihospitalmail@gmail.com";//"email" + (rnd.nextInt(NUMBER_PATIENTS) + 1) + "@mail.com";
 		healthgroup = healthGroups.get(rnd.nextInt(NUMBER_HEALTH_GROUP));
 		therapist = doctors.get(rnd.nextInt(NUMBER_DOCTORS));
 	}
@@ -148,7 +162,7 @@ public class GenerateAppl {
 		Random rnd = new Random();
 		doctorName = "doctor" + (rnd.nextInt(NUMBER_DOCTORS) + 1);
 		phone = "05" + (MIN_ADD_PHONE + rnd.nextInt(MAX_ADD_PHONE));
-		email = "email" + (rnd.nextInt(NUMBER_DOCTORS + NUMBER_PATIENTS) + NUMBER_PATIENTS) + "@mail.com";
+		email = "ihospitalmail@gmail.com";//"email" + (rnd.nextInt(NUMBER_DOCTORS + NUMBER_PATIENTS) + NUMBER_PATIENTS) + "@mail.com";
 	}
 
 }

@@ -14,21 +14,26 @@ public class SqlModel {
 	HttpHeaders httpHeaders = new HttpHeaders();
 
 	public SqlModel() {
+		System.err.println("New Model");
 		String tokenBase64 = Base64.getEncoder().encodeToString("manager:manager".getBytes());
-		httpHeaders.add("Authorization", "Basic " + tokenBase64);
+		//httpHeaders.add("Authorization", "Basic " + tokenBase64);
 
 	}
 
 	public Patient getPatientById(int idPatient) {
+		System.err.println("sending get req");
 		HttpEntity<String> requestEntity = new HttpEntity<String>(httpHeaders);
-
-		return restTemplate.exchange(url + RestRequest.PATIENTS + String.format("/%d", idPatient), HttpMethod.GET,
+		Patient pat = restTemplate.exchange(url + RestRequest.PATIENTS + String.format("/%d", idPatient), HttpMethod.GET,
 				requestEntity, Patient.class).getBody();
+		System.err.println("Patient = " + pat);
+		return pat;
 	}
 
 	public void putHeartBeatToBase(HeartBeat heartBeat) {
+		System.err.println("sending post req");
 		HttpEntity<HeartBeat> requestEntity = new HttpEntity<HeartBeat>(heartBeat, httpHeaders);
 		restTemplate.exchange(url + RestRequest.PULSE, HttpMethod.POST, requestEntity, HeartBeat.class);
+		System.err.println("req is sended");
 	}
 
 }

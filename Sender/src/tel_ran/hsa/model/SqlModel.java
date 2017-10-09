@@ -3,6 +3,7 @@ package tel_ran.hsa.model;
 import java.util.Base64;
 
 import org.springframework.http.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import tel_ran.hsa.entities.dto.*;
@@ -21,12 +22,17 @@ public class SqlModel {
 	}
 
 	public Patient getPatientById(int idPatient) {
-		System.err.println("sending get req");
-		HttpEntity<String> requestEntity = new HttpEntity<String>(httpHeaders);
-		Patient pat = restTemplate.exchange(url + RestRequest.PATIENTS + String.format("/%d", idPatient), HttpMethod.GET,
-				requestEntity, Patient.class).getBody();
-		System.err.println("Patient = " + pat);
-		return pat;
+		System.err.println("sending get req "+idPatient);
+		try {
+			HttpEntity<String> requestEntity = new HttpEntity<String>(httpHeaders);
+			Patient pat = restTemplate.exchange(url + RestRequest.PATIENTS + String.format("/%d", idPatient), HttpMethod.GET,
+					requestEntity, Patient.class).getBody();
+			System.err.println("Patient = " + pat);
+			return pat;
+		} catch (Throwable e) {
+			System.err.println(e.getMessage());
+			return null;
+		}
 	}
 
 	public void putHeartBeatToBase(HeartBeat heartBeat) {

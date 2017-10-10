@@ -1,0 +1,44 @@
+﻿Shalom, everybody!
+Let's check our plans to the nearest time. These are our issues:
+
+1. Gantverg:
+Entity "Doctor". Add field: 
+	retired : boolean
+	+setter +getter
+Add method:
+	setRetired() : String
+Rebuild all methods used doctors:
+if doctor retired:
+	- impossible to build schedule for him
+	- impossible book visit
+	- impossible replace visit to this doctor
+	etc
+	- possible view info about him
+	- possible view his patients
+	etc
+
+Fleisher, Leschinsky, Gantverg:
+	rebuild your implemengations of interface IHospital
+
+2All: Sic! Impossible remove doctor or patient if there
+is at least one visit in db.
+
+2. Gantverg: build new JUnit test from Rest through Tcp to
+MySql.
+
+3. Fleisher, Leschinsky, Gantverg: check ALL responses on
+requests through path: Tcp->Rest->client. They have to
+have this strict structure:
+Header: OK | ERROR | WRONG_REQUEST_TYPE //from TcpResponseCode
+Body: 	OK = "ok" | NO_DOCTOR = "no doctor" | NO_PATIENT = "no patient" |
+	NO_SCHEDULE = "no schedule on this time" |
+	VISIT_BUSY = "doctor at this time is busy" |
+	ALREADY_EXIST = "already exist" | NO_HEALTH_GROUP = "no healthgroup" |
+	VISIT_FREE = "visit free already" | NO_ACCOUNT = "no account" |
+	NO_ROLE = "no role" //from RestResponseCode
+If Header == OK Body MUST be EMPTY
+If Header == WRONG_REQUEST_TYPE Body MUST be EMPTY
+If Header == ERROR Body MUST contains reason of error
+other variants impossible!
+
+4. Kruzhkov. We're waiting for working bigData

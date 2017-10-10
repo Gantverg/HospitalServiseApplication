@@ -37,6 +37,7 @@ public interface IHospital extends Serializable, Iterable<Doctor>{
 	String setTherapist(int patientId, int doctorId);
 	
 	Iterable<Visit> buildSchedule(LocalDate startDate, LocalDate finishDate) throws ScheduleNotEmptyException;
+	Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, Doctor doctor) throws ScheduleNotEmptyException;
 	String bookVisit(int doctorId, int patientId, LocalDateTime dateTime);
 	String cancelVisit(int doctorId, int patientId, LocalDateTime dateTime);
 	String replaceVisitsDoctor(int doctorId, LocalDateTime beginDateTime, LocalDateTime endDateTime);

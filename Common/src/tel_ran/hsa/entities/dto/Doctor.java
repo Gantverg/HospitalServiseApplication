@@ -7,6 +7,7 @@ public class Doctor extends Person {
 	//@JsonSerialize(using=WorkingDaysSerializer.class)
 	//@JsonDeserialize(using=WorkingDaysDeserializer.class)
 	Set<TimeSlot> timeSlots;
+	boolean dismissed = false;
 
 	public Doctor() {
 	}
@@ -20,6 +21,14 @@ public class Doctor extends Person {
 		setTimeSlots(timeSlots);
 	}
 	
+	public boolean isDismissed() {
+		return dismissed;
+	}
+
+	public void setDismissed(boolean dismissed) {
+		this.dismissed = dismissed;
+	}
+
 	public Set<TimeSlot> getTimeSlots() {
 		return timeSlots;
 	}

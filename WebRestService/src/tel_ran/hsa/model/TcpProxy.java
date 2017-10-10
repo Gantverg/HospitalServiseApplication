@@ -88,12 +88,12 @@ public class TcpProxy implements IHospital {
 		try {
 			getResponse(getRequestString(request, requestBody));
 			result = mapper.readValue(responseBody, String.class);
-/*			if (code == TcpResponseCode.OK) {
-				result = code.name()+". "+mapper.readValue(responseBody, String.class);
+			if (code == TcpResponseCode.OK) {
+				result = code.name();
 			} else {
 				result = mapper.readValue(responseBody, String.class);
 			}
-*/
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -116,6 +116,29 @@ public class HospitalProto extends Hospital {
 		return result;
 	}
 
+	@Override
+	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId) throws ScheduleNotEmptyException {
+		LocalDate endDate = finishDate.plusDays(1);
+		if(schedule.keySet().stream()
+			.map(k->k.dateTime.toLocalDate())
+			.filter(date->date.isAfter(startDate.minusDays(1)))
+			.filter(date->date.isBefore(endDate))
+			.count() > 0)
+			throw new ScheduleNotEmptyException("There already is schedule on this period");
+		
+		List<Visit> result = new ArrayList<>();
+		for (Doctor doctor : doctors.values()) {
+			for(LocalDate currentDate = startDate; currentDate.isBefore(endDate); 
+					currentDate = currentDate.plusDays(1)) {
+				for (TimeSlot slot : doctor.getTimeSlots()) {
+					if(slot.isDateInSlot(currentDate))
+						result.addAll(fillSlots(currentDate, doctor, slot));
+				}
+			}
+		}
+		return result;
+	}
+
 	private Collection<? extends Visit> fillSlots(LocalDate date, Doctor doctor, TimeSlot slot) {
 		List<Visit> result = new ArrayList<>();
 		LocalDateTime currentDateTime = LocalDateTime.of(date, slot.getBeginTime());

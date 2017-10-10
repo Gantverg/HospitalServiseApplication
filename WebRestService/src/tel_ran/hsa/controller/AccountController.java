@@ -13,9 +13,9 @@ import tel_ran.security.interfaces.IAccounts;
 import tel_ran.security.accounting.AccountsStream;
 
 @RestController
-//@ImportResource({"classpath:security.xml"})
+@ImportResource({"classpath:security.xml"})
 public class AccountController {
-	//@Autowired
+	@Autowired
 	IAccounts accounts;
 	
 	@RequestMapping(value = AccountRequest.LOGIN, method = RequestMethod.GET)

@@ -3,12 +3,15 @@ package tel_ran.hsa.entities.dto;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import tel_ran.jackson.LocalDateTimeDeserializer;
+import tel_ran.jackson.LocalDateTimeSerializer;
 
 public class HeartBeat {
 	int patientId;
 	@JsonDeserialize(using=LocalDateTimeDeserializer.class)
+	@JsonSerialize(using=LocalDateTimeSerializer.class)
 	LocalDateTime dateTime;
 	int value;
 	int surveyPeriod;

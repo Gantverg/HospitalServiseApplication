@@ -189,6 +189,7 @@ public class WebController {
 	
 	@RequestMapping(value = RestRequest.PULSE, method = RequestMethod.POST)
 	public String addPulseInfo(@RequestBody HeartBeat heartBeat) {
+		System.err.println(heartBeat);
 		return hospital.addPulseInfo(heartBeat);
 	}
 

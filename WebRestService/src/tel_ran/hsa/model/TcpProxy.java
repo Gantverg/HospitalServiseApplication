@@ -306,7 +306,7 @@ public class TcpProxy implements IHospital {
 		requestBody.put("patientId", String.valueOf(patientId));
 		requestBody.put("beginDate", beginDate.toString());
 		requestBody.put("endDate", endDate.toString());
-		return getIterableResponse(TcpRequest.GET_PULSE_INFO, requestBody, new TypeReference<Iterable<HeartBeat>>() {
+		return getIterableResponse(TcpRequest.GET_PULSE, requestBody, new TypeReference<Iterable<HeartBeat>>() {
 		});
 	}
 

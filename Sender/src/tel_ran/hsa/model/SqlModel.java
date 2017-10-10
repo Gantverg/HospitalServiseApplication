@@ -1,11 +1,15 @@
 package tel_ran.hsa.model;
 
-import java.util.Base64;
+import java.util.*;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
+
+import scala.collection.immutable.HashMap;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.protocols.api.RestRequest;
 
@@ -17,7 +21,7 @@ public class SqlModel {
 	public SqlModel() {
 		System.err.println("New Model");
 		String tokenBase64 = Base64.getEncoder().encodeToString("manager:manager".getBytes());
-		//httpHeaders.add("Authorization", "Basic " + tokenBase64);
+		httpHeaders.add("Authorization", "Basic " + tokenBase64);
 
 	}
 
@@ -37,8 +41,17 @@ public class SqlModel {
 
 	public void putHeartBeatToBase(HeartBeat heartBeat) {
 		System.err.println("sending post req");
-		HttpEntity<HeartBeat> requestEntity = new HttpEntity<HeartBeat>(heartBeat, httpHeaders);
-		restTemplate.exchange(url + RestRequest.PULSE, HttpMethod.POST, requestEntity, HeartBeat.class);
+		try {
+//			Map<String, String> map = new LinkedHashMap<>();
+//			Gson gson = new Gson();
+//			String req = gson.toJson(heartBeat);
+			HttpEntity<HeartBeat> requestEntity = new HttpEntity<>(heartBeat, httpHeaders);
+			ResponseEntity<String> res = restTemplate.exchange(url + RestRequest.PULSE, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<String>() {
+			});
+			System.err.println(res.getBody());
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		System.err.println("req is sended");
 	}
 

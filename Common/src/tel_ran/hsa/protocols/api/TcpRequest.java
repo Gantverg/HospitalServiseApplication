@@ -1,11 +1,6 @@
 package tel_ran.hsa.protocols.api;
 
 public enum TcpRequest {
-//	ADD_WORKINGDAYS,
-//	REMOVE_WORKINGDAYS,
-//	GET_WORKINGDAYS,
-//	SET_WORKINGDAYS,
-	
 	ADD_DOCTOR,
 	ADD_PATIENT,
 	REMOVE_DOCTOR,
@@ -41,6 +36,6 @@ public enum TcpRequest {
 	
 	ADD_PULSE_INFO,
 	GET_PULSE_BY_PERIOD, 
-	GET_PULSE_INFO 
+	GET_PULSE 
 
 }

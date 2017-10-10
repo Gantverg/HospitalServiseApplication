@@ -1,6 +1,7 @@
 package tel_ran.hsa.model;
 
 import java.time.*;
+import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.stream.*;
 
@@ -494,11 +495,11 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		if (patient == null)
 			return null;
 		em.refresh(patient);
+		LocalDateTime startDate = beginDate.atStartOfDay().minusSeconds(1);
+		LocalDateTime finishDate = endDate.plusDays(1).atStartOfDay();
 		Set<HeartBeatOrm> beat = patient.getPulsePatients().stream()
-				.filter(x -> ((x.getDateTime().toLocalDate().isEqual(beginDate)
-						&& x.getDateTime().toLocalDate().isAfter(beginDate))
-						&& (x.getDateTime().toLocalDate().isEqual(endDate)
-								&& x.getDateTime().toLocalDate().isBefore(endDate))))
+				.filter(x -> (x.getDateTime().isAfter(startDate)
+								&& x.getDateTime().isBefore(finishDate)))
 				.collect(Collectors.toSet());
 
 		return beat.stream().map(HeartBeatOrm::getHeartBeat).collect(Collectors.toList());

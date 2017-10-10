@@ -161,6 +161,16 @@ public class TcpProxy implements IHospital {
 		requestBody.put("finishDate", finishDate.toString());
 		return getIterableResponse(TcpRequest.BUILD_SCHEDULE, requestBody, new TypeReference<Iterable<Visit>>() {});
 	}
+	
+	@Override
+	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId) {
+		Map<String,String> requestBody = new HashMap<>();
+		requestBody.put("startDate", startDate.toString());
+		requestBody.put("finishDate", finishDate.toString());
+		requestBody.put("doctorId", String.valueOf(doctorId));
+		return getIterableResponse(TcpRequest.BUILD_SCHEDULE_BY_DOCTOR, requestBody, new TypeReference<Iterable<Visit>>() {});
+	}
+
 
 	@Override
 	public String bookVisit(int doctorId, int patientId, LocalDateTime dateTime) {

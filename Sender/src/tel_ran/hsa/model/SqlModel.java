@@ -4,12 +4,7 @@ import java.util.*;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import com.google.gson.Gson;
-
-import scala.collection.immutable.HashMap;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.protocols.api.RestRequest;
 

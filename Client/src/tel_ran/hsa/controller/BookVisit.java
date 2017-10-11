@@ -79,16 +79,16 @@ public class BookVisit extends HospitalItem {
 		   return;
 		  }
 		  
-		  inputOutput.put(String.format("List of free visits by doctor with id %s in range of date %d1 - %d2",doctorId,beginDate,endDate));
+		  inputOutput.put(String.format("List of free visits by doctor with id %s in range of date %s - %s",doctorId,beginDate.toString(),endDate.toString()));
 		  int i=1;
 		  for (Visit iter:freeVisitsList)
 		  {
-		   inputOutput.put(String.format("%i. Free visit time: %d",i,iter.getDateTime().toString()));
+		   inputOutput.put(String.format("%d. Free visit time: %s",i++,iter.getDateTime().toString()));
 		  }
 		  int size = freeVisitsList.size();
 		  Integer listVisitsId=inputOutput.getInteger("Enter free visit digit in range of 1 - "+size);
 		  String res = hospital.bookVisit(doctorId, patientId, freeVisitsList.get(listVisitsId-1).getDateTime());
-		  if (res==RestResponseCode.OK)
+		  if (res.equals(RestResponseCode.OK))
 		  {
 		  inputOutput.put(String.format("Doctor with id %d will wait your visit at %t",
 		  doctorId,freeVisitsList.get(listVisitsId-1).getDateTime().toString()));

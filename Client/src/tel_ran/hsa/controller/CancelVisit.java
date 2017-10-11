@@ -1,7 +1,13 @@
 package tel_ran.hsa.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import tel_ran.hsa.entities.dto.Visit;
 import tel_ran.hsa.protocols.api.RestResponseCode;
 
 
@@ -15,32 +21,47 @@ public class CancelVisit extends HospitalItem {
 	public void perform() {
 		Integer doctorId=inputOutput.getInteger("Enter doctor id");
 		Integer patientId=inputOutput.getInteger("Enter patient id");
-		Integer hours=inputOutput.getInteger("Enter hour for cancelling visit");
-		Integer minutes=inputOutput.getInteger("Enter minutes for cancelling visit");
-		LocalDateTime dateTime=inputOutput.getDate
-				("Enter pick date in the format "+format, format).atTime(hours, minutes);
-
-
-		
-		String res = hospital.cancelVisit(doctorId, patientId, dateTime);
-		if (res==RestResponseCode.NO_DOCTOR)
+		LocalDate beginDate=inputOutput.getDate
+				("Enter pick begindate for cancelling visit in the format "+format, format);
+		LocalDate endDate=inputOutput.getDate
+				("Enter pick enddate for cancelling visit in the format "+format, format);
+		Iterable<Visit> visits = hospital.getVisitsByPatient(patientId, beginDate, endDate);
+		Iterator<Visit> iterator = visits.iterator();
+		List<Visit> visitsList = new ArrayList<>();
+		iterator.forEachRemaining(visitsList::add);
+		if (visitsList.isEmpty())
+		  {
+		   inputOutput.put(String.format("No  visits by patient with id %d  in range of  date %s - %s",patientId,beginDate.toString(),endDate.toString()));
+		   return;
+		  }
+		  List<Visit> visitsFilter = visitsList.stream().filter(x->x.getDoctor().getId()==doctorId).collect(Collectors.toList());
+		  inputOutput.put(String.format("List of  visits by patient with id %d and doctor with id %d in range of dates %s - %s",patientId,doctorId,beginDate.toString(),endDate.toString()));
+		  int i=1;
+		  for (Visit iter:visitsFilter)
+		  {
+		   inputOutput.put(String.format("%d.Current visit time: %s",i++,iter.getDateTime().toString()));
+		  }
+		  int size = visitsFilter.size();
+		  Integer listVisitsId=inputOutput.getInteger("Enter  visits digit in range of 1 - "+size);
+		String res = hospital.cancelVisit(doctorId, patientId, visitsList.get(listVisitsId-1).getDateTime());
+		if (res.equals(RestResponseCode.NO_DOCTOR))
 		{
 			inputOutput.put(String.format("Doctor with id %d doesn`t exist", doctorId));
 			return;
 		}
-		if (res==RestResponseCode.NO_PATIENT)
+		if (res.equals(RestResponseCode.NO_PATIENT))
 		{
 			inputOutput.put(String.format("Doctor with id %d doesn`t exist", doctorId));
 			return;
 		}
-		if (res==RestResponseCode.NO_SCHEDULE)
+		if (res.equals(RestResponseCode.NO_SCHEDULE))
 		{
 			inputOutput.put(String.format("Visit doesn`t exist in shedule", doctorId));
 			return;
 		}
-		if (res==RestResponseCode.OK) {
-		inputOutput.put(String.format("Doctor with id %d cancelled your visit at %t",
-		doctorId,dateTime.toString()));
+		if (res.equals(RestResponseCode.OK)) {
+		inputOutput.put(String.format("Doctor with id %d cancelled your visit at %s",
+		doctorId,visitsFilter.get(listVisitsId-1).getDateTime().toString()));
 		}
 	}
 

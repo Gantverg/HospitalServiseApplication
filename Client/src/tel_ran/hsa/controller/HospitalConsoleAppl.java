@@ -9,7 +9,7 @@ import java.util.*;
 public class HospitalConsoleAppl {
 
 	
-	private static final String adminAuth = "user:8f58939b-304f-4ad4-a342-37ea934e242e";//"admin:admin";
+	private static final String adminAuth = "manager:manager";//"admin:admin";
 
 	public static void main(String[] args) throws Exception {
 		InputOutput inputOutput = new ConsoleInputOutput();
@@ -21,35 +21,48 @@ public class HospitalConsoleAppl {
 		HospitalItem.setHospital(hospital);
 		HospitalItem.setRestConfig(rest);
 		HospitalItem.setAccauntStream(new AccountStream());
-
 		Menu menu = createMenu(inputOutput);
 		menu.runMenu();
+		//Menu menu = loginMenu(inputOutput);
+		//menu.runLogin();
+		//createMenu(inputOutput, menu);
+		//menu.runMenu();
+	}
+	
+	private static Menu loginMenu(InputOutput inputOutput) {
+		List<Item> items = new ArrayList<>();
+		items.add(new Login());
+		return new Menu(inputOutput, items);
 	}
 
 	private static Menu createMenu(InputOutput inputOutput) {
 		Item[] items = { 
-				//new AddAccount(), 
-				//new GetAccount(),
 				new AddDoctor(),
-				new AddPatient(),
-				new GetDoctor(),
-				new GetPatient(),
+				new  AddPatient(),
+				new AddHealthGroup(),
 				new RemoveDoctor(),
 				new RemovePatient(),
+				new RemoveHealthGroup(),
 				new UpdateDoctor(),
 				new UpdatePatient(),
-				new AddHealthGroup(),
-				new RemoveHealthGroup(),
-				new GetHealthGroups(),
-				new BuildShedule(),
+				new SetHealthGroup(),
+				new SetTimeSlot(),
 				new BookVisit(),
-				new GetVisitsByDoctor(),
-				new GetVisitsByPatient(),
-				new GetFreeVisits(),
 				new CancelVisit(),
+				new ReplaceVisitsDoctor(),
+				new BuildShedule(),
+				new GetDoctor(),
+				new GetPatient(),
+				new GetHealthGroup(),
+				new GetDoctors(),
+				new GetPatients(),
+				new GetHealthGroups(),
+				new GetVisits(),
 				new GetDoctorPatients(),
 				new GetPatientDoctors(),
-				new GetPulseByPeriod(),
+				new GetVisitsByPatient(),
+				new GetVisitsByDoctor(),
+				new GetFreeVisits(),
 				new ExitItem() };
 		return new Menu(inputOutput, Arrays.asList(items));
 	}

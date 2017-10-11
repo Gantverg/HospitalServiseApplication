@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
-import tel_ran.hsa.entities.dto.*;
+import tel_ran.hsa.entities.dto.Doctor;
+import tel_ran.hsa.entities.dto.TimeSlot;
 
 @Entity
 public class DoctorOrm  {
@@ -14,7 +15,7 @@ public class DoctorOrm  {
 	protected String name;
 	protected String phoneNumber;
 	protected String eMail;
-	
+	protected boolean dismissed;
 	@OneToMany(mappedBy="doctors")
 	Set<VisitOrm> visits;
 	@OneToMany(mappedBy="doctorSlot")
@@ -43,11 +44,12 @@ public class DoctorOrm  {
 	}
 
 
-	public DoctorOrm(int id, String name, String phoneNumber, String eMail) {
+	public DoctorOrm(int id, String name, String phoneNumber, String eMail,boolean dismissed) {
 		this.id = id;
 		this.name = name;
 		this.phoneNumber = phoneNumber;
 		this.eMail = eMail;
+		this.dismissed=dismissed;
 		//this.visits = visits;
 	}
 	
@@ -75,6 +77,16 @@ public class DoctorOrm  {
 
 	public String getNameDoctor() {
 		return name;
+	}
+
+
+	public boolean isDismiss() {
+		return dismissed;
+	}
+
+
+	public void setDismiss(boolean dismissed) {
+		this.dismissed = dismissed;
 	}
 
 

@@ -7,12 +7,12 @@ public class SetTimeSlot extends HospitalItem {
 	@Override
 	public String displayedName() {
 		// TODO Auto-generated method stub
-		return null;
+		return "Set timeslot";
 	}
 
 	@Override
 	public void perform() {
-		// TODO Auto-generated method stub
+		
 
 	}
 

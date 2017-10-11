@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import tel_ran.hsa.entities.dto.Patient;
+import tel_ran.hsa.entities.dto.*;
 import tel_ran.jackson.LocalDateTimeDeserializer;
 
 public class HeartBeatData {

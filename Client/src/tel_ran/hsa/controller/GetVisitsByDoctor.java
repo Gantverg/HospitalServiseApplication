@@ -27,7 +27,7 @@ public class GetVisitsByDoctor extends HospitalItem {
 		Iterable<Visit> res = hospital.getFreeVisits(doctorId, beginDate, endDate);
 		if (res==null)
 		{
-			inputOutput.put(String.format("Doctor with id %d doesn`t have free visits from %t1 until %t2 ", doctorId,beginDate.toString(),endDate.toString()));
+			inputOutput.put(String.format("Doctor with id %d doesn`t have free visits from %s until %s ", doctorId,beginDate.toString(),endDate.toString()));
 		return;
 		}
 		

@@ -117,6 +117,17 @@ public class WebController {
 		}
 	}
 
+	@RequestMapping(value = RestRequest.VISITS + RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}", method = RequestMethod.POST)
+	public Iterable<Visit> buildScheduleByDoctor(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
+										 @RequestParam(name=RestRequest.END_DATE) String endDate,
+										 @PathVariable int doctorId) {
+		try {
+			return hospital.buildScheduleByDoctor(LocalDate.parse(beginDate), LocalDate.parse(endDate), doctorId);
+		} catch (ScheduleNotEmptyException e) {
+			return null;
+		}
+	}
+
 	@RequestMapping(value = RestRequest.VISITS, method = RequestMethod.GET)
 	public Iterable<Visit> getVisits(@RequestParam(name=RestRequest.BEGIN_DATE) String beginDate,
 									 @RequestParam(name=RestRequest.END_DATE) String endDate) {

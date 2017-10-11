@@ -4,7 +4,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import tel_ran.hsa.entities.dto.*;
+import tel_ran.hsa.entities.dto.HealthGroup;
  
 @Entity
 public class HealthGroupOrm {

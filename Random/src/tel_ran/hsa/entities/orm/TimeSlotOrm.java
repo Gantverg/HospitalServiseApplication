@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 import javax.persistence.*;
 
-import tel_ran.hsa.entities.dto.*;
+import tel_ran.hsa.entities.dto.TimeSlot;
 
 @Entity
 public class TimeSlotOrm {

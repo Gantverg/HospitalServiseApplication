@@ -28,7 +28,7 @@ public class GetVisitsByPatient extends HospitalItem {
 		Iterable<Visit> res = hospital.getVisitsByPatient(patientId, beginDate, endDate);
 		if (res==null)
 		{
-			inputOutput.put(String.format("Patient with id %d doesn`t have visits from %t1 until %t2 ", patientId,beginDate.toString(),endDate.toString()));
+			inputOutput.put(String.format("Patient with id %d doesn`t have visits from %s until %s ", patientId,beginDate.toString(),endDate.toString()));
 		return;
 		}
 		

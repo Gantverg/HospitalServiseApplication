@@ -10,6 +10,7 @@ import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.handler.annotation.SendTo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import tel_ran.hsa.bigdata.dto.HeartBeatData;
 import tel_ran.hsa.bigdata.dto.HeartInfo;
@@ -27,7 +28,7 @@ public class MapReducerBeats {
 
 	@StreamListener(Processor.INPUT)
 	@SendTo(Processor.OUTPUT)
-	public HeartBeatData takePulse(String heartBeatInput) {
+	public String takePulse(String heartBeatInput) {
 		if(sql==null) {
 			sql = new SqlModel();
 		}
@@ -71,11 +72,13 @@ public class MapReducerBeats {
 		return info;
 	}
 
-	private HeartBeatData sendAlert(HeartInfo info, int pulse) {
+	private String sendAlert(HeartInfo info, int pulse) {
 		HealthGroup health = info.getPatient().getHealthGroup();
 		if (pulse > health.getMaxNormalPulse() || pulse < health.getMinNormalPulse()) {
 			System.err.println("Sending to Base");
-			return new HeartBeatData(info.getPatient(), LocalDateTime.parse(inp.getTime()), inp.getPulse(), info.getPatient().getHealthGroup().getSurveyPeriod());
+			Gson gson = new Gson();
+			String res = gson.toJson(new HeartBeatData(info.getPatient(), LocalDateTime.parse(inp.getTime()), inp.getPulse(), info.getPatient().getHealthGroup().getSurveyPeriod()));
+			return res;
 		}
 		System.err.println("Pulse is normal");
 		return null;

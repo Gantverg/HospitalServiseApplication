@@ -9,6 +9,7 @@ import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.messaging.handler.annotation.SendTo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import tel_ran.hsa.dto.*;
@@ -20,8 +21,10 @@ public class SensorDataGenerator {
 	
 	@InboundChannelAdapter(Processor.INPUT)
 	@SendTo(Processor.OUTPUT)
-	String sendSensorData(int idPatient) throws Exception
+	String sendSensorData(String id) throws Exception
 	{
+		ObjectMapper mapper = new ObjectMapper();
+		Integer idPatient = mapper.readValue(id, Integer.class);
 		timeStart = LocalDateTime.now();
 		updateMap(idPatient);
 		
@@ -36,12 +39,13 @@ public class SensorDataGenerator {
 		}else {
 			map.put(idPatient, new Info(1, timeStart.toString()));
 		}
-		
 	}
 
 	private String checkPulse(Info info, int idPatient) {
 		if(ChronoUnit.SECONDS.between(LocalDateTime.parse(info.getTime()), timeStart)>=60) {
-		return getJson(info, idPatient);}
+			String res = getJson(info, idPatient);
+			map.remove(idPatient);
+		return res;}
 		else return null;
 	}
 

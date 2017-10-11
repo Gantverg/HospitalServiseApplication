@@ -1,6 +1,5 @@
 package tel_ran.hsa.controller;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import tel_ran.view.Menu;
 
 public class Login extends HospitalItem{
 
-	private static final String ADD_ACCOUNT = "add_account";
+	/*private static final String ADD_ACCOUNT = "add_account";
 	private static final String GET_ACCOUNT = "get_account";
 	private static final String ADD_DOCTOR = "add_doctor";
 	private static final String ADD_PATIENT = "add_patient";
@@ -41,7 +40,7 @@ public class Login extends HospitalItem{
 	private static final String SET_HEALTH_GROUP = "set_health_group";
 	private static final String GET_FREE_VISITS = "get_free_visits";
 	private static final String GET_PULSE_BY_SURVEY_PERIOD = "get_pulse_by_survey_period";
-	private static final String REPLACE_VISITS_DOCTOR = "replace_visits_doctor";
+	private static final String REPLACE_VISITS_DOCTOR = "replace_visits_doctor";*/
 	
 
 	@Override
@@ -52,17 +51,60 @@ public class Login extends HospitalItem{
 
 	@Override
 	public void perform() {
+		// TODO Auto-generated method stub
 		String username = inputOutput.getString("Enter username");
 		String password = inputOutput.getString("Enter password");
 		List<Item> items = new LinkedList<>();
 		String tokenStr = username + ":" + password;
 		restConfig.setUserPass(tokenStr);
 		WebClient.headers=restConfig.headers;
+		items.add(new AddDoctor());
+		items.add(new AddPatient());
+		items.add(new AddHealthGroup());
+		items.add(new RemoveDoctor());
+		items.add(new RemovePatient());
+		items.add(new RemoveHealthGroup());
+		items.add(new UpdateDoctor());
+		items.add(new UpdatePatient());
+		items.add(new SetHealthGroup());
+		items.add(new SetTimeSlot());
+		items.add(new BookVisit());
+		items.add(new CancelVisit());
+		items.add(new ReplaceVisitsDoctor());
+		items.add(new BuildShedule());
+		items.add(new GetDoctor());
+		items.add(new GetPatient());
+		items.add(new GetHealthGroup());
+		items.add(new GetDoctors());
+		items.add(new GetPatients());
+		items.add(new GetHealthGroups());
+		items.add(new GetVisits());
+		items.add(new GetDoctorPatients());
+		items.add(new GetPatientDoctors());
+		items.add(new GetVisitsByPatient());
+		items.add(new GetVisitsByDoctor());
+		items.add(new GetFreeVisits());
+		items.add(new ExitItem());
+
+
+
+
 		
+
+
+
+
+
+
+
+
+
+
+		
+
+
 	
-		List<String> methods = new ArrayList<>();//accauntStream.getMethodsForRole(username);
-		methods.add(GET_PATIENT);
-		methods.add(GET_DOCTOR);
+		/*Iterable<String> methods = accauntStream.getMethodsForRole(username);
 		
 		items.add(new Login());
 		for(String s : methods){
@@ -116,9 +158,8 @@ public class Login extends HospitalItem{
 		}
 		
 		items.add(new ExitItem());
-		Menu menu = new Menu(inputOutput, items);
-		menu.runMenu();
-
+		Menu.setItems(items);*/
+      // Menu.setItems(items);
 	}
 
 }

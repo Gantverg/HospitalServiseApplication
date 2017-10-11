@@ -418,25 +418,6 @@ public class HsaProtocolJson implements Protocol {
 		}
 		
 	}
-	
-	private String buildScheduleByDoctor(String request) {
-		//StartFinishDate date;
-		String response = "";
-		TcpResponseCode code=TcpResponseCode.OK;
-		Map<String, String> map = new HashMap<String, String>();
-		map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
-		try {
-			Iterable<Visit> visit = hospital.buildScheduleByDoctor(LocalDate.parse(map.get("startDate")), 
-														   		   LocalDate.parse(map.get("finishDate")),
-														   		   Integer.valueOf(map.get("doctorId")));
-			return objectToJson(code,visit);
-		}catch (Exception e) {
-			code=TcpResponseCode.ERROR;
-			response=e.getMessage();
-			return objectToJson(code,response);
-		}
-		
-	}
 
 	private String getPatient(String request) {
 		Patient patient = hospital.getPatient(jsonToObject(request, Integer.class));

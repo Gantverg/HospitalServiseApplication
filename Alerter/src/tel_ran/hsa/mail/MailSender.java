@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tel_ran.hsa.entities.dto.*;
 
+
 @Component("telranalertsender")
 @EnableBinding(Sink.class)
 public class MailSender implements SenderMail{
@@ -23,24 +24,29 @@ public class MailSender implements SenderMail{
 	@Autowired
 	JavaMailSender javaMailSender;
 	
-	Logger logger = LoggerFactory.getLogger(this.getClass());
+	//Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@StreamListener(Sink.INPUT)
 	public void listeningInformation(String data) {
 		ObjectMapper mapper = new ObjectMapper();
+		System.err.println(data);
 		try {
-			System.out.println("Trying to parse inputting data...");
+			System.err.println("Trying to parse inputting data...");
 			HeartBeatData heartBeat = mapper.readValue(data, HeartBeatData.class);
-			System.out.println("Successfully");
-			//System.out.println("Success \n  trying to get patient from DB...");
+			System.err.println("Successfully");
+			if(heartBeat!=null) {
+				//System.out.println("Success \n  trying to get patient from DB...");
 			Patient patient = heartBeat.getPatient();
 			//System.out.println("trying to get Doctor from DB...");
 			Doctor doctor = patient.getTherapist();
-			System.out.println("Success \n Creating mail...");
+			System.err.println("Success \n Creating mail...");
 			String body = String.format("Dear, '%s' M.D., your patient, '%s' have a innormal pulse that equals %d. He need your help", doctor.getName(), patient.getName(), heartBeat.getValue());
 			String to = doctor.geteMail();
 			String subject="Alert, One of your patients have an unnormal pulse";
-			sendMail(from, to, subject, body);
+			//sendMail(from, to, subject, body);
+			System.err.println("mail has sended");
+			}
+			
 		}catch(Exception e) {
 			
 		}
@@ -55,10 +61,10 @@ public class MailSender implements SenderMail{
 		mail.setSubject(subject);
 		mail.setText(body);
 		
-		logger.info("Sending...");
+		System.err.println("Sending...");
 		
 		javaMailSender.send(mail);
 		
-		logger.info("Done! Alert has been sent");
+		System.err.println("Done! Alert has been sent");
 	}
 }

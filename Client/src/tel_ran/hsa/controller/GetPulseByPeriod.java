@@ -30,7 +30,7 @@ public class GetPulseByPeriod extends HospitalItem {
 		
 		if (res==null)
 		{
-			inputOutput.put(String.format("Patient with id %s have no pulse information from %t1 until %t2",patientId,beginDate.toString(),endDate.toString()));
+			inputOutput.put(String.format("Patient with id %d have no pulse information from %s until %s",patientId,beginDate.toString(),endDate.toString()));
 			return;
 		}
 		inputOutput.put(res);

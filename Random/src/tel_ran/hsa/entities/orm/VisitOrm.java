@@ -3,7 +3,7 @@ package tel_ran.hsa.entities.orm;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
-import tel_ran.hsa.entities.dto.*;
+import tel_ran.hsa.entities.dto.Visit;
 
 @Entity
 public class VisitOrm {

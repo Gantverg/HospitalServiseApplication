@@ -1,5 +1,6 @@
 package tel_ran.hsa.controller;
 
+import java.io.IOException;
 import java.net.*;
 
 import org.springframework.context.support.AbstractApplicationContext;
@@ -19,12 +20,12 @@ public class HSATcpServer {
 		AbstractApplicationContext ctx = new FileSystemXmlApplicationContext("beans.xml");
 		IHospital hospital = ctx.getBean(IHospital.class);
 		ServerSocket serverSocket = new ServerSocket(0);
-		
+
 		int port = serverSocket.getLocalPort();
 		ServerInfo serverInfo = new ServerInfo(serverSocket.getInetAddress().getHostAddress(), port);
 		Thread thread = new Thread(new ServerManager(serverInfo, UdpRequest.UDP_PORT));
 		thread.start();
-		
+
 		System.out.println("Library server is listening on the port: " + port);
 		Protocol protocol = new HsaProtocolJson(hospital);
 		while (true) {

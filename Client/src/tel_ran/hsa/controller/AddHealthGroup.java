@@ -22,12 +22,12 @@ public class AddHealthGroup extends HospitalItem {
 		Integer surveyPeriod=inputOutput.getInteger("Enter survey period");
 
 		String res=hospital.addHealthGroup(new HealthGroup(groupId, groupName, minNormalPulse, maxNormalPulse, surveyPeriod));
-		if (res==RestResponseCode.ALREADY_EXIST)
+		if (res.equals(RestResponseCode.ALREADY_EXIST))
 		{
 			inputOutput.put(String.format("Healthgroup  already exist"));
 			return;
 		}
-		if (res==RestResponseCode.OK)
+		if (res.equals(RestResponseCode.OK))
 		{
 		inputOutput.put(String.format("Healthgroup with name %d was added",
 		groupName));

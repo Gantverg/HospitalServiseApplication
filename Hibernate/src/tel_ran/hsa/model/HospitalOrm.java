@@ -1,7 +1,6 @@
-package tel_ran.hsa.model;
+  package tel_ran.hsa.model;
 
 import java.time.*;
-import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.stream.*;
 
@@ -32,7 +31,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	@Override
 	@Transactional
 	public String addDoctor(Doctor doctor) {
-		if (em.find(DoctorOrm.class, doctor.getId()) != null)
+		if ((em.find(DoctorOrm.class, doctor.getId())) != null)
 			return ALREADY_EXIST;
 		em.persist(getDoctorOrm(doctor));
 		return OK;
@@ -69,11 +68,12 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		DoctorOrm doctororm = em.find(DoctorOrm.class, doctorId);
 		if (doctororm == null)
 			return NO_DOCTOR;
-		em.refresh(doctororm);
-		Set<VisitOrm> records = doctororm.getVisitsDoctors();
-		records.removeIf(x -> x.getDoctors().getId() == doctorId);
-		em.remove(doctororm);
-		return OK;
+		List<VisitOrm> visits = em.createQuery("Select p from VisitOrm p where doctors.id=doctorId", VisitOrm.class).getResultList();
+			if (visits==null) {
+				em.remove(doctororm);
+			return OK;}
+			else doctororm.setDismiss(true); 
+			return OK;
 	}
 
 	@Override
@@ -147,6 +147,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		ArrayList<Visit> list = new ArrayList<>();
 		List<DoctorOrm> doctorsorm = em.createQuery("Select p from DoctorOrm p", DoctorOrm.class).getResultList();
 		for (DoctorOrm doctororm : doctorsorm) {
+			if (!doctororm.isDismiss()) {
 			em.refresh(doctororm);
 			for (LocalDate currentDate = startDate; currentDate
 					.isBefore(endDate); currentDate = currentDate.plusDays(1)) {
@@ -156,32 +157,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				}
 
 			}
-		}
-		return list;
-	}
-
-	@Override
-	@Transactional
-	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
-			throws ScheduleNotEmptyException {
-		DoctorOrm doctororm = em.find(DoctorOrm.class, doctorId);
-		if (doctororm == null)
-			throw new ScheduleNotEmptyException(NO_DOCTOR);
-		LocalDate endDate = finishDate.plusDays(1);
-		String jpqa = String.format("Select p from VisitOrm p where dateTime>'%s' and dateTime<%s and doctors.id=%d",
-				startDate.atStartOfDay().minusSeconds(1).toString(), endDate.atStartOfDay().toString(), doctorId);
-		List<VisitOrm> visits = em.createQuery(jpqa, VisitOrm.class).getResultList();
-		if (visits.size() > 0)
-			throw new ScheduleNotEmptyException("There already is schedule on this period");
-
-		ArrayList<Visit> list = new ArrayList<>();
-		em.refresh(doctororm);
-		for (LocalDate currentDate = startDate; currentDate.isBefore(endDate); currentDate = currentDate.plusDays(1)) {
-			for (TimeSlotOrm slot : doctororm.getSlots()) {
-				if (getSlot(slot).isDateInSlot(currentDate))
-					list.addAll(fillSlots(currentDate, doctororm, slot));
-			}
-
+			} else return null;
 		}
 		return list;
 	}
@@ -215,15 +191,15 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			return NO_DOCTOR;
 		if (patientorm == null)
 			return NO_PATIENT;
-		VisitOrm visitorm = em
-				.createQuery(String.format("Select p from VisitOrm p where dateTime='%s' and doctors.id=%d",
-						dateTime.toString(), doctorId), VisitOrm.class)
-				.getSingleResult();
-		if (visitorm == null)
+		if (doctororm.isDismiss())
 			return NO_SCHEDULE;
-		if (visitorm.isOccupied())
+		VisitOrm visitorm = em.createQuery(String.format("Select p from VisitOrm p where dateTime='%s' and doctors.id=%d",
+									 dateTime.toString(), doctorId), VisitOrm.class).getSingleResult();
+		if(visitorm==null)
+			return NO_SCHEDULE;
+		if(visitorm.isOccupied())
 			return VISIT_BUSY;
-		if (visitorm.getPatients() != null)
+		if(visitorm.getPatients()!=null)
 			return VISIT_BUSY;
 		visitorm.setPatients(patientorm);
 		em.persist(visitorm);
@@ -239,15 +215,15 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			return NO_DOCTOR;
 		if (patientorm == null)
 			return NO_PATIENT;
-		VisitOrm visitorm = em
-				.createQuery(String.format("Select p from VisitOrm p where dateTime='%s' and doctors.id=%d",
-						dateTime.toString(), doctorId), VisitOrm.class)
-				.getSingleResult();
-		if (visitorm == null)
+		if (doctororm.isDismiss())
 			return NO_SCHEDULE;
-		if (visitorm.getPatients() == null)
+		VisitOrm visitorm = em.createQuery(String.format("Select p from VisitOrm p where dateTime='%s' and doctors.id=%d",
+									 dateTime.toString(), doctorId), VisitOrm.class).getSingleResult();
+		if(visitorm==null)
+			return NO_SCHEDULE;
+		if(visitorm.getPatients()==null)
 			return VISIT_FREE;
-		if (visitorm.getPatients() != patientorm)
+		if(visitorm.getPatients()!=patientorm)
 			return VISIT_BUSY;
 		visitorm.setPatients(null);
 		em.persist(visitorm);
@@ -271,9 +247,13 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			return null;
 		em.refresh(doctororm);
 		Set<VisitOrm> patients = doctororm.getVisitsDoctors();
-		return patients.stream().filter(visitOrm -> !visitOrm.isOccupied()).map(VisitOrm::getPatients)
-				.filter(patientOrm -> patientOrm != null).map(PatientOrm::getPatient).collect(Collectors.toSet());
-		// .map(visit -> visit.getPatients().getPatient()).collect(Collectors.toSet());
+		return patients.stream()
+				.filter(visitOrm->!visitOrm.isOccupied())
+				.map(VisitOrm::getPatients)
+				.filter(patientOrm->patientOrm!=null)
+				.map(PatientOrm::getPatient)
+				.collect(Collectors.toSet());
+				//.map(visit -> visit.getPatients().getPatient()).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -291,8 +271,12 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	}
 
 	private Stream<VisitOrm> getVisibleOrm(LocalDate beginDate, LocalDate endDate, Set<VisitOrm> records) {
-		return records.stream().filter(x -> (x.getDateTime().toLocalDate().isAfter(beginDate)
-				&& x.getDateTime().toLocalDate().isBefore(endDate)));
+		LocalDate startDate = beginDate.minusDays(1);
+		LocalDate finishDate = endDate.plusDays(1);
+		if (beginDate.equals(endDate))
+			return records.stream().filter(visit->visit.getDateTime().toLocalDate().isEqual(beginDate));
+			else return records.stream().filter(x -> (x.getDateTime().toLocalDate().isAfter(startDate)
+				&& x.getDateTime().toLocalDate().plusDays(1).isBefore(finishDate))).filter(visit->!visit.isOccupied());
 	}
 
 	@Override
@@ -312,8 +296,11 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 			return null;
 		em.refresh(doctororm);
 		Set<VisitOrm> records = doctororm.getVisitsDoctors();
-		return getVisibleOrm(beginDate, endDate, records).filter(x -> x.getPatients() == null)
-				.filter(x -> !x.isOccupied()).map(VisitOrm::getVisit).collect(Collectors.toList());
+		return getVisibleOrm(beginDate, endDate, records)
+				.filter(x -> x.getPatients() == null)
+				.filter(x -> !x.isOccupied())
+				.map(VisitOrm::getVisit)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -339,8 +326,8 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				.collect(Collectors.toList());
 		if (listDate.contains(beginDate) && listDate.contains(endDate)) {
 			Set<HeartBeatOrm> pulsesbyDate = pulsesPatient.stream()
-					.filter(x -> (x.getDateTime().toLocalDate().isAfter(beginDate)
-							&& x.getDateTime().toLocalDate().isBefore(endDate)))
+					.filter(x -> (x.getDateTime().toLocalDate().minusDays(1).isAfter(beginDate)
+							&& x.getDateTime().toLocalDate().plusDays(1).isBefore(endDate)))
 					.collect(Collectors.toSet());
 			for (HeartBeatOrm iter : pulsesbyDate) {
 				int S1 = 0, S2 = 0;
@@ -370,28 +357,27 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		em.refresh(doctororm);
 		LocalDateTime startDateTime = beginDateTime.minusSeconds(1);
 		LocalDateTime finishDateTime = endDateTime.plusSeconds(1);
-
-		String stringQuery = String.format(
-				"Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s' and patients is Null and occupied=FALSE and doctors.id != %d",
-				startDateTime, finishDateTime, oldDoctorId);
-		Map<LocalDateTime, List<VisitOrm>> freeVisits = em.createQuery(stringQuery, VisitOrm.class).getResultList()
-				.stream().collect(Collectors.groupingBy(VisitOrm::getDateTime, Collectors.toList()));
-
-		/*
-		 * List<VisitOrm> freeVisitsList = em.createQuery(String.
-		 * format("Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s' and patients is Null and occupied=FALSE"
-		 * , startDateTime,finishDateTime), VisitOrm.class).getResultList();
-		 * Map<LocalDateTime, List<VisitOrm>> freeVisits = freeVisitsList.stream()
-		 * .collect(Collectors.groupingBy(VisitOrm::getDateTime, Collectors.toList()));
-		 */
+		
+		String stringQuery = String.format("Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s' and patients is Null and occupied=FALSE and doctors.id != %d", 
+				startDateTime,finishDateTime,oldDoctorId);
+		Map<LocalDateTime, List<VisitOrm>> freeVisits = em.createQuery(stringQuery , VisitOrm.class).getResultList()
+				.stream()
+				.collect(Collectors.groupingBy(VisitOrm::getDateTime, Collectors.toList()));
+				
+/*		List<VisitOrm> freeVisitsList = em.createQuery(String.format("Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s' and patients is Null and occupied=FALSE", 
+				startDateTime,finishDateTime),
+	VisitOrm.class).getResultList();
+		Map<LocalDateTime, List<VisitOrm>> freeVisits = freeVisitsList.stream()
+				.collect(Collectors.groupingBy(VisitOrm::getDateTime, Collectors.toList()));
+*/		
 		Set<VisitOrm> oldVisits = doctororm.getVisitsDoctors().stream()
-				.filter(x -> x.getDateTime().isAfter(startDateTime) && x.getDateTime().isBefore(finishDateTime))
+				.filter(x -> x.getDateTime().isAfter(startDateTime)	&& x.getDateTime().isBefore(finishDateTime))
 				.collect(Collectors.toSet());
 		Set<VisitOrm> result = new HashSet<>();
-		for (VisitOrm oldVisit : oldVisits) {
-			if (oldVisit.getPatients() != null) {
+		for(VisitOrm oldVisit: oldVisits) {
+			if(oldVisit.getPatients()!=null) {
 				VisitOrm newVisit = replaceVisit(oldVisit, freeVisits);
-				if (newVisit == null) {
+				if(newVisit == null) {
 					return NO_SCHEDULE;
 				}
 				result.add(newVisit);
@@ -401,16 +387,16 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		}
 		oldVisits.forEach(em::persist);
 		result.forEach(em::persist);
-
+		
 		return OK;
 	}
 
 	private VisitOrm replaceVisit(VisitOrm oldVisit, Map<LocalDateTime, List<VisitOrm>> freeVisits) {
 		List<VisitOrm> listVisits = freeVisits.get(oldVisit.getDateTime());
-		if (listVisits == null)
+		if(listVisits == null)
 			return null;
 		VisitOrm result = listVisits.remove(0);
-		if (listVisits.isEmpty()) {
+		if(listVisits.isEmpty()) {
 			freeVisits.remove(oldVisit.getDateTime());
 		}
 		result.setPatients(oldVisit.getPatients());
@@ -494,23 +480,29 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
 		String startDate = beginDate.atStartOfDay().minusSeconds(1).toString();
 		String finishDate = endDate.plusDays(1).atStartOfDay().toString();
-		return em
-				.createQuery(String.format("Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s'",
-						startDate, finishDate), VisitOrm.class)
-				.getResultList().stream().map(VisitOrm::getVisit).collect(Collectors.toList());
-		/*
-		 * 
-		 * 
-		 * List<VisitOrm> visits = em.createQuery("Select p from VisitOrm p",
-		 * VisitOrm.class).getResultList(); List<VisitOrm> visitsByDate =
-		 * visits.stream().filter(x ->
-		 * (x.getDateTime().toLocalDate().isAfter(startDate)) &&
-		 * (x.getDateTime().toLocalDate().isBefore(finishDate)))
-		 * .collect(Collectors.toList());
-		 * 
-		 * return
-		 * visitsByDate.stream().map(VisitOrm::getVisit).collect(Collectors.toList());
-		 */ }
+		if (beginDate.equals(endDate))
+			return em.createQuery("Select p from VisitOrm p",VisitOrm.class).getResultList().stream()
+.filter(visit->visit.getDateTime().toLocalDate().isEqual(beginDate)).map(VisitOrm::getVisit)
+.collect(Collectors.toList());
+		
+		else return em.createQuery(String.format("Select p from VisitOrm p where dateTime > '%s' and dateTime < '%s'", 
+										startDate, 
+										finishDate), 
+					   VisitOrm.class)
+			.getResultList()
+			.stream()
+			.map(VisitOrm::getVisit)
+			.collect(Collectors.toList());
+/*		
+		
+		
+		List<VisitOrm> visits = em.createQuery("Select p from VisitOrm p", VisitOrm.class).getResultList();
+		List<VisitOrm> visitsByDate = visits.stream().filter(x -> (x.getDateTime().toLocalDate().isAfter(startDate))
+				&& (x.getDateTime().toLocalDate().isBefore(finishDate)))
+				.collect(Collectors.toList());
+
+		return visitsByDate.stream().map(VisitOrm::getVisit).collect(Collectors.toList());
+*/	}
 
 	@Override
 	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
@@ -521,7 +513,8 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		LocalDateTime startDate = beginDate.atStartOfDay().minusSeconds(1);
 		LocalDateTime finishDate = endDate.plusDays(1).atStartOfDay();
 		Set<HeartBeatOrm> beat = patient.getPulsePatients().stream()
-				.filter(x -> (x.getDateTime().isAfter(startDate) && x.getDateTime().isBefore(finishDate)))
+				.filter(x -> (x.getDateTime().isAfter(startDate)
+								&& x.getDateTime().isBefore(finishDate)))
 				.collect(Collectors.toSet());
 
 		return beat.stream().map(HeartBeatOrm::getHeartBeat).collect(Collectors.toList());
@@ -534,15 +527,16 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		if (doctor == null)
 			return NO_DOCTOR;
 		getSlots(slots, doctor);
-		// doctor.setSlots(getSlots(slots, doctor));
-		// em.persist(doctor);
+		//doctor.setSlots(getSlots(slots, doctor));
+		//em.persist(doctor);
 		return OK;
 	}
 
 	private Set<TimeSlotOrm> getSlots(TimeSlot[] slots, DoctorOrm doctor) {
 		return Arrays.stream(slots)
 				.map(s -> new TimeSlotOrm(s.getNumberDayOfWeek(), s.getBeginTime(), s.getEndTime(), doctor))
-				.peek(em::persist).collect(Collectors.toSet());
+				.peek(em::persist)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -569,28 +563,33 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	private PatientOrm getPatientOrm(Patient patient, HealthGroupOrm healthGroupOrm, DoctorOrm therapistOrm) {
 		PatientOrm patientOrm = new PatientOrm(patient.getId(), patient.getName(), patient.getPhoneNumber(),
 				patient.geteMail(), healthGroupOrm, therapistOrm);
-		// patientOrm.setHealthGroup(getHealthGroupOrm(patient.getHealthGroup()));
-		// patientOrm.setTherapist(getDoctorOrm(patient.getTherapist()));
+		//patientOrm.setHealthGroup(getHealthGroupOrm(patient.getHealthGroup()));
+		//patientOrm.setTherapist(getDoctorOrm(patient.getTherapist()));
 		return patientOrm;
 	}
 
-	// private TimeSlotOrm getTimeSlotOrm(TimeSlot timeSlot) {
-	// return new TimeSlotOrm(timeSlot.getNumberDayOfWeek(),
-	// timeSlot.getBeginTime(), timeSlot.getEndTime());
-	// }
+//	private TimeSlotOrm getTimeSlotOrm(TimeSlot timeSlot) {
+//		return new TimeSlotOrm(timeSlot.getNumberDayOfWeek(), timeSlot.getBeginTime(), timeSlot.getEndTime());
+//	}
 
 	private DoctorOrm getDoctorOrm(Doctor doctor) {
 		DoctorOrm doctorOrm = new DoctorOrm(doctor.getId(), doctor.getName(), doctor.getPhoneNumber(),
-				doctor.geteMail());
-		// TimeSlot[] timeSlots = doctor.getTimeSlots().toArray(new
-		// TimeSlot[doctor.getTimeSlots().size()]);
-		// doctorOrm.setSlots(getSlots(timeSlots , doctorOrm));
-		// doctorOrm.setSlots(doctor.getTimeSlots().stream().map(this::getTimeSlotOrm).collect(Collectors.toSet()));
+				doctor.geteMail(), false);
+		//TimeSlot[] timeSlots = doctor.getTimeSlots().toArray(new TimeSlot[doctor.getTimeSlots().size()]);
+		//doctorOrm.setSlots(getSlots(timeSlots , doctorOrm));
+		//doctorOrm.setSlots(doctor.getTimeSlots().stream().map(this::getTimeSlotOrm).collect(Collectors.toSet()));
 		return doctorOrm;
 	}
 
 	private HeartBeatOrm getHeartBeatOrm(PatientOrm patientorm, HeartBeat heartBeat) {
 		return new HeartBeatOrm(patientorm, heartBeat.getDateTime(), heartBeat.getValue(),
 				patientorm.getHealthGroup().getSurveyPeriod());
+	}
+
+	@Override
+	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
+			throws ScheduleNotEmptyException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

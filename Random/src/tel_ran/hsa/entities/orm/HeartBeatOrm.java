@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
-import tel_ran.hsa.entities.dto.*;
+import tel_ran.hsa.entities.dto.HeartBeat;
 
 @Entity
 public class HeartBeatOrm {

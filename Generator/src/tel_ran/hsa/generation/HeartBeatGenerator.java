@@ -6,7 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.integration.annotation.InboundChannelAdapter;
+import org.springframework.integration.annotation.Poller;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.Gson;
 
 import tel_ran.hsa.generation.controller.HeartBeatController;
 
@@ -23,7 +26,7 @@ public class HeartBeatGenerator extends Thread {
 	 * mapper.writeValueAsString(sensor); return jsonRes; }
 	 */
 	SecureRandom sec = new SecureRandom();
-	@InboundChannelAdapter(Source.OUTPUT)
+	@InboundChannelAdapter(value=Source.OUTPUT, poller = @Poller(fixedDelay="1", maxMessagesPerPoll="2500"))
 	public String sendData() {
 		System.out.println("send data");
 		return getData();
@@ -39,9 +42,9 @@ public class HeartBeatGenerator extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		String res = Integer.toString(HeartBeatController.currentBeats[index]);
-		System.out.println(res);
+			Integer res = index;
+		//System.out.println(res);
 		System.err.println(res);
-		return res;
+		return new Gson().toJson(res);
 	}
 }

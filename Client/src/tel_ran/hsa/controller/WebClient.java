@@ -12,12 +12,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.Hospital;
 import tel_ran.hsa.protocols.api.*;
+import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
 import tel_ran.hsa.utils.RestConfig;
+import tel_ran.security.entities.Account;
 
 //TODO rebuild all methods to new map reducing
 
 @SuppressWarnings("serial")
-public class WebClient extends Hospital {
+public class WebClient extends Hospital implements RestRequest, AccountRequest {
 	RestTemplate restTemplate;
 	String URL;
 	static HttpHeaders headers;
@@ -32,7 +34,7 @@ public class WebClient extends Hospital {
 	@Override
 	public String addDoctor(Doctor doctor) {
 		HttpEntity<Doctor> requestEntity = new HttpEntity<>(doctor, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.DOCTORS, HttpMethod.POST, requestEntity,
+		ResponseEntity<String> response = restTemplate.exchange(URL + DOCTORS, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -42,7 +44,7 @@ public class WebClient extends Hospital {
 	@Override
 	public String addPatient(Patient patient) {
 		HttpEntity<Patient> requestEntity = new HttpEntity<>(patient, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.PATIENTS, HttpMethod.POST, requestEntity,
+		ResponseEntity<String> response = restTemplate.exchange(URL + PATIENTS, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -52,9 +54,8 @@ public class WebClient extends Hospital {
 	@Override
 	public String removeDoctor(int doctorId) {
 		HttpEntity<Integer> requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.DOCTORS)
-		        .queryParam(RestRequest.DOCTOR_ID, doctorId);
-		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, requestEntity,
+
+		ResponseEntity<String> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(doctorId), HttpMethod.DELETE, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -63,10 +64,9 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String removePatient(int patientId) {
-		HttpEntity<Integer> requestEntity = new HttpEntity<>(patientId, headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PATIENTS)
-		        .queryParam(RestRequest.PATIENT_ID, patientId);
-		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, requestEntity,
+		HttpEntity<Integer> requestEntity = new HttpEntity<>(headers);
+		
+		ResponseEntity<String> response = restTemplate.exchange(URL+PATIENTS+"/"+String.valueOf(patientId), HttpMethod.DELETE, requestEntity,
 				new ParameterizedTypeReference<String>() {
 				});
 
@@ -96,11 +96,7 @@ public class WebClient extends Hospital {
 	@Override
 	public Doctor getDoctor(int docotrId) {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.DOCTORS)
-		        .queryParam(RestRequest.DOCTOR_ID, docotrId);
-		
-		
-		ResponseEntity<Doctor> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		ResponseEntity<Doctor> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(docotrId), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Doctor>() {
 				});
 
@@ -109,27 +105,22 @@ public class WebClient extends Hospital {
 
 	@Override
 	public Patient getPatient(int patientId) {
-		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-		Patient pat = restTemplate.exchange(URL + RestRequest.PATIENTS + String.format("/%d", patientId), HttpMethod.GET,
-				requestEntity, Patient.class).getBody();
-		return pat;
-//		HttpEntity requestEntity = new HttpEntity<>(headers);
-//		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PATIENTS)
-//		        .queryParam(RestRequest.PATIENT_ID, patientId);
-//		ResponseEntity<Patient> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
-//				requestEntity, new ParameterizedTypeReference<Patient>() {
-//				});
-//
-//		return response.getBody();
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<Patient> response = restTemplate.exchange(URL+PATIENTS+"/"+String.valueOf(patientId), HttpMethod.GET,
+				requestEntity, new ParameterizedTypeReference<Patient>() {
+				});
+
+		return response.getBody();
 	}
 
 	@Override
 	public Iterable<Visit> buildSchedule(LocalDate startDate, LocalDate finishDate) {
-		Map<String, String> map = new HashMap<>();
-		map.put("startdate", startDate.toString());
-		map.put("finishDate", finishDate.toString());
-		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(map, headers);
-		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL + RestRequest.VISITS, HttpMethod.POST,
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+	    Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, startDate.toString());
+	    map.put(END_DATE, finishDate.toString());
+	    
+		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+"?"+getParamString(map), HttpMethod.POST,
 				requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {
 				});
 
@@ -138,12 +129,10 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String bookVisit(int doctorId, int patientId, LocalDateTime dateTime) {
-		Map<String, String> map = new HashMap<>();
-		map.put("doctorId", String.valueOf(doctorId));
-		map.put("patientId", String.valueOf(patientId));
-		map.put("dateTime", dateTime.toString());
-		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(map, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.VISITS, HttpMethod.PUT,
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		 Map<String,String> map = new HashMap<>();
+		    map.put(DATE_TIME, dateTime.toString());
+		ResponseEntity<String> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+PATIENTS+"/"+String.valueOf(patientId)+"?"+getParamString(map), HttpMethod.PUT,
 				requestEntity, new ParameterizedTypeReference<String>() {
 				});
 
@@ -155,10 +144,8 @@ public class WebClient extends Hospital {
 	@Override
 	public Iterable<Doctor> getPatientDoctors(int patientId) {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.DOCTORS+RestRequest.PATIENTS)
-		        .queryParam(RestRequest.PATIENT_ID, patientId);
-		        
-		ResponseEntity<Iterable<Doctor>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		
+		ResponseEntity<Iterable<Doctor>> response = restTemplate.exchange(URL+PATIENTS+"/"+String.valueOf(patientId)+DOCTORS, HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Doctor>>() {
 				});
 
@@ -168,9 +155,7 @@ public class WebClient extends Hospital {
 	@Override
 	public Iterable<Patient> getDoctorPatients(int docotrId) {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PATIENTS+RestRequest.DOCTORS)
-		        .queryParam(RestRequest.DOCTOR_ID, docotrId);
-		ResponseEntity<Iterable<Patient>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		ResponseEntity<Iterable<Patient>> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(docotrId)+PATIENTS, HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Patient>>() {
 				});
 
@@ -179,12 +164,10 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String cancelVisit(int doctorId, int patientId, LocalDateTime dateTime) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.VISITS)
-		        .queryParam(RestRequest.DOCTOR_ID, doctorId)
-		        .queryParam(RestRequest.PATIENT_ID, patientId)
-		        .queryParam(RestRequest.DATE_TIME, dateTime);
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE,
+		 Map<String,String> map = new HashMap<>();
+		    map.put(DATE_TIME, dateTime.toString());
+		ResponseEntity<String> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+PATIENTS+"/"+String.valueOf(patientId)+"?"+getParamString(map), HttpMethod.DELETE,
 				requestEntity, new ParameterizedTypeReference<String>() {
 				});
 
@@ -197,11 +180,11 @@ public class WebClient extends Hospital {
 	@Override
 	public Iterable<Visit> getVisitsByPatient(int patientId, LocalDate beginDate, LocalDate endDate) {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.VISITS)
-		        .queryParam(RestRequest.PATIENT_ID, patientId)
-		        .queryParam(RestRequest.BEGIN_DATE, beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate);
-		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+
+		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+PATIENTS+"/"+String.valueOf(patientId)+"?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {
 				});
 
@@ -212,11 +195,10 @@ public class WebClient extends Hospital {
 	public Iterable<Visit> getVisitsByDoctor(int doctorId, LocalDate beginDate, LocalDate endDate) {
 		
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.VISITS)
-		        .queryParam(RestRequest.DOCTOR_ID, doctorId)
-		        .queryParam(RestRequest.BEGIN_DATE, beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate);
-		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+"?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {
 				});
 
@@ -227,11 +209,10 @@ public class WebClient extends Hospital {
 	public Iterable<Visit> getFreeVisits(int doctorId, LocalDate beginDate, LocalDate endDate) {
 		
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.VISITS+RestRequest.DOCTORS+RestRequest.FREE)
-		        .queryParam(RestRequest.DOCTOR_ID, doctorId)
-		        .queryParam(RestRequest.BEGIN_DATE, beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate);
-		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+FREE+"?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {
 				});
 
@@ -254,33 +235,17 @@ public class WebClient extends Hospital {
 
 	@Override
 	public Iterable<Integer> getPulseByPeriod(int patientId, LocalDate beginDate, LocalDate endDate, int surveyPeriod) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PULSE)
-				.queryParam(RestRequest.PATIENT_ID, patientId)
-		        .queryParam(RestRequest.BEGIN_DATE,beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate)
-		        .queryParam(RestRequest.SURVEY_PERIOD, surveyPeriod);
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<Iterable<Integer>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+		ResponseEntity<Iterable<Integer>> response = restTemplate.exchange(URL+PULSE+"/"+String.valueOf(patientId)+"/"+String.valueOf(surveyPeriod)+"/?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Integer>>() {});
 
 		return response.getBody();
 	}
 
-	@Override
-	public String replaceVisitsDoctor(int oldDoctorId, LocalDateTime beginDateTime,
-			LocalDateTime endDateTime) {
-		Map<String, String> map = new HashMap<>();
-		map.put("oldDoctorId", String.valueOf(oldDoctorId));
-		map.put("beginDateTime",beginDateTime.toString());
-		map.put("endDateTime",endDateTime.toString());
-
-		HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(map, headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.VISITS+RestRequest.DOCTORS, HttpMethod.POST,
-				requestEntity, new ParameterizedTypeReference<String>() {
-				});
-
-		return response.getBody();
-	}
+	
 
 	@Override
 	public String addHealthGroup(HealthGroup healthGroup) {
@@ -304,9 +269,7 @@ public class WebClient extends Hospital {
 		
 
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.HEALTHGROUPS)
-		        .queryParam(RestRequest.GROUP_ID, groupId);
-		ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.DELETE,
+		ResponseEntity<String> response = restTemplate.exchange(URL+HEALTHGROUPS+"/"+String.valueOf(groupId), HttpMethod.DELETE,
 				requestEntity, new ParameterizedTypeReference<String>() {
 				});
 
@@ -388,9 +351,7 @@ public class WebClient extends Hospital {
 	@Override
 	public HealthGroup getHealthgroup(int groupId) {
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.HEALTHGROUPS)
-		        .queryParam(RestRequest.GROUP_ID,groupId);
-		ResponseEntity<HealthGroup> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		ResponseEntity<HealthGroup> response = restTemplate.exchange(URL+HEALTHGROUPS+"/"+String.valueOf(groupId), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<HealthGroup>() {});
 
 		return response.getBody();
@@ -408,11 +369,9 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String setHealthGroup(int patientId, int groupId) {
-		Map<String,String> mapBody = new HashMap<>();
-		mapBody.put("patientId", String.valueOf(patientId));
-		mapBody.put("groupId", String.valueOf(groupId));
-		HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(mapBody , headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL + RestRequest.HEALTHGROUPS, HttpMethod.PUT,
+		
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL +PATIENTS+"/"+String.valueOf(patientId)+HEALTHGROUPS+"/"+String.valueOf(groupId), HttpMethod.PUT,
 				requestEntity, String.class);
 
 		return response.getBody();
@@ -421,11 +380,11 @@ public class WebClient extends Hospital {
 	@Override
 	//GET
 	public Iterable<Visit> getVisits(LocalDate beginDate, LocalDate endDate) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.HEALTHGROUPS)
-		        .queryParam(RestRequest.BEGIN_DATE,beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate);
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+		ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+"?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {});
 
 		return response.getBody();
@@ -433,12 +392,11 @@ public class WebClient extends Hospital {
 
 	@Override
 	public Iterable<HeartBeat> getPulse(int patientId, LocalDate beginDate, LocalDate endDate) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL+RestRequest.PULSE)
-				.queryParam(RestRequest.PATIENT_ID, patientId)
-		        .queryParam(RestRequest.BEGIN_DATE,beginDate)
-		        .queryParam(RestRequest.END_DATE, endDate);
 		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<Iterable<HeartBeat>> response = restTemplate.exchange(builder.toUriString(), HttpMethod.GET,
+		Map<String,String> map = new HashMap<>();
+	    map.put(BEGIN_DATE, beginDate.toString());
+	    map.put(END_DATE, endDate.toString());
+		ResponseEntity<Iterable<HeartBeat>> response = restTemplate.exchange(URL+PATIENTS+"/"+String.valueOf(patientId)+"?"+getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<HeartBeat>>() {});
 
 		return response.getBody();
@@ -446,8 +404,13 @@ public class WebClient extends Hospital {
 
 	@Override
 	public String setTimeSlot(int doctorId, TimeSlot... slots) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,String> map = new HashMap<>();
+		map.put(TIMESLOT, slots.toString());
+		HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(map,headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(doctorId)+TIMESLOT, HttpMethod.GET,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+
+		return response.getBody();
 	}
 
 	@Override
@@ -464,7 +427,53 @@ public class WebClient extends Hospital {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String replaceVisitsDoctor(int doctorId, LocalDateTime beginDateTime, LocalDateTime endDateTime) {
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		Map<String,String> map = new HashMap<>();
+		map.put(BEGIN_DATE_TIME, beginDateTime.toString());
+		map.put(END_DATE_TIME, endDateTime.toString());
+		
+		ResponseEntity<String> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+REPLACE+"?"+getParamString(map), HttpMethod.PUT,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+
+		return response.getBody();
+	}
 	
+	public String login()
+	{
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL +LOGIN, HttpMethod.GET,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+		return response.getBody();
+	}
+	public Iterable<Account> getAccounts()
+	{
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<Iterable<Account>> response = restTemplate.exchange(URL +ACCOUNTS, HttpMethod.GET,
+				requestEntity, new ParameterizedTypeReference<Iterable<Account>>() {});
+		return response.getBody();
+	}
+	
+	public String addAccount(String userName, String password)
+	{
+		Map<String,String> map = new HashMap<>();
+		map.put(USERNAME, userName);
+		map.put("password", password);
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS, HttpMethod.POST,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+		return response.getBody();
+	}
+
+	@Override
+	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
+			throws ScheduleNotEmptyException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
+	
 }

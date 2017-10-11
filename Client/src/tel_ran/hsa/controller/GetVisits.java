@@ -20,7 +20,7 @@ public class GetVisits extends HospitalItem {
 		Iterable<Visit> res = hospital.getVisits(beginDate, endDate);
 		if (res==null)
 		{
-			 inputOutput.put(String.format("No  visits in range of date %d1 - %d2",beginDate,endDate));
+			 inputOutput.put(String.format("No  visits in range of date %s - %s",beginDate,endDate));
 			   return;
 		}
 		inputOutput.put(res);

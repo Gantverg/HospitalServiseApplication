@@ -12,12 +12,12 @@ public class RemoveHealthGroup extends HospitalItem {
 	public void perform() {
 		int groupId=inputOutput.getInteger("Enter id for removing");
 		String res=hospital.removeHealthGroup(groupId);
-		if (res==RestResponseCode.NO_HEALTH_GROUP)
+		if (res.equals(RestResponseCode.NO_HEALTH_GROUP))
 		{
 			inputOutput.put(String.format("Healthgroup with id %d doesn`t exist",groupId));
 			return;
 		}
-		if (res==RestResponseCode.OK) {
+		if (res.equals(RestResponseCode.OK)) {
 		inputOutput.put(String.format("Healthgroup with id %d was removed",
 		groupId));
 		}

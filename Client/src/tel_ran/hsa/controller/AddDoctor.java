@@ -16,12 +16,13 @@ public class AddDoctor extends HospitalItem {
 		String phoneNumber=inputOutput.getString("Enter doctor phone number");
 		String eMail=inputOutput.getString("Enter doctor email");
 		String res=hospital.addDoctor(new Doctor(doctorId, name, phoneNumber, eMail));
-		if (res==RestResponseCode.ALREADY_EXIST)
+        inputOutput.put(res);
+		if (res.equals(RestResponseCode.ALREADY_EXIST))
 		{
 			inputOutput.put(String.format("Doctor with id %d already exist", doctorId));
 			return;
 		}
-		if (res==RestResponseCode.OK)
+		if (res.equals(RestResponseCode.OK))
 		{
 		inputOutput.put(String.format("Doctor with id %d was added",
 		doctorId));

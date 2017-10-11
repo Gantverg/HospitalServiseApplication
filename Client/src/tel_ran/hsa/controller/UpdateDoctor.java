@@ -16,12 +16,12 @@ public class UpdateDoctor extends HospitalItem {
 		String phoneNumber=inputOutput.getString("Enter new doctor phone number");
 		String eMail=inputOutput.getString("Enter new  doctor email");
 		String res=hospital.updateDoctor(new Doctor(doctorId, name, phoneNumber, eMail));
-		if (res==RestResponseCode.NO_DOCTOR)
+		if (res.equals(RestResponseCode.NO_DOCTOR))
 		{
 			inputOutput.put(String.format("Doctor with id %d doesn`t exist", doctorId));
 			return;
 		}
-		if (res==RestResponseCode.OK) {
+		if (res.equals(RestResponseCode.OK)) {
 		inputOutput.put(String.format("Doctor with id %d %s was updated",
 		doctorId));
 		}

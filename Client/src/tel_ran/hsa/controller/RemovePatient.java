@@ -12,12 +12,12 @@ public class RemovePatient extends HospitalItem {
 	public void perform() {
 		Integer patientId=inputOutput.getInteger("Enter patient id for removing");
 		String res=hospital.removePatient(patientId);
-		if (res==RestResponseCode.NO_PATIENT)
+		if (res.equals(RestResponseCode.NO_PATIENT))
 		{
 			inputOutput.put(String.format("Patient with id %d doesn`t exist", patientId));
 			return;
 		}
-		if (res==RestResponseCode.OK)
+		if (res.equals(RestResponseCode.OK))
 		{
 		inputOutput.put(String.format("Patient with id %d was removed",
 		patientId));

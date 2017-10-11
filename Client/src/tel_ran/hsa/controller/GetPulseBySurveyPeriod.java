@@ -21,7 +21,7 @@ public class GetPulseBySurveyPeriod extends HospitalItem {
         Iterable<Integer> res = hospital.getPulseByPeriod(patientId, beginDate, endDate, surveyPeriod);
         if (res==null)
         {
-        	inputOutput.put(String.format("Pulse data for patient with id %d in range of %d1 - %d2 by survey period %s doesn`t exist",
+        	inputOutput.put(String.format("Pulse data for patient with id %d in range of %s - %s by survey period %s doesn`t exist",
 					  patientId,beginDate,endDate,surveyPeriod));
 					  return;
         }

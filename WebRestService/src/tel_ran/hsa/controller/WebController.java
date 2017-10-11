@@ -14,16 +14,11 @@ import tel_ran.hsa.tests.model.ScheduleNotEmptyException;
 
 @SpringBootApplication
 @RestController
-@ImportResource({"classpath:hospital.xml","classpath:security.xml"})
-//@ImportResource({"classpath:hospital.xml"})
+@ImportResource({"classpath:hospital.xml"})
 public class WebController {
 	@Autowired
-	IHospital hospital;
+	private IHospital hospital;
 	
-	public void setHospital(IHospital hospital) {
-		this.hospital = hospital;
-	}
-
 	@RequestMapping(value = RestRequest.DOCTORS, method = RequestMethod.POST)
 	public String addDoctor(@RequestBody Doctor doctor) {
 		return hospital.addDoctor(doctor);
@@ -189,7 +184,6 @@ public class WebController {
 	
 	@RequestMapping(value = RestRequest.PULSE, method = RequestMethod.POST)
 	public String addPulseInfo(@RequestBody HeartBeat heartBeat) {
-		System.err.println(heartBeat);
 		return hospital.addPulseInfo(heartBeat);
 	}
 

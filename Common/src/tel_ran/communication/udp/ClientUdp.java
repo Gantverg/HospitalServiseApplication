@@ -26,7 +26,7 @@ public class ClientUdp {
 	}
 
 	public ClientUdp(String hostname, int portServer) throws UnknownHostException, SocketException {
-		this(hostname, portServer, Integer.MIN_VALUE);
+		this(hostname, portServer, Integer.MAX_VALUE);
 	}
 
 	public void send(String request) throws IOException {
@@ -43,7 +43,7 @@ public class ClientUdp {
 		for (int i = 0; i < repeats; i++) {
 			try {
 				socket.receive(rpacket);
-				return Arrays.copyOf(buf, rpacket.getLength());
+				return Arrays.copyOf(rpacket.getData(), rpacket.getLength());
 			} catch (SocketTimeoutException e) {
 				send(request);
 			}

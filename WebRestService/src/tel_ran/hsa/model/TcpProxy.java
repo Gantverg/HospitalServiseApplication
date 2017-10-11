@@ -5,17 +5,24 @@ import java.net.Socket;
 import java.time.*;
 import java.util.*;
 
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
 //import org.springframework.context.annotation.ImportResource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tel_ran.communication.udp.ClientUdp;
+import tel_ran.communication.udp.ServerInfo;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
+import tel_ran.hsa.protocols.api.RestResponseCode;
 import tel_ran.hsa.protocols.api.TcpRequest;
 import tel_ran.hsa.protocols.api.TcpResponseCode;
+import tel_ran.hsa.protocols.api.UdpRequest;
 
 //@ImportResource({"classpath:hospital.xml"})
 @SuppressWarnings("serial")
@@ -31,19 +38,34 @@ public class TcpProxy implements IHospital {
 	private ObjectMapper mapper = new ObjectMapper();
 	private Socket socket;
 	
-	public TcpProxy(String hostName, int port) throws IOException {
-		super();
-		this.hostName = hostName;
-		this.port = port;
+	public TcpProxy() throws IOException {
 		getCurrentConnection();
 	}
 
+	private boolean getServerInfo() {
+		ObjectMapper mapper = new ObjectMapper();
+		try (AbstractApplicationContext ctx = new FileSystemXmlApplicationContext("web.xml")){
+			ClientUdp clientUdp = ctx.getBean(ClientUdp.class);
+			clientUdp.send(UdpRequest.GET_SERVERS_INFO);
+			byte[] response = clientUdp.receive();
+			if (response != null) {
+				ServerInfo serverInfo = mapper.readValue(response, new TypeReference<ServerInfo>() {});
+				hostName = serverInfo.getHostName();
+				port = serverInfo.getPort();
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private void getCurrentConnection() throws IOException {
-		//this.socket = LoadBalancer.getSocket();
-		//System.out.printf("hostName=%s, port=%s%n",hostName, port);
-		socket = new Socket(hostName, port);
-		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		writer = new PrintStream(socket.getOutputStream());
+		if(getServerInfo()) {
+			socket = new Socket(hostName, port);
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			writer = new PrintStream(socket.getOutputStream());
+		}
 	}
 
 	public void setHostName(String hostName) {
@@ -89,7 +111,7 @@ public class TcpProxy implements IHospital {
 			getResponse(getRequestString(request, requestBody));
 			result = mapper.readValue(responseBody, String.class);
 			if (code == TcpResponseCode.OK) {
-				result = code.name();
+				result = RestResponseCode.OK;
 			} else {
 				result = mapper.readValue(responseBody, String.class);
 			}

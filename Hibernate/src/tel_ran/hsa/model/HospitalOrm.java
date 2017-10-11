@@ -32,7 +32,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	@Override
 	@Transactional
 	public String addDoctor(Doctor doctor) {
-		if ((em.find(DoctorOrm.class, doctor.getId())) != null)
+		if (em.find(DoctorOrm.class, doctor.getId()) != null)
 			return ALREADY_EXIST;
 		em.persist(getDoctorOrm(doctor));
 		return OK;

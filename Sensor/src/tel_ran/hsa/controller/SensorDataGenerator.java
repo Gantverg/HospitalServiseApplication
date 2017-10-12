@@ -5,11 +5,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.messaging.handler.annotation.SendTo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import tel_ran.hsa.dto.*;
@@ -19,12 +19,13 @@ public class SensorDataGenerator {
 	LocalDateTime timeStart;
 	Map<Integer, Info> map = new HashMap<>();
 	
-	@InboundChannelAdapter(Processor.INPUT)
+	@StreamListener(Processor.INPUT)
 	@SendTo(Processor.OUTPUT)
-	String sendSensorData(String id) throws Exception
+	String sendSensorData(int idPatient)
 	{
-		ObjectMapper mapper = new ObjectMapper();
-		Integer idPatient = mapper.readValue(id, Integer.class);
+		//ObjectMapper mapper = new ObjectMapper();
+		//Integer idPatient = mapper.readValue(id, Integer.class);
+		//int idPatient = Integer.parseInt(id);
 		timeStart = LocalDateTime.now();
 		updateMap(idPatient);
 		

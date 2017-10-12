@@ -8,23 +8,16 @@ import java.util.*;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-//import org.springframework.context.annotation.ImportResource;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tel_ran.communication.udp.ClientUdp;
-import tel_ran.communication.udp.ServerInfo;
+import tel_ran.communication.udp.*;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
-import tel_ran.hsa.protocols.api.RestResponseCode;
-import tel_ran.hsa.protocols.api.TcpRequest;
-import tel_ran.hsa.protocols.api.TcpResponseCode;
-import tel_ran.hsa.protocols.api.UdpRequest;
+import tel_ran.hsa.protocols.api.*;
 
-//@ImportResource({"classpath:hospital.xml"})
 @SuppressWarnings("serial")
 public class TcpProxy implements IHospital {
 
@@ -109,13 +102,13 @@ public class TcpProxy implements IHospital {
 		String result = TcpResponseCode.WRONG_REQUEST_TYPE.name();
 		try {
 			getResponse(getRequestString(request, requestBody));
-			result = mapper.readValue(responseBody, String.class);
-			if (code == TcpResponseCode.OK) {
+			result = responseBody; //mapper.readValue(responseBody, String.class);
+/*			if (code == TcpResponseCode.OK) {
 				result = RestResponseCode.OK;
 			} else {
 				result = mapper.readValue(responseBody, String.class);
 			}
-
+*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

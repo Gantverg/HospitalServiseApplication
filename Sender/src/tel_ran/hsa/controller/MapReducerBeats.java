@@ -75,9 +75,10 @@ public class MapReducerBeats {
 	private String sendAlert(HeartInfo info, int pulse) {
 		HealthGroup health = info.getPatient().getHealthGroup();
 		if (pulse > health.getMaxNormalPulse() || pulse < health.getMinNormalPulse()) {
-			System.err.println("Sending to Base");
+			System.err.println("Sending to Alert");
 			Gson gson = new Gson();
-			String res = gson.toJson(new HeartBeatData(info.getPatient(), LocalDateTime.parse(inp.getTime()), inp.getPulse(), info.getPatient().getHealthGroup().getSurveyPeriod()));
+			HeartBeatData heartBeatData = new HeartBeatData(info.getPatient().getName(), info.getPatient().getTherapist().getName(), info.getPatient().getTherapist().geteMail(), inp.getPulse(), info.getPatient().getHealthGroup().getSurveyPeriod());
+			String res = gson.toJson(heartBeatData);
 			return res;
 		}
 		System.err.println("Pulse is normal");

@@ -1,6 +1,7 @@
   package tel_ran.hsa.model;
 
 import java.time.*;
+import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 import java.util.stream.*;
 
@@ -68,14 +69,50 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		DoctorOrm doctororm = em.find(DoctorOrm.class, doctorId);
 		if (doctororm == null)
 			return NO_DOCTOR;
-		List<VisitOrm> visits = em.createQuery("Select p from VisitOrm p where doctors.id=doctorId", VisitOrm.class).getResultList();
-			if (visits==null) {
-				em.remove(doctororm);
-			return OK;}
-			else doctororm.setDismiss(true); 
-			return OK;
+		em.refresh(doctororm);
+		  Set<VisitOrm> visits = doctororm.getVisitsDoctors();
+		  if (visits.isEmpty())
+			    em.remove(doctororm);
+			   else doctororm.setDismiss(true); 
+			   return OK;
+			
 	}
+	@Override
+	 @Transactional
+	 public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
+	   throws ScheduleNotEmptyException {
+	  LocalDate endDate = finishDate.plusDays(1);
+	  DoctorOrm doctororm = em.find(DoctorOrm.class, doctorId);
+	  List<VisitOrm> visits = em.createQuery("Select p from VisitOrm p", VisitOrm.class).getResultList();
+	  if (visits.stream().map(x -> x.getDateTime().toLocalDate()).filter(date -> date.isAfter(startDate.minusDays(1)))
+	    .filter(date -> date.isBefore(endDate)).count() > 0)
+	   throw new ScheduleNotEmptyException("There already is schedule on this period");
 
+	  ArrayList<Visit> list = new ArrayList<>();
+	  
+	  if (!doctororm.isDismiss()) {
+		   em.refresh(doctororm);
+		   if (startDate.isEqual(finishDate)) {
+		    for (TimeSlotOrm slot : doctororm.getSlots()) {
+		     if (getSlot(slot).isDateInSlot(startDate))
+		      list.addAll(fillSlots(startDate, doctororm, slot));
+		    }
+		   } else {
+		    
+		   for (LocalDate currentDate = startDate; currentDate
+		     .isBefore(endDate); currentDate = currentDate.plusDays(1)) {
+		    for (TimeSlotOrm slot : doctororm.getSlots()) {
+		     if (getSlot(slot).isDateInSlot(currentDate))
+		      list.addAll(fillSlots(currentDate, doctororm, slot));
+		    }
+
+		   }
+		   }
+		   } else return null;
+	 
+	  return list;
+	 }
+	
 	@Override
 	@Transactional
 	public String removePatient(int patientId) {
@@ -146,6 +183,19 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 
 		ArrayList<Visit> list = new ArrayList<>();
 		List<DoctorOrm> doctorsorm = em.createQuery("Select p from DoctorOrm p", DoctorOrm.class).getResultList();
+		if (startDate.isEqual(finishDate)) {
+			   for (DoctorOrm doctororm : doctorsorm) {
+			    if (!doctororm.isDismiss()) {
+			    em.refresh(doctororm);
+			     for (TimeSlotOrm slot : doctororm.getSlots()) {
+			      if (getSlot(slot).isDateInSlot(startDate))
+			       list.addAll(fillSlots(startDate, doctororm, slot));
+			     }
+
+			    } else return null;
+			  }
+			   return list;
+			  }
 		for (DoctorOrm doctororm : doctorsorm) {
 			if (!doctororm.isDismiss()) {
 			em.refresh(doctororm);
@@ -586,10 +636,5 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 				patientorm.getHealthGroup().getSurveyPeriod());
 	}
 
-	@Override
-	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
-			throws ScheduleNotEmptyException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

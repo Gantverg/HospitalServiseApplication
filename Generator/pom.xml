@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>hsa.generator</groupId>
-	<artifactId>beats</artifactId>
+	<artifactId>simplesink</artifactId>
 	<version>1</version>
 	<packaging>jar</packaging>
 

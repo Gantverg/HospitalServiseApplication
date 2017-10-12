@@ -13,6 +13,7 @@ import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
 import tel_ran.hsa.protocols.api.*;
+import tel_ran.hsa.utils.StartFinishDate;
 
 public class HsaProtocolJson implements Protocol {
 	IHospital hospital;
@@ -419,6 +420,22 @@ public class HsaProtocolJson implements Protocol {
 		
 	}
 
+	private String buildScheduleByDoctor(String request) {
+		  String response = "";
+		  TcpResponseCode code = TcpResponseCode.OK;
+		  Map<String, String> map = new HashMap<String, String>();
+		  map = jsonToObject(request, new TypeReference<Map<String, String>>(){});
+		  try {
+		   Iterable<Visit> visits = hospital.buildScheduleByDoctor(LocalDate.parse(map.get("startDate")),
+		     LocalDate.parse(map.get("finishDate")), Integer.parseInt(map.get("doctorId")));
+		   return objectToJson(code,visits);
+		  }catch (Exception e) {
+		   code=TcpResponseCode.ERROR;
+		   response=e.getMessage();
+		   return objectToJson(code,response);
+		  }
+		 }
+	
 	private String getPatient(String request) {
 		Patient patient = hospital.getPatient(jsonToObject(request, Integer.class));
 		String response="";

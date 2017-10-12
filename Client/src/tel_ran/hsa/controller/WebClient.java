@@ -407,7 +407,7 @@ public class WebClient extends Hospital implements RestRequest, AccountRequest {
 		Map<String,String> map = new HashMap<>();
 		map.put(TIMESLOT, slots.toString());
 		HttpEntity<Map<String,String>> requestEntity = new HttpEntity<>(map,headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(doctorId)+TIMESLOT, HttpMethod.GET,
+		ResponseEntity<String> response = restTemplate.exchange(URL+DOCTORS+"/"+String.valueOf(doctorId)+TIMESLOT, HttpMethod.PUT,
 				requestEntity, new ParameterizedTypeReference<String>() {});
 
 		return response.getBody();
@@ -424,8 +424,11 @@ public class WebClient extends Hospital implements RestRequest, AccountRequest {
 
 	@Override
 	public String setTherapist(int patientId, int doctorId) {
-		// TODO Auto-generated method stub
-		return null;
+		HttpEntity requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL+PATIENTS+"/"+String.valueOf(patientId)+DOCTORS+"/"+String.valueOf(doctorId), HttpMethod.PUT,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+
+		return response.getBody();
 	}
 
 	@Override
@@ -468,10 +471,14 @@ public class WebClient extends Hospital implements RestRequest, AccountRequest {
 	}
 
 	@Override
-	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId)
-			throws ScheduleNotEmptyException {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Visit> buildScheduleByDoctor(LocalDate startDate, LocalDate finishDate, int doctorId){
+	Map<String,String> map = new HashMap<>();
+	map.put(BEGIN_DATE, startDate.toString());
+	map.put(END_DATE, finishDate.toString());
+	HttpEntity requestEntity = new HttpEntity<>(headers);
+	ResponseEntity<Iterable<Visit>> response = restTemplate.exchange(URL+VISITS+DOCTORS+"/"+String.valueOf(doctorId)+"?"+getParamString(map), HttpMethod.POST,
+			requestEntity, new ParameterizedTypeReference<Iterable<Visit>>() {});
+	return response.getBody();
 	}
 	
 

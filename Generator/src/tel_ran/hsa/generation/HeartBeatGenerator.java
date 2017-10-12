@@ -9,13 +9,11 @@ import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 import tel_ran.hsa.generation.controller.HeartBeatController;
 
 @EnableBinding(Source.class)
 @Component
-public class HeartBeatGenerator extends Thread {
+public class HeartBeatGenerator{
 	public HeartBeatGenerator() {
 	}
 
@@ -27,12 +25,12 @@ public class HeartBeatGenerator extends Thread {
 	 */
 	SecureRandom sec = new SecureRandom();
 	@InboundChannelAdapter(value=Source.OUTPUT, poller = @Poller(fixedDelay="1", maxMessagesPerPoll="2500"))
-	public String sendData() {
+	public int sendData() {
 		System.out.println("send data");
 		return getData();
 	}
 	
-	public String getData() {
+	public int getData() {
 			Integer index = ThreadLocalRandom.current().nextInt(HeartBeatController.maxPatientId);
 			HeartBeatController.currentBeats[index] = HeartBeatController.currentBeats[index] + sec.nextInt(HeartBeatController.entropyRND);
 			if (HeartBeatController.currentBeats[index] > HeartBeatController.maxBeatRate)
@@ -45,6 +43,7 @@ public class HeartBeatGenerator extends Thread {
 			Integer res = index;
 		//System.out.println(res);
 		System.err.println(res);
-		return new Gson().toJson(res);
+		//return new Gson().toJson(res);
+		return res;
 	}
 }

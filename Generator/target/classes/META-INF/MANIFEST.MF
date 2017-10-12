@@ -4,7 +4,7 @@ Implementation-Version: 1
 Built-By: gantv
 Implementation-Vendor-Id: hsa.generator
 Build-Jdk: 1.8.0_144
-Implementation-URL: http://projects.spring.io/spring-boot/beats/
+Implementation-URL: http://projects.spring.io/spring-boot/simplesink/
 Created-By: Maven Integration for Eclipse
 Implementation-Vendor: Pivotal Software, Inc.
 

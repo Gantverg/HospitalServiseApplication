@@ -35,6 +35,10 @@ public class HospitalConsoleAppl {
 		return new Menu(inputOutput, items);
 	}
 
+
+		
+	
+
 	private static Menu createMenu(InputOutput inputOutput) {
 		Item[] items = { 
 				new AddDoctor(),
@@ -47,10 +51,12 @@ public class HospitalConsoleAppl {
 				new UpdatePatient(),
 				new SetHealthGroup(),
 				new SetTimeSlot(),
+				new SetTherapist(),
 				new BookVisit(),
 				new CancelVisit(),
 				new ReplaceVisitsDoctor(),
 				new BuildShedule(),
+				new BuildSheduleByDoctor(),
 				new GetDoctor(),
 				new GetPatient(),
 				new GetHealthGroup(),

@@ -57,16 +57,20 @@ public class MapReducerBeats {
 			System.err.println("Getting info from map");
 			info = map.get(inp.getIdPatient());
 			System.err.println("updating map");
-			info.setAverage(info.getAverage() + inp.getPulse() / (info.getCount() + 1));
+			int average = (info.getAverage()*info.getCount()+inp.getPulse())/info.getCount()+1;
+			info.setAverage(average);
+			info.setCount(info.getCount()+1);
 			map.replace(inp.getIdPatient(), info);
 		}
 		if (info.getCount() >= info.getPatient().getHealthGroup().getSurveyPeriod()) {
+			//info.setAverage(info.getAverage()/info.getCount());
 			Patient patient = info.getPatient();
 			HeartBeat heartBeat = new HeartBeat(patient.getId(), 
-												inp.getTime(), 
+												LocalDateTime.now().toString(), 
 												info.getAverage(),
 												patient.getHealthGroup().getSurveyPeriod());
 			sql.putHeartBeatToBase(heartBeat);
+			map.remove(info.getPatient().getId());
 		}
 		System.err.println("Ending of Reducing");
 		return info;

@@ -25,9 +25,9 @@ public class HeartBeatGenerator {
 	 */
 	SecureRandom sec = new SecureRandom();
 
-	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(fixedDelay = "1", maxMessagesPerPoll = "7500"))
+	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(fixedDelay = "1", maxMessagesPerPoll = "4000"))
 	public int sendData() {
-		System.out.println("send data");
+		//System.out.println("send data");
 		return getData();
 	}
 

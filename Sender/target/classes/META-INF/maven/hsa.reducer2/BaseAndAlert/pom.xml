@@ -5,7 +5,7 @@
 
 	<groupId>hsa.reducer2</groupId>
 	<artifactId>BaseAndAlert</artifactId>
-	<version>1</version>
+	<version>new</version>
 	<packaging>jar</packaging>
 
 	<name>sensor-source</name>

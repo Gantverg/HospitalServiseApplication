@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: sensor-source
-Implementation-Version: 1
+Implementation-Version: new
 Built-By: gantv
 Implementation-Vendor-Id: hsa.reducer2
 Build-Jdk: 1.8.0_144

@@ -40,7 +40,7 @@ public class MailSender implements SenderMail {
 						heartBeat.getDoctorName(), heartBeat.getPatientName(), heartBeat.getValue());
 				String to = heartBeat.getDoctorMail();
 				String subject = "Alert, One of your patients have an unnormal pulse";
-				// sendMail(from, to, subject, body);
+				//sendMail(from, to, subject, body);
 				System.err.println("mail has sended");
 			}
 

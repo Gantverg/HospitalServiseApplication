@@ -10,7 +10,7 @@ public class HeartBeatController {
 	public static int[] currentBeats = new int[maxPatientId]; //array for storing beats based on beatPeriod time
 	public static int   maxBeatRate = 250; //maximum stored beat rate value
 	public static int   sleepPeriod = 6; //time for thread sleep (for better beats assignment)
-	public static int   entropyRND = 30; //entropy value (for better beats assignment)
+	public static int   entropyRND = 10; //entropy value (for better beats assignment)
 	
 	public static void main(String[] args) {
 			HeartBeatCleaner hbc = new HeartBeatCleaner();

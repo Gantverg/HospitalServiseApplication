@@ -13,37 +13,35 @@ import tel_ran.hsa.generation.controller.HeartBeatController;
 
 @EnableBinding(Source.class)
 @Component
-public class HeartBeatGenerator{
+public class HeartBeatGenerator {
 	public HeartBeatGenerator() {
 	}
 
 	/*
 	 * @InboundChannelAdapter(Source.OUTPUT) String sendSensorData() throws
-	 * JsonProcessingException{ Sensor sensor = getRandomSensorData();
-	 * ObjectMapper mapper = new ObjectMapper(); String jsonRes =
+	 * JsonProcessingException{ Sensor sensor = getRandomSensorData(); ObjectMapper
+	 * mapper = new ObjectMapper(); String jsonRes =
 	 * mapper.writeValueAsString(sensor); return jsonRes; }
 	 */
 	SecureRandom sec = new SecureRandom();
-	@InboundChannelAdapter(value=Source.OUTPUT, poller = @Poller(fixedDelay="1", maxMessagesPerPoll="2500"))
+
+	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(fixedDelay = "1", maxMessagesPerPoll = "7500"))
 	public int sendData() {
 		System.out.println("send data");
 		return getData();
 	}
-	
+
 	public int getData() {
+		while(true) {
 			Integer index = ThreadLocalRandom.current().nextInt(HeartBeatController.maxPatientId);
-			HeartBeatController.currentBeats[index] = HeartBeatController.currentBeats[index] + sec.nextInt(HeartBeatController.entropyRND);
-			if (HeartBeatController.currentBeats[index] > HeartBeatController.maxBeatRate)
+			HeartBeatController.currentBeats[index] = HeartBeatController.currentBeats[index]
+					+ sec.nextInt(HeartBeatController.entropyRND);
+			if (HeartBeatController.currentBeats[index] > HeartBeatController.maxBeatRate) {
 				HeartBeatController.currentBeats[index] = HeartBeatController.maxBeatRate;
-			try {
-				Thread.sleep(HeartBeatController.sleepPeriod);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
-			Integer res = index;
-		//System.out.println(res);
-		System.err.println(res);
-		//return new Gson().toJson(res);
-		return res;
+			else {
+				return index;
+			}
+		}
 	}
 }

@@ -46,7 +46,7 @@ public class MapReducerBeats {
 
 	}
 
-	private HeartInfo mapReducing() {
+	private synchronized HeartInfo mapReducing() {
 		System.err.println("StartReducing");
 		HeartInfo info;
 		if (map.get(inp.getIdPatient()) == null) {
@@ -57,7 +57,7 @@ public class MapReducerBeats {
 			System.err.println("Getting info from map");
 			info = map.get(inp.getIdPatient());
 			System.err.println("updating map");
-			int average = (info.getAverage()*info.getCount()+inp.getPulse())/info.getCount()+1;
+			int average = (info.getAverage()*info.getCount()+inp.getPulse())/(info.getCount()+1);
 			info.setAverage(average);
 			info.setCount(info.getCount()+1);
 			map.replace(inp.getIdPatient(), info);

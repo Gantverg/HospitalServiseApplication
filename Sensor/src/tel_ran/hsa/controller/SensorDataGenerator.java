@@ -17,10 +17,12 @@ import tel_ran.hsa.dto.*;
 public class SensorDataGenerator {
 	private static final int MAXBEATRATE = 250;
 	private static final int MINBEAT = 20;
+	private static final int BASIS = 120;
 	private static final int MAXPERSONS = 999;
 	private static final String MAXMESSAGES = "100";
 	LocalDateTime timeStart;
 	int count = 0;
+	Random r = new Random();
 
 	@InboundChannelAdapter(channel = Source.OUTPUT, poller = @Poller(maxMessagesPerPoll = MAXMESSAGES))
 	String sendSensorData() {
@@ -44,8 +46,9 @@ public class SensorDataGenerator {
 		timeStart = LocalDateTime.now();
 	}
 
-	private String checkPulse() {
-		int pulse = MINBEAT + new Random().nextInt(MAXBEATRATE - MINBEAT);
+	private synchronized String checkPulse() {
+		//int pulse = MINBEAT + new Random().nextInt(MAXBEATRATE - MINBEAT);
+		int pulse = (BASIS + r.nextInt(MAXBEATRATE - BASIS)) / (1 + r.nextInt((BASIS / MINBEAT) - 1));
 		return getJson(pulse);
 	}
 

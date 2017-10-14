@@ -19,7 +19,7 @@ public class BuildScheduleByDoctor extends HospitalItem {
 		  Doctor doctor = hospital.getDoctor(doctorId);
 		  if (doctor==null)
 		  {
-		   inputOutput.put(String.format("Doctor with id %s doesn`t exist"));
+		   inputOutput.put(String.format("Doctor with id %d doesn`t exist",doctorId));
 		   return;
 		  }
 		LocalDate startDate=inputOutput.getDate

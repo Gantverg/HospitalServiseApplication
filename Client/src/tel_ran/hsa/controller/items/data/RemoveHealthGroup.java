@@ -18,6 +18,11 @@ public class RemoveHealthGroup extends HospitalItem {
 			inputOutput.put(String.format("Healthgroup with id %d doesn`t exist",groupId));
 			return;
 		}
+		if (res.equals(RestResponseCode.USING_OBJECT)) {
+			inputOutput.put(String.format("Healthgroup with id %d couldn`t be removed",
+			groupId));
+			}
+		
 		if (res.equals(RestResponseCode.OK)) {
 		inputOutput.put(String.format("Healthgroup with id %d was removed",
 		groupId));

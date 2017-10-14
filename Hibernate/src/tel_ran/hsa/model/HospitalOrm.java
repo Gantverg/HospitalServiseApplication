@@ -114,17 +114,19 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	 }
 	
 	@Override
-	@Transactional
-	public String removePatient(int patientId) {
-		PatientOrm patientorm = em.find(PatientOrm.class, patientId);
-		if (patientorm == null)
-			return NO_PATIENT;
-		em.refresh(patientorm);
-		Set<VisitOrm> records = patientorm.getVisitsPatient();
-		records.removeIf(x -> x.getPatients().getId() == patientId);
-		em.remove(patientorm);
-		return OK;
-	}
+	 @Transactional
+	 public String removePatient(int patientId) {
+	  PatientOrm patientorm = em.find(PatientOrm.class, patientId);
+	  if (patientorm == null)
+	   return NO_PATIENT;
+	  em.refresh(patientorm);
+	  Set<VisitOrm> records = patientorm.getVisitsPatient();
+	  Set<HeartBeatOrm> beat = patientorm.getPulsePatients();
+	  if (records.isEmpty() && beat.isEmpty()) {
+	  em.remove(patientorm);
+	  return OK; }
+	  else return USING_OBJECT;
+	 }
 
 	@Override
 	@Transactional
@@ -150,7 +152,6 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		patientorm.setName(patient.getName());
 		patientorm.setPhoneNumber(patient.getPhoneNumber());
 		patientorm.seteMail(patient.geteMail());
-		patientorm.setHealthGroup(getHealthGroupOrm(patient.getHealthGroup()));
 		em.persist(patientorm);
 		return OK;
 	}
@@ -467,17 +468,18 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	}
 
 	@Override
-	@Transactional
-	public String removeHealthGroup(int groupId) {
-		HealthGroupOrm healtgrouporm = em.find(HealthGroupOrm.class, groupId);
-		if (healtgrouporm == null)
-			return NO_HEALTH_GROUP;
-		em.refresh(healtgrouporm);
-		Set<PatientOrm> patient = healtgrouporm.getPatient();
-		patient.removeIf(x -> x.getHealthGroup().getId() == groupId); // ***
-		em.remove(healtgrouporm);
-		return OK;
-	}
+	 @Transactional
+	 public String removeHealthGroup(int groupId) {
+	  HealthGroupOrm healtgrouporm = em.find(HealthGroupOrm.class, groupId);
+	  if (healtgrouporm == null)
+	   return NO_HEALTH_GROUP;
+	  em.refresh(healtgrouporm);
+	  Set<PatientOrm> patients = healtgrouporm.getPatient();
+	  if (patients.isEmpty()) {
+	  em.remove(healtgrouporm);
+	  return OK; }
+	  else return USING_OBJECT;
+	 }
 
 	@Override
 	public Iterable<HealthGroup> getHealthGroups() {

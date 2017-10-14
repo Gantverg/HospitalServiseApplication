@@ -8,12 +8,12 @@ import java.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
 import tel_ran.hsa.protocols.ProtocolEntity;
 import tel_ran.hsa.protocols.api.*;
-import tel_ran.hsa.utils.StartFinishDate;
 
 public class HsaProtocolJson implements Protocol {
 	IHospital hospital;

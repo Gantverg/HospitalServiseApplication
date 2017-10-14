@@ -27,7 +27,7 @@ public class HeartBeatOrm {
 	public HeartBeatOrm() {}
 	
 	public HeartBeat getHeartBeat() {
-		return new HeartBeat(patientPuls.id, dateTime.toString(), value, surveyPeriod);
+		return new HeartBeat(patientPuls.id, dateTime, value, surveyPeriod);
 	}
 	
 	public LocalDateTime getDateTime() {
@@ -47,6 +47,10 @@ public class HeartBeatOrm {
 	public String toString() {
 		return "HertBeatOrm [dateTime=" + dateTime + ", value=" + value + ", surveyPeriod=" + surveyPeriod
 				+ ", patient=" + patientPuls + "]";
+	}
+	public void setPatientPuls(PatientOrm patient) {
+		this.patientPuls=patient;
+		
 	}
 
 	

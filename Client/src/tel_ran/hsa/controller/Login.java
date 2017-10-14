@@ -62,6 +62,7 @@ public class Login extends HospitalItem{
 										   new GetDoctorPatients(),
 										   new GetPulseByPeriod(),
 										   new GetPulseBySurveyPeriod(),
+										   new ChartPulse(),
 										   new ExitItem()));
 		SubMenu visitingSubmenu = new VisitingSubmenu();
 		visitingSubmenu.setItems(Arrays.asList(new BuildSchedule(),

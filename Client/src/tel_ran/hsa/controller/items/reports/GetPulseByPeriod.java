@@ -25,8 +25,8 @@ public class GetPulseByPeriod extends HospitalItem {
 				("Enter begin date in the format "+format, format);
 		LocalDate endDate=inputOutput.getDate
 				("Enter end date in the format "+format, format);
-		Integer surveyPeriod=inputOutput.getInteger("Enter patient surveyPeriod");
-		Iterable<Integer> res = hospital.getPulseByPeriod(patientId,beginDate,endDate,surveyPeriod);
+
+		Iterable<HeartBeat> res = hospital.getPulse(patientId,beginDate,endDate);
 		
 		
 		if (res==null)

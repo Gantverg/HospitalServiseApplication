@@ -23,7 +23,7 @@ public class UpdateDoctor extends HospitalItem {
 			return;
 		}
 		if (res.equals(RestResponseCode.OK)) {
-		inputOutput.put(String.format("Doctor with id %d %s was updated",
+		inputOutput.put(String.format("Doctor with id %d was updated",
 		doctorId));
 		}
 	}

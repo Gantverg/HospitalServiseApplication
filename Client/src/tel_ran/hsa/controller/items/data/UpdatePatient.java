@@ -22,7 +22,7 @@ public class UpdatePatient extends HospitalItem {
 			inputOutput.put(String.format("Patient with id %d doesn`t exist", patientId));
 			return;
 		}
-		if (res.equals(RestResponseCode.NO_PATIENT)) {
+		if (res.equals(RestResponseCode.OK)) {
 		inputOutput.put(String.format("Patient with id %d  was updated",
 		patientId));
 		}

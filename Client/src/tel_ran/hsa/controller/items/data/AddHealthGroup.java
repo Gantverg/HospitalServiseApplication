@@ -28,7 +28,7 @@ public class AddHealthGroup extends HospitalItem {
 		if (res.equals(RestResponseCode.OK))
 		{
 		inputOutput.put(String.format("Healthgroup with name %d was added",
-		groupName));
+		groupId));
 		}
 	}
 

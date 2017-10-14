@@ -55,14 +55,14 @@ public class BookVisit extends HospitalItem {
 		  Doctor doctor = hospital.getDoctor(doctorId);
 		  if (doctor==null)
 		  {
-		   inputOutput.put(String.format("Doctor with id %s doesn`t exist"));
+		   inputOutput.put(String.format("Doctor with id %d doesn`t exist",doctorId));
 		   return;
 		  }
 		  Integer patientId=inputOutput.getInteger("Enter patient id");
 		  Patient patient = hospital.getPatient(patientId);
 		  if (patient==null)
 		  {
-		   inputOutput.put(String.format("Patient with id %s doesn`t exist"));
+		   inputOutput.put(String.format("Patient with id %d doesn`t exist",patientId));
 		   return;
 		  }
 		  LocalDate beginDate =inputOutput.getDate("Enter begin date of visit"+format,format);
@@ -77,12 +77,12 @@ public class BookVisit extends HospitalItem {
 		  	
 		  if (freeVisitsList.isEmpty())
 		  {
-		   inputOutput.put(String.format("No free visits by doctor with id %s in range of date %d1 - %d2",doctorId,beginDate,endDate));
+		   inputOutput.put(String.format("No free visits by doctor with id %d in range of date %s - %s",doctorId,beginDate,endDate));
 		   return;
 		  }
 		 
 		  freeVisitsList.sort(Comparator.comparing(x->x.getDateTime()));
-		  inputOutput.put(String.format("List of free visits by doctor with id %s in range of date %s - %s",doctorId,beginDate.toString(),endDate.toString()));
+		  inputOutput.put(String.format("List of free visits by doctor with id %d in range of date %s - %s",doctorId,beginDate.toString(),endDate.toString()));
 		  int i=1;
 		  for (Visit iter:freeVisitsList)
 		  {
@@ -93,7 +93,7 @@ public class BookVisit extends HospitalItem {
 		  String res = hospital.bookVisit(doctorId, patientId, freeVisitsList.get(listVisitsId-1).getDateTime());
 		  if (res.equals(RestResponseCode.OK))
 		  {
-		  inputOutput.put(String.format("Doctor with id %d will wait your visit at %t",
+		  inputOutput.put(String.format("Doctor with id %d will wait your visit at %s",
 		  doctorId,freeVisitsList.get(listVisitsId-1).getDateTime().toString()));
 		  }
 		 }

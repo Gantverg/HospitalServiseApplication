@@ -411,7 +411,7 @@ public class WebClient extends Hospital implements RestRequest, AccountRequest {
 		map.put(BEGIN_DATE, beginDate.toString());
 		map.put(END_DATE, endDate.toString());
 		ResponseEntity<Iterable<HeartBeat>> response = restTemplate.exchange(
-				URL + PATIENTS + "/" + String.valueOf(patientId) + "?" + getParamString(map), HttpMethod.GET,
+				URL + PULSE + "/" + String.valueOf(patientId) + "?" + getParamString(map), HttpMethod.GET,
 				requestEntity, new ParameterizedTypeReference<Iterable<HeartBeat>>() {
 				});
 

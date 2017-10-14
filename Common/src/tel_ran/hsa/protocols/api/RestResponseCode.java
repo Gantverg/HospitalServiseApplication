@@ -12,4 +12,5 @@ public interface RestResponseCode {
 	String NO_ACCOUNT = "no account";
 	String NO_ROLE = "no role";
 	String WRONG_LOGIN = "wrong login";
+	String USING_OBJECT = "object is using";
 }

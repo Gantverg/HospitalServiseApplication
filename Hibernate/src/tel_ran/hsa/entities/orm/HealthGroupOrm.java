@@ -10,6 +10,14 @@ import tel_ran.hsa.entities.dto.HealthGroup;
 public class HealthGroupOrm {
 	@Id
 	int id;
+	public void setMinNormalPulse(int minNormalPulse) {
+		this.minNormalPulse = minNormalPulse;
+	}
+
+	public void setMaxNormalPulse(int maxNormalPulse) {
+		this.maxNormalPulse = maxNormalPulse;
+	}
+
 	String name;
 	int minNormalPulse;
 	int maxNormalPulse;

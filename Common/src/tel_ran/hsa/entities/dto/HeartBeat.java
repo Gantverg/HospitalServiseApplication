@@ -19,11 +19,35 @@ public class HeartBeat {
 	public HeartBeat() {
 	}
 
+	public HeartBeat(int patientId, LocalDateTime dateTime, int value, int surveyPeriod) {
+		super();
+		this.patientId = patientId;
+		this.dateTime = dateTime;//LocalDateTime.parse(dateTime);
+		this.value = value;
+		this.surveyPeriod = surveyPeriod;
+	}
+
 	public HeartBeat(int patientId, String dateTime, int value, int surveyPeriod) {
 		super();
 		this.patientId = patientId;
 		this.dateTime = LocalDateTime.parse(dateTime);
 		this.value = value;
+		this.surveyPeriod = surveyPeriod;
+	}
+
+	public void setPatientId(int patientId) {
+		this.patientId = patientId;
+	}
+
+	public void setDateTime(LocalDateTime dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public void setSurveyPeriod(int surveyPeriod) {
 		this.surveyPeriod = surveyPeriod;
 	}
 

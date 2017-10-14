@@ -18,6 +18,14 @@ public class RemovePatient extends HospitalItem {
 			inputOutput.put(String.format("Patient with id %d doesn`t exist", patientId));
 			return;
 		}
+		
+		if (res.equals(RestResponseCode.USING_OBJECT))
+		{
+		inputOutput.put(String.format("Patient with id %d couldn`t be removed",
+		patientId));
+		}
+		
+		
 		if (res.equals(RestResponseCode.OK))
 		{
 		inputOutput.put(String.format("Patient with id %d was removed",

@@ -17,13 +17,13 @@ public class GetDoctorPatients extends HospitalItem {
 		Doctor doctor = hospital.getDoctor(doctorId);
 		if (doctor==null)
 		{
-			inputOutput.put(String.format("Doctor with id %s doesn`t exist"));
+			inputOutput.put(String.format("Doctor with id %d doesn`t exist",doctorId));
 			return;
 		}
 		Iterable<Patient> patients = hospital.getDoctorPatients(doctorId);
 		if (patients==null)
 		{
-			inputOutput.put(String.format("Doctor with id %s have no patients",doctorId));
+			inputOutput.put(String.format("Doctor with id %d have no patients",doctorId));
 			return;
 		}
 		inputOutput.put(patients);

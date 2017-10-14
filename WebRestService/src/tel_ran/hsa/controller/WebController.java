@@ -1,11 +1,14 @@
 package tel_ran.hsa.controller;
 
+import java.io.IOException;
 import java.time.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.bind.annotation.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.model.interfaces.IHospital;
@@ -165,7 +168,15 @@ public class WebController {
 	@RequestMapping(value = RestRequest.DOCTORS+"/{"+RestRequest.DOCTOR_ID+"}"+
 							RestRequest.TIMESLOT, method = RequestMethod.PUT)
 	public String setTimeslots(@PathVariable int doctorId,
-							   @RequestBody TimeSlot[] slots) {
+							   @RequestBody String slotsString) {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		TimeSlot[] slots;
+		try {
+			slots = mapper.readValue(slotsString, TimeSlot[].class);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Wrong request");
+		}
 		return hospital.setTimeSlot(doctorId, slots);
 	}
 	

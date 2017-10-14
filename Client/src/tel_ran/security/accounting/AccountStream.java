@@ -24,6 +24,7 @@ public class AccountStream implements IAccounts,AccountRequest {
 		URL = rest.URL;
 		headers = rest.headers;
 	}
+	
 	public RestConfig getRest() {
 		return rest;
 	}
@@ -51,14 +52,6 @@ public class AccountStream implements IAccounts,AccountRequest {
 		return filePath;
 	}
 
-	public void restore() {
-		// TODO Auto-generated method stub
-	}
-
-	public void save() {
-		// TODO Auto-generated method stub
-	}
-
 	@Override
 	public Iterator<Account> iterator() {
 		return account.values().iterator();
@@ -66,18 +59,28 @@ public class AccountStream implements IAccounts,AccountRequest {
 
 	@Override
 	public  String addAccount(Account account) {
-		
 		HttpEntity<Account> requestEntity = new HttpEntity<>(account,headers);
 		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS, HttpMethod.POST,
 				requestEntity, new ParameterizedTypeReference<String>() {});
 		return response.getBody();
 	}
 
+	public boolean login() {
+		try {
+			HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+			@SuppressWarnings("unused")
+			ResponseEntity<String> response = restTemplate.exchange(URL + LOGIN, HttpMethod.GET,
+					requestEntity, new ParameterizedTypeReference<String>() {});
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 	
 	public String saveAccounts()
 	{
-		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL +LOGIN, HttpMethod.PUT,
+		HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL + ACCOUNTS, HttpMethod.PUT,
 				requestEntity, new ParameterizedTypeReference<String>() {});
 		return response.getBody();
 	}
@@ -94,39 +97,25 @@ public class AccountStream implements IAccounts,AccountRequest {
 	@Override
 	public String removeAccount(String userName)
 	{
-		HttpEntity requestEntity = new HttpEntity<>(headers);
+		HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+userName, HttpMethod.DELETE,
 				requestEntity, new ParameterizedTypeReference<String>() {});
 		return response.getBody();
 	}
 	
-	public String getRoles(String userName)
+	@Override
+	public String[] getRoles(String userName)
 	{
-		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+userName+ROLES, HttpMethod.GET,
-				requestEntity, new ParameterizedTypeReference<String>() {});
+		HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String[]> response = restTemplate.exchange(URL +ACCOUNTS+"/"+userName+ROLES, HttpMethod.GET,
+				requestEntity, new ParameterizedTypeReference<String[]>() {});
 		return response.getBody();
 	}
 	
-	public String setRoles(String userName,String role)
-	{
-		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+userName+ROLES+"/"+role, HttpMethod.PUT,
-				requestEntity, new ParameterizedTypeReference<String>() {});
-		return response.getBody();
-	}
-	
-	public String removeRoles(String userName,String role)
-	{
-		HttpEntity requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+userName+ROLES+"/"+role, HttpMethod.DELETE,
-				requestEntity, new ParameterizedTypeReference<String>() {});
-		return response.getBody();
-	}
 	@Override
 	public Account getAccount(String username) {
 		HttpEntity<String> requestEntity = new HttpEntity<>(username,rest.headers);
-		ResponseEntity<Account> response = rest.restTemplate.exchange(rest.URL + "/account/get" , HttpMethod.POST, requestEntity,
+		ResponseEntity<Account> response = rest.restTemplate.exchange(URL + ACCOUNTS , HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<Account>() {
 				});
 		return response.getBody();
@@ -141,13 +130,17 @@ public class AccountStream implements IAccounts,AccountRequest {
 	}*/
 	@Override
 	public String addRole(String username, String role) {
-		// TODO Auto-generated method stub
-		return null;
+		HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+username+ROLES+"/"+role, HttpMethod.PUT,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+		return response.getBody();
 	}
 	@Override
 	public String removeRole(String username, String role) {
-		// TODO Auto-generated method stub
-		return null;
+		HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(URL +ACCOUNTS+"/"+username+ROLES+"/"+role, HttpMethod.DELETE,
+				requestEntity, new ParameterizedTypeReference<String>() {});
+		return response.getBody();
 	}
 	@Override
 	public boolean adminPresent() {

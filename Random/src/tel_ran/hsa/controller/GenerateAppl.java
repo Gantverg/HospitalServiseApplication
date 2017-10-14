@@ -40,25 +40,25 @@ public class GenerateAppl {
 		patients = new ArrayList<>();
 		doctors = new ArrayList<>();
 
-		System.out.println("Generate healthgroups at "+LocalDateTime.now());
-		healthGroups.add(new HealthGroup(0, "Normal", 40, 80, 3));
-		healthGroups.add(new HealthGroup(1, "Risk1", 80, 120, 2));
-		healthGroups.add(new HealthGroup(2, "Risk2", 20, 60, 2));
-		healthGroups.add(new HealthGroup(3, "Spies", 55, 65, 1));
+		//System.out.println("Generate healthgroups at "+LocalDateTime.now());
+		healthGroups.add(new HealthGroup(0, "Normal", 500, 120, 30));
+		healthGroups.add(new HealthGroup(1, "Risk1", 50, 180, 15));
+		healthGroups.add(new HealthGroup(2, "Risk2", 20, 150, 15));
+		healthGroups.add(new HealthGroup(3, "Spies", 30, 160, 20));
 	
 //		for (int i = 0; i < NUMBER_HEALTH_GROUP; i++) {
 //			//generatorHealthGroups();
 //			healthGroups.add(new HealthGroup(i+1, groupName, minNormalPulse, maxNormalPulse, surveyPeriod));
 //		}
 
-		System.out.println("Generate doctors at "+LocalDateTime.now());
+		//System.out.println("Generate doctors at "+LocalDateTime.now());
 		int id = NUMBER_PATIENTS*2;
 		for (int i = 0; i < NUMBER_DOCTORS; i++) {
 			generatorDoctors();
 			doctors.add(new Doctor(id++, doctorName, phone, email));
 		}
 
-		System.out.println("Generate patients at "+LocalDateTime.now());
+		//System.out.println("Generate patients at "+LocalDateTime.now());
 		id = 0;
 		for (int i = 0; i < NUMBER_PATIENTS; i++) {
 			generatorPatients();
@@ -78,6 +78,7 @@ public class GenerateAppl {
 		AbstractApplicationContext ctx = new FileSystemXmlApplicationContext("beans.xml");
 		IHospital hospitalCreation = ctx.getBean(IHospital.class);
 
+		System.out.println("Start writing data to SQL at "+LocalDateTime.now());
 		healthGroups.stream().forEach(hospitalCreation::addHealthGroup);
 		doctors.stream().forEach(hospitalCreation::addDoctor);
 		patients.stream().forEach(hospitalCreation::addPatient);

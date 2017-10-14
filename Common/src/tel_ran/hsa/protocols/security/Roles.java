@@ -6,4 +6,5 @@ public interface Roles {
 	String DOCTOR="DOCTOR";
 	String MANAGER="MANAGER";
 	String BEAT="BEAT";
+	
 }

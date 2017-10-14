@@ -115,4 +115,10 @@ public class AccountsStream implements IAccounts, Serializable, RestResponseCode
 				.anyMatch(role -> role.equals(Roles.ADMIN));
 	}
 
+	@Override
+	public String[] getRoles(String username) {
+		Account account = accounts.get(username);
+		return account.getRolesAsArray();
+	}
+
 }

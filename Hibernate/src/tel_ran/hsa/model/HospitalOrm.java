@@ -326,7 +326,7 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 		if (beginDate.equals(endDate))
 			return records.stream().filter(visit->visit.getDateTime().toLocalDate().isEqual(beginDate));
 			else return records.stream().filter(x -> (x.getDateTime().toLocalDate().isAfter(startDate)
-				&& x.getDateTime().toLocalDate().plusDays(1).isBefore(finishDate))).filter(visit->!visit.isOccupied());
+				&& x.getDateTime().toLocalDate().isBefore(finishDate))).filter(visit->!visit.isOccupied());
 	}
 
 	@Override
@@ -571,24 +571,28 @@ public class HospitalOrm extends Hospital implements RestResponseCode {
 	}
 
 	@Override
-	@Transactional
-	public String setTimeSlot(int doctorId, TimeSlot... slots) {
-		DoctorOrm doctor = em.find(DoctorOrm.class, doctorId);
-		if (doctor == null)
-			return NO_DOCTOR;
-		getSlots(slots, doctor);
-		//doctor.setSlots(getSlots(slots, doctor));
-		//em.persist(doctor);
-		return OK;
-	}
+	 @Transactional
+	 public String setTimeSlot(int doctorId, TimeSlot... slots) {
+	  DoctorOrm doctor = em.find(DoctorOrm.class, doctorId);
+	  if (doctor == null)
+	   return NO_DOCTOR;
+	  em.refresh(doctor);
+	  Set<TimeSlotOrm> slotsormOld = doctor.getSlots();
+	  if (slotsormOld.isEmpty())
+	   getSlots(slots, doctor);
+	  else {
+	   slotsormOld.stream().forEach(em::remove);
+	   getSlots(slots, doctor);
+	  }
+	  return OK;
+	 }
 
-	private Set<TimeSlotOrm> getSlots(TimeSlot[] slots, DoctorOrm doctor) {
-		return Arrays.stream(slots)
-				.map(s -> new TimeSlotOrm(s.getNumberDayOfWeek(), s.getBeginTime(), s.getEndTime(), doctor))
-				.peek(em::persist)
-				.collect(Collectors.toSet());
-	}
-
+	 private Set<TimeSlotOrm> getSlots(TimeSlot[] slots, DoctorOrm doctor) {
+	  return Arrays.stream(slots)
+	    .map(s -> new TimeSlotOrm(s.getNumberDayOfWeek(), s.getBeginTime(), s.getEndTime(), doctor))
+	    .peek(em::persist)
+	    .collect(Collectors.toSet());
+	 }
 	@Override
 	@Transactional
 	public String setTherapist(int patientId, int doctorId) {

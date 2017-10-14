@@ -19,7 +19,7 @@ public class AccountController {
 	IAccounts accounts;
 	
 	@RequestMapping(value = AccountRequest.LOGIN, method = RequestMethod.GET)
-	public void getLoginResponse() {}
+	public String getLoginResponse() {return "";}
 	
 	@RequestMapping(value = AccountRequest.ACCOUNTS, method = RequestMethod.POST)
 	public String addAccount(@RequestBody Account account) {
@@ -57,6 +57,11 @@ public class AccountController {
 	@RequestMapping(value = AccountRequest.ACCOUNTS, method = RequestMethod.GET)
 	public Iterable<Account> getAccounts() {
 		return StreamSupport.stream(accounts.spliterator(), false).collect(Collectors.toList());
+	}
+
+	@RequestMapping(value = AccountRequest.ACCOUNTS+"/{"+AccountRequest.USERNAME+"}", method = RequestMethod.GET)
+	public Account getAccount(@PathVariable String username) {
+		return accounts.getAccount(username);
 	}
 
 	@RequestMapping(value = AccountRequest.ACCOUNTS+"/{"+AccountRequest.USERNAME+"}"+

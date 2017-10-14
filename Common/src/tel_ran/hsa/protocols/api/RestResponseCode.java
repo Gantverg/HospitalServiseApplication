@@ -11,4 +11,5 @@ public interface RestResponseCode {
 	String VISIT_FREE = "visit free already";
 	String NO_ACCOUNT = "no account";
 	String NO_ROLE = "no role";
+	String WRONG_LOGIN = "wrong login";
 }

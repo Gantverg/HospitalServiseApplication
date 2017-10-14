@@ -13,24 +13,29 @@ import tel_ran.security.interfaces.IAccounts;
 
 public class AccountStream implements IAccounts,AccountRequest {
 
-	RestConfig rest;
-	RestTemplate restTemplate;
-	String URL;
-	static HttpHeaders headers;
+	private RestConfig rest;
+	private RestTemplate restTemplate;
+	private String URL;
+	private HttpHeaders headers;
 	
 	public AccountStream(RestConfig rest) {
 		super();
-		restTemplate = rest.restTemplate;
-		URL = rest.URL;
-		headers = rest.headers;
+		setFieds(rest);
 	}
 	
+	private void setFieds(RestConfig newRest) {
+		restTemplate = newRest.restTemplate;
+		URL = newRest.URL;
+		headers = newRest.headers;
+	}
+
 	public RestConfig getRest() {
 		return rest;
 	}
 
-	public void setRest(RestConfig rest) {
-		this.rest = rest;
+	public void setRest(RestConfig newRest) {
+		this.rest = newRest;
+		setFieds(rest);
 	}
 
 	Map<String, Account> account;

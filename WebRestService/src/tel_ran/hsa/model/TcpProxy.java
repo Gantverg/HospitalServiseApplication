@@ -102,7 +102,7 @@ public class TcpProxy implements IHospital {
 		String result = TcpResponseCode.WRONG_REQUEST_TYPE.name();
 		try {
 			getResponse(getRequestString(request, requestBody));
-			result = responseBody; //mapper.readValue(responseBody, String.class);
+			result = mapper.readValue(responseBody, String.class);
 /*			if (code == TcpResponseCode.OK) {
 				result = RestResponseCode.OK;
 			} else {

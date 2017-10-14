@@ -7,6 +7,7 @@ import tel_ran.hsa.controller.items.accounting.*;
 import tel_ran.hsa.controller.items.data.*;
 import tel_ran.hsa.controller.items.reports.*;
 import tel_ran.hsa.controller.items.visiting.*;
+import tel_ran.view.ExitItem;
 import tel_ran.view.Menu;
 
 public class Login extends HospitalItem{
@@ -25,9 +26,12 @@ public class Login extends HospitalItem{
 			String tokenStr = username + ":" + password;
 			restConfig.setUserPass(tokenStr);
 			((WebClient)hospital).setRestConfig(restConfig);
+			accountStream.setRest(restConfig);
 			
-			if (accountStream.login())
+			if (accountStream.login()) {
 				runMenu();
+				break;
+			}
 			else
 				inputOutput.put("wrong user or password");
 		}
@@ -45,7 +49,8 @@ public class Login extends HospitalItem{
 										   new SetTherapist(),
 										   new SetTimeSlot(),
 										   new UpdateDoctor(),
-										   new UpdatePatient()));
+										   new UpdatePatient(),
+										   new ExitItem()));
 		SubMenu reportsSubmenu = new ReportsSubmenu();
 		reportsSubmenu.setItems(Arrays.asList(new GetDoctors(),
 										   new GetDoctor(),
@@ -56,7 +61,8 @@ public class Login extends HospitalItem{
 										   new GetPatientDoctors(),
 										   new GetDoctorPatients(),
 										   new GetPulseByPeriod(),
-										   new GetPulseBySurveyPeriod()));
+										   new GetPulseBySurveyPeriod(),
+										   new ExitItem()));
 		SubMenu visitingSubmenu = new VisitingSubmenu();
 		visitingSubmenu.setItems(Arrays.asList(new BuildSchedule(),
 										   new BuildScheduleByDoctor(),
@@ -66,7 +72,8 @@ public class Login extends HospitalItem{
 										   new GetVisits(),
 										   new GetVisitsByDoctor(),
 										   new GetVisitsByPatient(),
-										   new GetFreeVisits()));
+										   new GetFreeVisits(),
+										   new ExitItem()));
 		SubMenu accountingSubmenu = new AccountingSubmenu();
 		accountingSubmenu.setItems(Arrays.asList(new Login(),
 										   new AddAccountItem(),
@@ -75,11 +82,13 @@ public class Login extends HospitalItem{
 										   new RemoveRoleItem(),
 										   new SetPasswordItem(),
 										   new DisplayAccountsItem(),
-										   new DisplayAccountItem()));
+										   new DisplayAccountItem(),
+										   new ExitItem()));
 		Menu menu = new Menu(inputOutput, Arrays.asList(dataSubmenu,
 														reportsSubmenu,
 														visitingSubmenu,
-														accountingSubmenu));
+														accountingSubmenu,
+														new ExitItem()));
 		menu.runMenu();
 	}
 

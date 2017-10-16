@@ -1,16 +1,21 @@
 package tel_ran.hsa.entities.jfx;
 
+import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import tel_ran.hsa.entities.dto.Doctor;
 import tel_ran.hsa.entities.dto.TimeSlot;
 
 public class DoctorJfx extends PersonJfx {
-	ObjectProperty<Set<TimeSlot>> timeSlots;
+	ObservableSet<TimeSlot> timeSlots = FXCollections.emptyObservableSet();
 	BooleanProperty dismissed;
 
 	public DoctorJfx() {
+		this.timeSlots = FXCollections.emptyObservableSet();
 	}
 	
 	public DoctorJfx(int id, String name, String phoneNumber, String eMail) {
@@ -27,7 +32,8 @@ public class DoctorJfx extends PersonJfx {
 	}
 	
 	public Doctor get() {
-		return new Doctor(id.get(), name.get(), phoneNumber.get(), eMail.get(), timeSlots.get());
+		
+		return new Doctor(id.get(), name.get(), phoneNumber.get(), eMail.get(), getTimeSlots());
 	}
 	
 	public boolean isDismissed() {
@@ -43,14 +49,14 @@ public class DoctorJfx extends PersonJfx {
 	}
 
 	public Set<TimeSlot> getTimeSlots() {
-		return timeSlots.get();
+		return timeSlots.stream().collect(Collectors.toSet());
 	}
 	
-	public void setTimeSlots(Set<TimeSlot> timeSlots) {
-		this.timeSlots.set(timeSlots);
+	public void setTimeSlots(Set<TimeSlot> timeSlotsSet) {
+		timeSlots = FXCollections.observableSet(timeSlotsSet);
 	}
 	
-	public ObjectProperty<Set<TimeSlot>> timeSlotsProperty() {
+	public ObservableSet<TimeSlot> timeSlotsProperty() {
 		return this.timeSlots;
 	}
 

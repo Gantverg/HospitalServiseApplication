@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import tel_ran.hsa.entities.dto.HeartBeat;
 import tel_ran.hsa.entities.util.HeartbeatDiagramData;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -21,7 +22,7 @@ public class HeartbeatLineChart extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			final LineChart<Number, Number> lineChart = getLineChart();
+			final LineChart<String, Number> lineChart = getLineChart();
 			Scene scene = new Scene(lineChart, 800, 600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -35,14 +36,14 @@ public class HeartbeatLineChart extends Application {
 		HeartbeatLineChart.heartBeatsDiagram = heartBeatsDiagram;
 	}
 
-	private LineChart<Number, Number> getLineChart() {
+	private LineChart<String, Number> getLineChart() {
 		// defining the axes
-		final NumberAxis xAxis = new NumberAxis();
+		final CategoryAxis xAxis = new CategoryAxis();
 		final NumberAxis yAxis = new NumberAxis();
 		xAxis.setLabel("periods of time");
 		yAxis.setLabel("heart beating");
 		// creating the chart
-		final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+		final LineChart<String, Number> lineChart = new LineChart(xAxis, yAxis);
 
 		lineChart.setTitle("Heartbeat data of "+heartBeatsDiagram.getPatient().getName());
 		// defining a series
@@ -50,7 +51,7 @@ public class HeartbeatLineChart extends Application {
 		series.setName("Heartbeating");
 		
 		for (HeartBeat heartBeat : heartBeatsDiagram.getHeartBeats()) {
-			series.getData().add(new XYChart.Data<LocalDateTime, Integer>(heartBeat.getDateTime(), heartBeat.getValue()));
+			series.getData().add(new XYChart.Data<String, Integer>(heartBeat.getDateTime().toString(), heartBeat.getValue()));
 		}
 		
 		lineChart.getData().add(series);

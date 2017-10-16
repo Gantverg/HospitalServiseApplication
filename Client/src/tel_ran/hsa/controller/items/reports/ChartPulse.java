@@ -1,12 +1,14 @@
 package tel_ran.hsa.controller.items.reports;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tel_ran.hsa.charts.HeartbeatLineChart;
 import tel_ran.hsa.controller.items.HospitalItem;
+import tel_ran.hsa.controller.utils.HeartbeatLineChart;
 import tel_ran.hsa.entities.dto.*;
 import tel_ran.hsa.entities.util.HeartbeatDiagramData;
 
@@ -44,10 +46,42 @@ public class ChartPulse extends HospitalItem {
 		try (PrintStream stream = new PrintStream(fileName)){
 			stream.println(mapper.writeValueAsString(diagramData));
 		} catch (Exception e) {
-			inputOutput.put("Unexpected error show chart");;
+			inputOutput.put("Unexpected error show chart");
+			return;
 		}
+		String[] args = {fileName};
 		
-		HeartbeatLineChart.launch(fileName);
+		  try {
+		        //Загружаем класс с именем className
+		        Class<?> targetClass = Class.forName("tel_ran.hsa.controller.utils.HeartbeatLineChart");
+
+		        //Находим метод с именем "main" и списком параметров String[]
+		        Class[] argTypes = new Class[]{String[].class};
+		        Method mainMethod = targetClass.getDeclaredMethod("main", argTypes);
+
+		        //В качестве параметра передаем пустой массив
+		        Object[] arguments = new Object[]{args};
+		        mainMethod.invoke(null, arguments);
+		    } catch (ClassNotFoundException ex) {
+		        ex.printStackTrace();
+		    } catch (NoSuchMethodException ex) {
+		    	ex.printStackTrace();
+		    } catch (InvocationTargetException ex) {
+		    	ex.printStackTrace();
+		    } catch (IllegalAccessException ex) {
+		    	ex.printStackTrace();
+		    }	
+		
+/*		ProcessBuilder pb = new ProcessBuilder("java", "-jar", "c:/tmp/chart.jar", fileName);
+		try {
+			Process p = pb.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+*/		
+//		HeartbeatLineChart lineChart = new HeartbeatLineChart();
+//		lineChart.main(fileName);
+//		lineChart.launch(fileName);
 		//inputOutput.put(res);
 	}
 

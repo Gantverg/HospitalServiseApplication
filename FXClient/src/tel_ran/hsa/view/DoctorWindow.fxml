@@ -19,7 +19,6 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tel_ran.hsa.view.DoctorDialog">
    <center>
       <VBox prefHeight="600.0" prefWidth="900.0">
@@ -36,14 +35,11 @@
                       <Color blue="0.624" green="0.624" red="0.624" fx:id="x2" />
                     </textFill>
                   </Label>
-                        <TableView layoutX="14.0" layoutY="41.0" prefHeight="576.0" prefWidth="222.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:id="tableDoctors" prefHeight="576.0" prefWidth="222.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                            <TableColumn fx:id="doctorIdColumn" prefWidth="82.0" text="Doctor's id" />
                             <TableColumn fx:id="doctorNameColumn" prefWidth="138.0" text="Doctor's name" />
+                            <TableColumn fx:id="doctorIdColumn" prefWidth="82.0" text="Doctor's id" />
                           </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
                         </TableView>
                 </children>
               </AnchorPane>
@@ -65,20 +61,20 @@
                                 </rowConstraints>
                                  <children>
                                     <Label text="Id" />
-                                    <Label text="Id" GridPane.columnIndex="1" />
+                                    <Label fx:id="idLabel" text="Id" GridPane.columnIndex="1" />
                                     <Label text="Name" GridPane.rowIndex="1" />
-                                    <Label text="Name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label fx:id="nameLabel" text="Name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Label text="Phone number" GridPane.rowIndex="2" />
-                                    <Label text="Phone number" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label fx:id="phoneNumberLabel" text="Phone number" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label text="eMail" GridPane.rowIndex="3" />
-                                    <Label text="eMail" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label fx:id="eMailLabel" text="eMail" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
                               <ButtonBar prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
                                 <buttons>
-                                  <Button mnemonicParsing="false" text="Add..." />
-                                    <Button mnemonicParsing="false" text="Delete..." />
-                                    <Button mnemonicParsing="false" text="Edit..." />
+                                  <Button mnemonicParsing="false" onAction="#handleNewPerson" text="Add..." />
+                                    <Button mnemonicParsing="false" onAction="#handleDeleteDoctor" text="Delete..." />
+                                    <Button mnemonicParsing="false" onAction="#handleEditPerson" text="Edit..." />
                                 </buttons>
                               </ButtonBar>
                     </children>
@@ -88,11 +84,11 @@
               <AnchorPane>
                 <children>
                   <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Doctor' s Schedule" textAlignment="CENTER" textFill="$x2" wrapText="false" />
-                        <TableView layoutX="11.0" layoutY="57.0" prefHeight="576.0" prefWidth="221.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:id="tableSlots" layoutX="11.0" layoutY="57.0" prefHeight="576.0" prefWidth="221.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                            <TableColumn prefWidth="75.0" text="Day of week" />
-                            <TableColumn prefWidth="75.0" text="from" />
-                              <TableColumn prefWidth="75.0" text="to" />
+                            <TableColumn fx:id="timeSlotDayColumn" prefWidth="75.0" text="Day of week" />
+                            <TableColumn fx:id="timeSlotBeginTimeColumn" prefWidth="75.0" text="from" />
+                              <TableColumn fx:id="timeSlotEndTimeColumn" prefWidth="75.0" text="to" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

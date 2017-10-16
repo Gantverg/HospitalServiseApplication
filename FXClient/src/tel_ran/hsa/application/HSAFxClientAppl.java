@@ -33,8 +33,10 @@ public class HSAFxClientAppl extends Application {
         BorderPane rootLayout = (BorderPane) loader.load();
         Form.setParentNode(rootLayout);
 
-        //MainWindowController controller = loader.getController();
-        //controller.setMainAppl(this);
+        MainWindowController controller = loader.getController();
+        Form.setMainController(controller);
+        
+        Form.setPrimaryStage(primaryStage);
         
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);

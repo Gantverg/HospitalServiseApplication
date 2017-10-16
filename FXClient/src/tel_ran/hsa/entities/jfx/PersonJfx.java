@@ -2,13 +2,14 @@ package tel_ran.hsa.entities.jfx;
 
 import javafx.beans.property.*;
 
-abstract class PersonJfx {
+public abstract class PersonJfx {
 	IntegerProperty id;
 	StringProperty name;
 	StringProperty phoneNumber;
 	StringProperty eMail;
 
 	public PersonJfx() {
+		this(0,"","","");
 	}
 	
 	public PersonJfx(int id, String name, String phoneNumber, String eMail) {
@@ -32,7 +33,7 @@ abstract class PersonJfx {
 		return eMail.get();
 	}
 	public void setId(int id) {
-		this.id.set(id);;
+		this.id.set(id);
 	}
 	public void setName(String name) {
 		this.name.set(name);

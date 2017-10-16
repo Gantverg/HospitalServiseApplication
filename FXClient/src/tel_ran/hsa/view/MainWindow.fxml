@@ -6,14 +6,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tel_ran.hsa.view.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tel_ran.hsa.view.MainWindowController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="Data">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleDoctorDataMenuItem" text="Doctors" />
+                  <MenuItem fx:id="doctorDataMenuItem" mnemonicParsing="false" onAction="#handleDoctorDataMenuItem" text="Doctors" />
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>

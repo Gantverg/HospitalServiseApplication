@@ -4,6 +4,8 @@ import java.time.*;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import tel_ran.hsa.entities.dto.TimeSlot;
 
 public class TimeSlotJfx {
@@ -16,9 +18,9 @@ public class TimeSlotJfx {
 	
 	public TimeSlotJfx(int numberDayOfWeek, LocalTime beginTime, LocalTime endTime) {
 		super();
-		this.numberDayOfWeek.set(numberDayOfWeek);
-		this.beginTime.set(beginTime);
-		this.endTime.set(endTime);
+		this.numberDayOfWeek = new SimpleIntegerProperty(numberDayOfWeek);
+		this.beginTime = new SimpleObjectProperty<LocalTime>(beginTime);
+		this.endTime = new SimpleObjectProperty<LocalTime>(endTime);
 	}
 
 	public TimeSlotJfx(TimeSlot timeSlot) {

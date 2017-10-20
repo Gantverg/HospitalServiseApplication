@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
@@ -12,13 +13,15 @@
         <menus>
           <Menu mnemonicParsing="false" text="Data">
             <items>
-                  <MenuItem fx:id="doctorDataMenuItem" mnemonicParsing="false" onAction="#handleDoctorDataMenuItem" text="Doctors" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleDoctorDataMenuItem" text="Doctors" />
+              <MenuItem mnemonicParsing="false" onAction="#handlePatientDataMenuItem" text="Patients" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleHealthgroupDataMenuItem" text="Healthgroups" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Reports">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+              <MenuItem mnemonicParsing="false" onAction="#handlePulseChartMenuItem" text="Pulse chart" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Accounting">

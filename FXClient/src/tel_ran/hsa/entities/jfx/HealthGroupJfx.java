@@ -116,4 +116,8 @@ public class HealthGroupJfx {
 		return true;
 	}
 
+	public IntegerProperty groupIdProperty() {
+		return groupId;
+	}
+
 }

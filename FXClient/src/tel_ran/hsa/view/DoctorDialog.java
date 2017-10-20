@@ -1,6 +1,5 @@
 package tel_ran.hsa.view;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.stream.*;
 
@@ -115,61 +114,60 @@ public class DoctorDialog extends Form {
 		}
 
 	}
+
 	@FXML
 	private void handleNewPerson() {
-	    DoctorJfx tempPerson = new DoctorJfx();
-	    tempPerson.setId(getMaxId()+1);
-	    boolean okClicked = mainController.showPersonEditDialog(tempPerson);
-	    if (okClicked) {
-	    	String result = jfxProxy.addDoctor(tempPerson);
-	    	if(result.equalsIgnoreCase(RestResponseCode.OK)) {
-	    		doctors.add(tempPerson);
-	    	} else {
-		        Alert alert = new Alert(AlertType.WARNING);
-		        alert.initOwner(primaryStage);
-		        alert.setTitle("No adding");
-		        alert.setHeaderText("Person didn't add");
-		        alert.setContentText("Reason: "+result);
+		DoctorJfx tempPerson = new DoctorJfx();
+		tempPerson.setId(getMaxId() + 1);
+		boolean okClicked = mainController.showPersonEditDialog(tempPerson);
+		if (okClicked) {
+			String result = jfxProxy.addDoctor(tempPerson);
+			if (result.equalsIgnoreCase(RestResponseCode.OK)) {
+				doctors.add(tempPerson);
+			} else {
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.initOwner(primaryStage);
+				alert.setTitle("No adding");
+				alert.setHeaderText("Person didn't add");
+				alert.setContentText("Reason: " + result);
 
-		        alert.showAndWait();
-	    	}
-	    }
+				alert.showAndWait();
+			}
+		}
 	}
 
 	private int getMaxId() {
-		return doctors.stream()
-			.map(DoctorJfx::getId)
-			.max(Integer::compareTo)
-			.orElse(0);
+		return doctors.stream().map(DoctorJfx::getId).max(Integer::compareTo).orElse(0);
 	}
 
 	@FXML
 	private void handleEditPerson() {
-	    DoctorJfx selectedPerson = tableDoctors.getSelectionModel().getSelectedItem();
-	    if (selectedPerson != null) {
-	        boolean okClicked = mainController.showPersonEditDialog(selectedPerson);
-	        if (okClicked) {
-		    	String result = jfxProxy.updateDoctor(selectedPerson);
-		    	if(result.equalsIgnoreCase(RestResponseCode.OK)) {
-		            showPersonalDetails(selectedPerson);
-		    	} else {
-			        Alert alert = new Alert(AlertType.WARNING);
-			        alert.initOwner(primaryStage);
-			        alert.setTitle("No update");
-			        alert.setHeaderText("Person didn't update");
-			        alert.setContentText("Reason: "+result);
+		DoctorJfx selectedPerson = tableDoctors.getSelectionModel().getSelectedItem();
+		if (selectedPerson != null) {
+			boolean okClicked = mainController.showPersonEditDialog(selectedPerson);
+			if (okClicked) {
+				String result = jfxProxy.updateDoctor(selectedPerson);
+				if (result.equalsIgnoreCase(RestResponseCode.OK)) {
+					showPersonalDetails(selectedPerson);
+				} else {
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.initOwner(primaryStage);
+					alert.setTitle("No update");
+					alert.setHeaderText("Person didn't update");
+					alert.setContentText("Reason: " + result);
 
-			        alert.showAndWait();
-		    	}
-	        }
+					alert.showAndWait();
+				}
+			}
 
-	    } else {
-	        Alert alert = new Alert(AlertType.WARNING);
-	        alert.initOwner(primaryStage);
-	        alert.setTitle("No Selection");
-	        alert.setHeaderText("No Person Selected");
-	        alert.setContentText("Please select a person in the table.");
+		} else {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.initOwner(primaryStage);
+			alert.setTitle("No Selection");
+			alert.setHeaderText("No Person Selected");
+			alert.setContentText("Please select a person in the table.");
 
-	        alert.showAndWait();
-	    }
-	}}
+			alert.showAndWait();
+		}
+	}
+}

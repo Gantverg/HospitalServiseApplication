@@ -25,6 +25,10 @@ public class HeartBeatJfx {
 	public HeartBeatJfx(HeartBeat heartBeat) {
 		this(heartBeat.getPatientId(), heartBeat.getDateTime().toString(), heartBeat.getValue(), heartBeat.getSurveyPeriod());
 	}
+	
+	public HeartBeat get() {
+		return new HeartBeat(patientId.get(), dateTime.get(), value.get(), surveyPeriod.get());
+	}
 
 	public int getPatientId() {
 		return patientId.get();
